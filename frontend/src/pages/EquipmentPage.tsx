@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, X } from "lucide-react";
+import { Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
+import { useAuth } from "../lib/auth";
 import type { Equipment, Supply } from "../types";
 
 const STATUS_LABEL: Record<Equipment["status"], string> = {
@@ -17,8 +18,12 @@ const STATUS_TONE: Record<Equipment["status"], string> = {
 };
 
 export function EquipmentPage() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingEquipment, setEditingEquipment] = useState<Equipment | null>(null);
+  const isAdmin = user?.role === "ADMIN";
 
   const equipmentQuery = useQuery({
     queryKey: ["equipment", search],
@@ -27,6 +32,21 @@ export function EquipmentPage() {
       return data as Equipment[];
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (equipmentId: string) => {
+      await api.delete(`/api/equipment/${equipmentId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["equipment"] });
+    },
+  });
+
+  function handleDelete(eq: Equipment) {
+    if (confirm(`¿Eliminar el equipo "${eq.name}"?`)) {
+      deleteMutation.mutate(eq.id);
+    }
+  }
 
   const items = equipmentQuery.data ?? [];
   const inMaintenance = items.filter((e) => e.status === "MAINTENANCE").length;
@@ -82,6 +102,7 @@ export function EquipmentPage() {
               <th className="px-4 py-3">Ubicación</th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3">Insumos Vinculados</th>
+              {isAdmin && <th className="px-4 py-3 text-right">Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -115,11 +136,31 @@ export function EquipmentPage() {
                     </div>
                   ))}
                 </td>
+                {isAdmin && (
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-1">
+                      <button
+                        onClick={() => setEditingEquipment(eq)}
+                        title="Editar equipo"
+                        className="rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(eq)}
+                        title="Eliminar equipo"
+                        className="rounded-md p-1 text-on-surface-variant hover:bg-danger-bg hover:text-danger"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
             {!equipmentQuery.isLoading && items.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-on-surface-variant">
+                <td colSpan={isAdmin ? 8 : 7} className="px-4 py-8 text-center text-on-surface-variant">
                   No hay equipos registrados todavía.
                 </td>
               </tr>
@@ -128,7 +169,10 @@ export function EquipmentPage() {
         </table>
       </div>
 
-      {modalOpen && <AddEquipmentModal onClose={() => setModalOpen(false)} />}
+      {modalOpen && <EquipmentFormModal onClose={() => setModalOpen(false)} />}
+      {editingEquipment && (
+        <EquipmentFormModal editing={editingEquipment} onClose={() => setEditingEquipment(null)} />
+      )}
     </div>
   );
 }
@@ -156,7 +200,7 @@ function StatCard({
   );
 }
 
-function AddEquipmentModal({ onClose }: { onClose: () => void }) {
+function EquipmentFormModal({ onClose, editing }: { onClose: () => void; editing?: Equipment }) {
   const queryClient = useQueryClient();
   const suppliesQuery = useQuery({
     queryKey: ["supplies", ""],
@@ -167,25 +211,30 @@ function AddEquipmentModal({ onClose }: { onClose: () => void }) {
   });
 
   const [form, setForm] = useState({
-    code: "",
-    serial: "",
-    name: "",
-    category: "",
-    quantity: 1,
-    location: "",
-    status: "OPERATIVE" as Equipment["status"],
-    unitValue: 0,
-    linkedSupplyId: "",
+    code: editing?.code ?? "",
+    serial: editing?.serial ?? "",
+    name: editing?.name ?? "",
+    category: editing?.category ?? "",
+    quantity: editing?.quantity ?? 1,
+    location: editing?.location ?? "",
+    status: editing?.status ?? ("OPERATIVE" as Equipment["status"]),
+    unitValue: editing ? Number(editing.unitValue) : 0,
+    linkedSupplyId: editing?.linkedSupplies[0]?.supplyId ?? "",
   });
 
   const mutation = useMutation({
     mutationFn: async () => {
-      await api.post("/api/equipment", {
+      const payload = {
         ...form,
         linkedSupplies: form.linkedSupplyId
           ? [{ supplyId: form.linkedSupplyId, autoDiscount: true }]
           : [],
-      });
+      };
+      if (editing) {
+        await api.patch(`/api/equipment/${editing.id}`, payload);
+      } else {
+        await api.post("/api/equipment", payload);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
@@ -197,7 +246,9 @@ function AddEquipmentModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg bg-surface-lowest p-6 shadow-xl">
         <div className="mb-4 flex items-start justify-between">
-          <h2 className="text-xl font-bold text-on-surface">Agregar Equipo</h2>
+          <h2 className="text-xl font-bold text-on-surface">
+            {editing ? "Editar Equipo" : "Agregar Equipo"}
+          </h2>
           <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface">
             <X size={20} />
           </button>
@@ -317,7 +368,7 @@ function AddEquipmentModal({ onClose }: { onClose: () => void }) {
               disabled={mutation.isPending}
               className="rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
             >
-              {mutation.isPending ? "Guardando..." : "Guardar Equipo"}
+              {mutation.isPending ? "Guardando..." : editing ? "Guardar Cambios" : "Guardar Equipo"}
             </button>
           </div>
         </form>

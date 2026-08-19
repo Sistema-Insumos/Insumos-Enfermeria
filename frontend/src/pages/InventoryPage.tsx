@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, X } from "lucide-react";
+import { Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
+import { useAuth } from "../lib/auth";
 import type { Subject, Supply } from "../types";
 
 export function InventoryPage() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingSupply, setEditingSupply] = useState<Supply | null>(null);
+  const isAdmin = user?.role === "ADMIN";
 
   const suppliesQuery = useQuery({
     queryKey: ["supplies", search],
@@ -15,6 +20,21 @@ export function InventoryPage() {
       return data as { items: Supply[]; total: number };
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (supplyId: string) => {
+      await api.delete(`/api/supplies/${supplyId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["supplies"] });
+    },
+  });
+
+  function handleDelete(supply: Supply) {
+    if (confirm(`¿Eliminar el insumo "${supply.name}"?`)) {
+      deleteMutation.mutate(supply.id);
+    }
+  }
 
   const supplies = suppliesQuery.data?.items ?? [];
   const lowStockCount = supplies.filter((s) => s.currentStock < s.minStock).length;
@@ -67,6 +87,7 @@ export function InventoryPage() {
               <th className="px-4 py-3">Ubicación</th>
               <th className="px-4 py-3 text-right">Stock Actual</th>
               <th className="px-4 py-3 text-right">Stock Mínimo</th>
+              {isAdmin && <th className="px-4 py-3 text-right">Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -86,11 +107,31 @@ export function InventoryPage() {
                   {supply.currentStock}
                 </td>
                 <td className="px-4 py-3 text-right text-on-surface-variant">{supply.minStock}</td>
+                {isAdmin && (
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-1">
+                      <button
+                        onClick={() => setEditingSupply(supply)}
+                        title="Editar insumo"
+                        className="rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(supply)}
+                        title="Eliminar insumo"
+                        className="rounded-md p-1 text-on-surface-variant hover:bg-danger-bg hover:text-danger"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
             {!suppliesQuery.isLoading && supplies.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-on-surface-variant">
+                <td colSpan={isAdmin ? 7 : 6} className="px-4 py-8 text-center text-on-surface-variant">
                   No hay insumos registrados todavía.
                 </td>
               </tr>
@@ -99,7 +140,10 @@ export function InventoryPage() {
         </table>
       </div>
 
-      {modalOpen && <AddSupplyModal onClose={() => setModalOpen(false)} />}
+      {modalOpen && <SupplyFormModal onClose={() => setModalOpen(false)} />}
+      {editingSupply && (
+        <SupplyFormModal editing={editingSupply} onClose={() => setEditingSupply(null)} />
+      )}
     </div>
   );
 }
@@ -127,7 +171,7 @@ function StatCard({
   );
 }
 
-function AddSupplyModal({ onClose }: { onClose: () => void }) {
+function SupplyFormModal({ onClose, editing }: { onClose: () => void; editing?: Supply }) {
   const queryClient = useQueryClient();
   const subjectsQuery = useQuery({
     queryKey: ["subjects"],
@@ -138,25 +182,27 @@ function AddSupplyModal({ onClose }: { onClose: () => void }) {
   });
 
   const [form, setForm] = useState({
-    name: "",
-    sku: "",
-    category: "",
-    locationType: "",
-    locationDetail: "",
-    initialStock: 0,
-    minStock: 0,
-    maxStock: "",
-    unit: "uds",
-    description: "",
+    name: editing?.name ?? "",
+    sku: editing?.sku ?? "",
+    category: editing?.category ?? "",
+    locationType: editing?.locationType ?? "",
+    locationDetail: editing?.locationDetail ?? "",
+    initialStock: editing?.initialStock ?? 0,
+    minStock: editing?.minStock ?? 0,
+    maxStock: editing?.maxStock != null ? String(editing.maxStock) : "",
+    unit: editing?.unit ?? "uds",
+    description: editing?.description ?? "",
     subjectIds: [] as string[],
   });
 
   const mutation = useMutation({
     mutationFn: async () => {
-      await api.post("/api/supplies", {
-        ...form,
-        maxStock: form.maxStock ? Number(form.maxStock) : undefined,
-      });
+      const payload = { ...form, maxStock: form.maxStock ? Number(form.maxStock) : undefined };
+      if (editing) {
+        await api.patch(`/api/supplies/${editing.id}`, payload);
+      } else {
+        await api.post("/api/supplies", payload);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["supplies"] });
@@ -178,9 +224,13 @@ function AddSupplyModal({ onClose }: { onClose: () => void }) {
       <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-surface-lowest p-6 shadow-xl">
         <div className="mb-4 flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold text-on-surface">Agregar Nuevo Insumo</h2>
+            <h2 className="text-xl font-bold text-on-surface">
+              {editing ? "Editar Insumo" : "Agregar Nuevo Insumo"}
+            </h2>
             <p className="text-sm text-on-surface-variant">
-              Complete los detalles para registrar un nuevo elemento en el inventario.
+              {editing
+                ? "Actualiza los detalles de este elemento del inventario."
+                : "Complete los detalles para registrar un nuevo elemento en el inventario."}
             </p>
           </div>
           <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface">
@@ -333,7 +383,7 @@ function AddSupplyModal({ onClose }: { onClose: () => void }) {
               disabled={mutation.isPending}
               className="rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
             >
-              {mutation.isPending ? "Guardando..." : "Guardar Insumo"}
+              {mutation.isPending ? "Guardando..." : editing ? "Guardar Cambios" : "Guardar Insumo"}
             </button>
           </div>
         </form>

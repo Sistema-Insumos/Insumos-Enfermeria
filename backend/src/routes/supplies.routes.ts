@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
-import { requireAuth } from "../middleware/auth";
+import { requireAdmin, requireAuth } from "../middleware/auth";
 import { asyncHandler } from "../utils/asyncHandler";
 
 export const suppliesRouter = Router();
@@ -103,6 +103,7 @@ suppliesRouter.post(
 
 suppliesRouter.patch(
   "/:id",
+  requireAdmin,
   asyncHandler(async (req, res) => {
     const data = supplySchema.partial().parse(req.body);
     const { subjectIds, ...rest } = data;
@@ -128,6 +129,7 @@ suppliesRouter.patch(
 
 suppliesRouter.delete(
   "/:id",
+  requireAdmin,
   asyncHandler(async (req, res) => {
     await prisma.supply.delete({ where: { id: req.params.id } });
     res.status(204).send();
