@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { GraduationCap, Plus, X } from "lucide-react";
+import { GraduationCap, Plus, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
+import { useAuth } from "../lib/auth";
 import type { SubjectSummary } from "../types";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = [CURRENT_YEAR - 1, CURRENT_YEAR, CURRENT_YEAR + 1];
 
 export function SubjectsPage() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [year, setYear] = useState(CURRENT_YEAR);
   const [semester, setSemester] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
@@ -20,6 +23,23 @@ export function SubjectsPage() {
       return data as SubjectSummary[];
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (subjectId: string) => {
+      await api.delete(`/api/subjects/${subjectId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subjects"] });
+    },
+  });
+
+  function handleDelete(e: React.MouseEvent, subject: SubjectSummary) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm(`¿Eliminar la asignatura "${subject.name}"? Esto también elimina sus talleres y secciones.`)) {
+      deleteMutation.mutate(subject.id);
+    }
+  }
 
   return (
     <div>
@@ -78,13 +98,24 @@ export function SubjectsPage() {
               <span className="rounded-md bg-surface-container p-2">
                 <GraduationCap size={18} className="text-secondary" />
               </span>
-              <span
-                className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                  subject.stockStatus === "ALERTA" ? "bg-warning-bg text-warning" : "bg-success-bg text-success"
-                }`}
-              >
-                {subject.stockStatus === "ALERTA" ? "Alerta Stock" : "Stock Normal"}
-              </span>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                    subject.stockStatus === "ALERTA" ? "bg-warning-bg text-warning" : "bg-success-bg text-success"
+                  }`}
+                >
+                  {subject.stockStatus === "ALERTA" ? "Alerta Stock" : "Stock Normal"}
+                </span>
+                {user?.role === "ADMIN" && (
+                  <button
+                    onClick={(e) => handleDelete(e, subject)}
+                    title="Eliminar asignatura"
+                    className="rounded-md p-1 text-on-surface-variant hover:bg-danger-bg hover:text-danger"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
+              </div>
             </div>
             <h3 className="text-lg font-semibold text-on-surface">{subject.name}</h3>
             <p className="text-sm text-on-surface-variant">{subject.professor ?? "Sin docente asignado"}</p>

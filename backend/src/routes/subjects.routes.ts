@@ -84,3 +84,14 @@ subjectsRouter.post(
     res.status(201).json(subject);
   })
 );
+
+subjectsRouter.delete(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    if (req.auth?.role !== "ADMIN") {
+      return res.status(403).json({ error: "Solo un administrador puede eliminar asignaturas" });
+    }
+    await prisma.subject.delete({ where: { id: req.params.id } });
+    res.status(204).send();
+  })
+);
