@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AcademicStock - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Courier+Prime&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-tint": "#565e74",
+                        "surface-container-highest": "#e4e2e4",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fcf8fa",
+                        "on-surface-variant": "#45464d",
+                        "background": "#fcf8fa",
+                        "surface-container-low": "#f6f3f5",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#fefcff",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "surface-dim": "#dcd9db",
+                        "secondary-fixed": "#d8e2ff",
+                        "outline": "#76777d",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f3f0f2",
+                        "inverse-primary": "#bec6e0",
+                        "secondary-container": "#2170e4",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#d3e4fe",
+                        "surface-container-high": "#eae7e9",
+                        "surface": "#fcf8fa",
+                        "on-primary-container": "#7c839b",
+                        "on-primary-fixed": "#131b2e",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-tertiary-container": "#75859d",
+                        "on-surface": "#1b1b1d",
+                        "secondary": "#0058be",
+                        "primary-fixed": "#dae2fd",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#303032",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "primary-container": "#131b2e",
+                        "outline-variant": "#c6c6cd",
+                        "on-secondary-fixed": "#001a42",
+                        "tertiary": "#000000",
+                        "on-background": "#1b1b1d",
+                        "tertiary-container": "#0b1c30",
+                        "primary": "#000000",
+                        "surface-container": "#f0edef",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e4e2e4",
+                        "on-tertiary": "#ffffff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "unit": "4px",
+                        "stack-lg": "32px",
+                        "gutter": "16px",
+                        "container-padding": "24px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["Inter"],
+                        "mono-data": ["Courier Prime"],
+                        "label-bold": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "table-header": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "mono-data": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+                        "label-bold": ["13px", { lineHeight: "18px", fontWeight: "600" }],
+                        "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "display-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+                        "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }],
+                        "table-header": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom input ring glow */
+        .input-glow:focus {
+            box-shadow: 0 0 0 2px rgba(0, 88, 190, 0.2);
+            border-color: #0058be;
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex items-center justify-center font-body-md">
+<!-- Split Screen Container -->
+<div class="flex w-full max-w-[1440px] h-screen md:h-auto md:min-h-[800px] bg-surface-container-lowest md:rounded-xl md:shadow-[0_4px_12px_rgba(15,23,42,0.08)] overflow-hidden border border-surface-variant">
+<!-- Left Side: Image (Hidden on small screens) -->
+<div class="hidden md:block md:w-1/2 relative bg-surface-container-high">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A brightly lit, modern university laboratory interior with pristine white countertops, highly organized rows of transparent glassware and advanced scientific equipment. The scene exudes academic rigor, cleanliness, and precision, using a sophisticated palette of crisp whites, soft grays, and subtle institutional blue accents under soft, even daylight illumination." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAf8O8ALW_kVQt_crJCwLou5z8jollSkp701j4T2yq4Dl8CVBQHYU6L6HNj9gk7YLAZpdep2ZVarxS9D7zBUuGy6xQ0rfICyE7kmWrlthtbf9Yuc7a7ZL4bZw4Bbm-UsE4bUNHC6Us9Rh_z05HfTp5fxDwDu4CNU5-YzNRkz4a1mINJ5apB8ZsQQtKYEcOeBI4TOPtveoXu7_eBpjghGvNDP3dl0wAtxrUezfmaM5Z1noyop9o60w')"></div>
+<!-- Overlay -->
+<div class="absolute inset-0 bg-primary/10"></div>
+<!-- Branding Overlay -->
+<div class="absolute bottom-stack-lg left-stack-lg right-stack-lg p-container-padding bg-surface-container-lowest/90 backdrop-blur-sm rounded-lg border border-outline-variant">
+<div class="flex items-center gap-stack-sm mb-stack-sm text-secondary">
+<span class="material-symbols-outlined text-[32px]">science</span>
+<h2 class="font-display-lg text-display-lg text-on-surface">AcademicStock</h2>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Precision inventory management for modern educational institutions. Streamline your departmental resources with accuracy and ease.</p>
+</div>
+</div>
+<!-- Right Side: Login Form -->
+<div class="w-full md:w-1/2 flex flex-col justify-center px-container-padding py-stack-lg sm:px-12 lg:px-24">
+<!-- Mobile Branding (Visible only on small screens) -->
+<div class="md:hidden flex items-center gap-stack-sm mb-stack-lg justify-center text-secondary">
+<span class="material-symbols-outlined text-[32px]">science</span>
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold">AcademicStock</h2>
+</div>
+<div class="mb-stack-lg">
+<h1 class="font-display-lg text-display-lg text-on-surface mb-stack-sm">Welcome Back</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Sign in to manage your inventory and academic resources.</p>
+</div>
+<form action="#" class="space-y-stack-md" method="POST">
+<!-- Email Field -->
+<div>
+<label class="block font-label-bold text-label-bold text-on-surface mb-unit" for="email">Institutional Email</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded bg-surface-container-lowest text-on-surface font-body-md input-glow transition-all" id="email" name="email" placeholder="user@university.edu" required="" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div>
+<div class="flex justify-between items-center mb-unit">
+<label class="block font-label-bold text-label-bold text-on-surface" for="password">Password</label>
+<a class="font-body-sm text-body-sm text-secondary hover:underline" href="#">Forgot Password?</a>
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded bg-surface-container-lowest text-on-surface font-body-md input-glow transition-all" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<!-- Remember Me -->
+<div class="flex items-center">
+<input class="h-4 w-4 text-secondary focus:ring-secondary border-outline-variant rounded" id="remember-me" name="remember-me" type="checkbox"/>
+<label class="ml-2 block font-body-sm text-body-sm text-on-surface-variant" for="remember-me">
+                        Remember me for 30 days
+                    </label>
+</div>
+<!-- Sign In Button -->
+<button class="w-full flex justify-center py-2 px-4 border border-transparent rounded bg-secondary text-on-secondary font-label-bold text-label-bold hover:bg-on-secondary-fixed-variant transition-colors shadow-sm mt-stack-md" type="submit">
+                    Sign In
+                </button>
+</form>
+<div class="mt-stack-lg pt-stack-md border-t border-outline-variant text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    Don't have an account? 
+                    <a class="font-label-bold text-label-bold text-secondary hover:underline ml-1" href="#">Create an Account</a>
+</p>
+</div>
+<!-- Contextual Footer Links -->
+<div class="mt-auto pt-stack-lg flex justify-center gap-gutter">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">IT Support</a>
+<span class="text-on-surface-variant text-body-sm">•</span>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">System Status</a>
+</div>
+</div>
+</div>
+</body></html>

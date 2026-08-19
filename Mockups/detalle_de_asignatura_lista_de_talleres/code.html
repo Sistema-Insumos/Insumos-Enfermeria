@@ -1,0 +1,344 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Detalle de Asignatura - EduInventory</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Courier+Prime&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#c6c6cd",
+                        "on-primary-fixed": "#131b2e",
+                        "tertiary": "#000000",
+                        "surface-bright": "#fcf8fa",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "on-background": "#1b1b1d",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "secondary": "#0058be",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-secondary-fixed": "#001a42",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "surface-dim": "#dcd9db",
+                        "primary": "#000000",
+                        "on-surface-variant": "#45464d",
+                        "secondary-container": "#2170e4",
+                        "primary-fixed": "#dae2fd",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-surface": "#303032",
+                        "surface-variant": "#e4e2e4",
+                        "surface-tint": "#565e74",
+                        "on-secondary": "#ffffff",
+                        "surface": "#fcf8fa",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary-container": "#fefcff",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container-low": "#f6f3f5",
+                        "surface-container": "#f0edef",
+                        "background": "#fcf8fa",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface-container-highest": "#e4e2e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#75859d",
+                        "tertiary-fixed": "#d3e4fe",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-surface": "#1b1b1d",
+                        "secondary-fixed": "#d8e2ff",
+                        "outline": "#76777d",
+                        "on-primary-container": "#7c839b",
+                        "tertiary-container": "#0b1c30",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#bec6e0",
+                        "surface-container-high": "#eae7e9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-padding": "24px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "mono-data": ["Courier Prime"],
+                        "table-header": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-bold": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "mono-data": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "table-header": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-bold": ["13px", { "lineHeight": "18px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- TopNavBar -->
+<nav class="sticky top-0 z-40 flex items-center justify-between px-6 py-3 w-full lg:pl-72 bg-surface dark:bg-surface-container-lowest border-b border-outline-variant dark:border-outline">
+<div class="flex items-center gap-4">
+<span class="lg:hidden font-headline-sm text-headline-sm font-black text-secondary">EduInventory</span>
+<!-- Search Bar placeholder -->
+<div class="hidden md:flex items-center bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant mr-2" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="bg-transparent border-none focus:ring-0 font-body-sm text-body-sm text-on-surface outline-none placeholder-on-surface-variant" placeholder="Buscar..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-secondary dark:hover:text-secondary-fixed-dim transition-all duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary dark:hover:text-secondary-fixed-dim transition-all duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden border border-outline-variant">
+<img alt="User Profile Avatar" class="object-cover w-full h-full" data-alt="A small, professional avatar portrait of a university administrator. The lighting is bright and even, set against a neutral light grey background. The subject is wearing business casual attire, exuding a sense of organization and competence. The image is crisp and clear, fitting for a modern corporate application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuRxNkXr48uL8hkN3w281Ay7ukTz62QNpdA_zQ8iJjOcgb3LnVqiNnIiQw0vjQzkfn3g8N8WCwnBOcrUna3uGrCRciaslafHItMWdRCuaXof2lK8Wx600gXwRK6S9joqImPedyWAHGQEQtW0TV2W2ztqc3hzAEZ74hcHEqW_RYdANHuE3-rv9fDwVTLitMLEPM-8zfeHPrewJ_Ti8u2yJQYs86wjFINtPhVd9XHmpxRm-omHxhXg">
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="hidden lg:flex fixed left-0 top-0 h-full w-64 flex-col border-r border-outline-variant bg-surface dark:bg-surface-container border-r border-outline-variant dark:border-outline"><div class="p-6 border-b border-outline-variant dark:border-outline">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-lg">
+                    EI
+                </div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-surface">EduInventory</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Academic Management</p>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto py-4">
+<nav class="flex flex-col gap-1 px-3">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary font-label-bold cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="font-label-bold text-label-bold">Asignaturas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">inventory_2</span>
+<span class="font-body-md text-body-md">Inventario</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">trending_up</span>
+<span class="font-body-md text-body-md">Proyecciones</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">shopping_cart</span>
+<span class="font-body-md text-body-md">Órdenes de Compra</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">construction</span>
+<span class="font-body-md text-body-md">Equipamiento</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">assessment</span>
+<span class="font-body-md text-body-md">Reportes</span>
+</a>
+</nav>
+</div>
+<div class="p-4 border-t border-outline-variant dark:border-outline">
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-body-md text-body-md">Configuración</span>
+</a>
+<div class="flex items-center gap-3 px-4 py-3 mt-2">
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden">
+<img alt="User" class="object-cover w-full h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuRxNkXr48uL8hkN3w281Ay7ukTz62QNpdA_zQ8iJjOcgb3LnVqiNnIiQw0vjQzkfn3g8N8WCwnBOcrUna3uGrCRciaslafHItMWdRCuaXof2lK8Wx600gXwRK6S9joqImPedyWAHGQEQtW0TV2W2ztqc3hzAEZ74hcHEqW_RYdANHuE3-rv9fDwVTLitMLEPM-8zfeHPrewJ_Ti8u2yJQYs86wjFINtPhVd9XHmpxRm-omHxhXg">
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-bold text-label-bold text-on-surface truncate">Admin</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">admin@edu.edu</p>
+</div>
+</div>
+</nav>
+</div></aside>
+<!-- Main Content Canvas -->
+<main class="lg:pl-64 flex flex-col min-h-[calc(100vh-65px)]">
+<!-- Page Header & Breadcrumbs -->
+<header class="bg-surface-container-lowest border-b border-outline-variant px-container-padding py-stack-md">
+<div class="max-w-[1440px] mx-auto w-full">
+<nav aria-label="Breadcrumb" class="flex items-center text-body-sm font-body-sm text-on-surface-variant mb-3">
+<a class="hover:text-secondary transition-colors" href="#">Subjects</a>
+<span class="material-symbols-outlined mx-2 text-[16px]" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+<span class="text-on-surface font-label-bold">Laboratorio de Enzimas</span>
+</nav>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<div class="w-8 h-8 rounded-md bg-secondary/10 flex items-center justify-center text-secondary border border-secondary/20">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">science</span>
+</div>
+<span class="px-2 py-1 bg-surface-container-high rounded text-xs font-label-bold text-on-surface-variant border border-outline-variant">BIO-402</span>
+</div>
+<h2 class="font-display-lg text-display-lg text-on-background">Laboratorio de Enzimas</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1 max-w-2xl">Gestión de talleres prácticos, inventario de reactivos y asignación de equipamiento especializado para el semestre en curso.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface font-label-bold text-label-bold hover:bg-surface-container-low transition-colors flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">download</span>
+                            Exportar Reporte
+                        </button>
+<button class="px-4 py-2 bg-secondary text-on-secondary rounded-lg font-label-bold text-label-bold hover:bg-secondary-container transition-colors flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">add</span>
+                            Nuevo Taller
+                        </button>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="flex-1 p-container-padding bg-background">
+<div class="max-w-[1440px] mx-auto w-full">
+<!-- Filters Bar -->
+<div class="flex flex-col sm:flex-row justify-between items-center bg-surface-container-lowest p-3 rounded-lg border border-outline-variant shadow-sm mb-stack-md gap-4">
+<div class="flex items-center gap-2 w-full sm:w-auto">
+<div class="relative w-full sm:w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="w-full pl-9 pr-3 py-1.5 bg-surface-container-low border border-outline-variant rounded-md text-body-sm font-body-sm focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all" placeholder="Buscar taller o docente..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+<button class="px-3 py-1 bg-surface-container-high rounded-full border border-outline-variant text-body-sm font-label-bold text-on-surface whitespace-nowrap">Todos (12)</button>
+<button class="px-3 py-1 bg-surface-container-lowest rounded-full border border-outline-variant text-body-sm font-body-md text-on-surface-variant hover:bg-surface-container-low whitespace-nowrap">Activos (8)</button>
+<button class="px-3 py-1 bg-surface-container-lowest rounded-full border border-outline-variant text-body-sm font-body-md text-on-surface-variant hover:bg-surface-container-low whitespace-nowrap">Completados (4)</button>
+</div>
+</div>
+<!-- Bento Grid Layout for Workshops -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm hover:shadow-md hover:border-outline transition-all duration-200 group flex flex-col">
+<div class="p-5 flex-1">
+<div class="flex justify-between items-start mb-4">
+<span class="px-2.5 py-1 bg-tertiary-fixed border border-tertiary-fixed-dim rounded-full text-[11px] font-label-bold text-on-tertiary-fixed uppercase tracking-wider">Taller 01</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary transition-colors" style="font-variation-settings: 'FILL' 0;">more_vert</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-2">Cinética Enzimática Básica</h3>
+<div class="flex items-center gap-2 mb-4 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-body-sm text-body-sm">Dr. Carlos Mendoza</span>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Estado del Inventario</span>
+<span class="text-[#006874] font-label-bold">Óptimo</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-[#006874] h-full" style="width: 90%;"></div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-outline-variant bg-surface-bright flex justify-between items-center rounded-b-xl">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-surface-container-high border border-outline flex items-center justify-center text-[10px] font-label-bold">S1</div>
+<div class="w-6 h-6 rounded-full bg-surface-container-high border border-outline flex items-center justify-center text-[10px] font-label-bold">S2</div>
+</div>
+<button class="text-secondary font-label-bold text-label-bold hover:text-secondary-container transition-colors flex items-center gap-1 group-hover:translate-x-1 duration-200">
+                                Ver Secciones
+                                <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm hover:shadow-md hover:border-outline transition-all duration-200 group flex flex-col">
+<div class="p-5 flex-1">
+<div class="flex justify-between items-start mb-4">
+<span class="px-2.5 py-1 bg-tertiary-fixed border border-tertiary-fixed-dim rounded-full text-[11px] font-label-bold text-on-tertiary-fixed uppercase tracking-wider">Taller 02</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary transition-colors" style="font-variation-settings: 'FILL' 0;">more_vert</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-2">Inhibición Competitiva</h3>
+<div class="flex items-center gap-2 mb-4 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-body-sm text-body-sm">Dra. Elena Rojas</span>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Estado del Inventario</span>
+<span class="text-[#8B5000] font-label-bold">Alerta</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-[#8B5000] h-full" style="width: 45%;"></div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-outline-variant bg-surface-bright flex justify-between items-center rounded-b-xl">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-surface-container-high border border-outline flex items-center justify-center text-[10px] font-label-bold">S3</div>
+</div>
+<button class="text-secondary font-label-bold text-label-bold hover:text-secondary-container transition-colors flex items-center gap-1 group-hover:translate-x-1 duration-200">
+                                Ver Secciones
+                                <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm hover:shadow-md hover:border-outline transition-all duration-200 group flex flex-col">
+<div class="p-5 flex-1">
+<div class="flex justify-between items-start mb-4">
+<span class="px-2.5 py-1 bg-surface-container-high border border-outline-variant rounded-full text-[11px] font-label-bold text-on-surface-variant uppercase tracking-wider">Taller 03</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary transition-colors" style="font-variation-settings: 'FILL' 0;">more_vert</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-2">Inmovilización de Enzimas</h3>
+<div class="flex items-center gap-2 mb-4 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-body-sm text-body-sm">Dr. Carlos Mendoza</span>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Estado del Inventario</span>
+<span class="text-[#006874] font-label-bold">Pendiente</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-surface-variant h-full" style="width: 0%;"></div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-outline-variant bg-surface-bright flex justify-between items-center rounded-b-xl">
+<div class="flex -space-x-2">
+<span class="text-xs text-on-surface-variant italic">Sin secciones</span>
+</div>
+<button class="text-secondary font-label-bold text-label-bold hover:text-secondary-container transition-colors flex items-center gap-1 group-hover:translate-x-1 duration-200">
+                                Ver Detalles
+                                <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

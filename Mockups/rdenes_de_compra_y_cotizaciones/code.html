@@ -1,0 +1,445 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Purchase Orders and Quotes - Inventory Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime&amp;family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#fefcff",
+                        "on-surface-variant": "#45464d",
+                        "surface-tint": "#565e74",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#fcf8fa",
+                        "surface": "#fcf8fa",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#bec6e0",
+                        "secondary-fixed": "#d8e2ff",
+                        "inverse-surface": "#303032",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container": "#f0edef",
+                        "primary-container": "#131b2e",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#2170e4",
+                        "on-primary-container": "#7c839b",
+                        "on-tertiary-container": "#75859d",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-secondary-fixed": "#001a42",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-background": "#1b1b1d",
+                        "secondary": "#0058be",
+                        "surface-container-low": "#f6f3f5",
+                        "surface-variant": "#e4e2e4",
+                        "on-surface": "#1b1b1d",
+                        "surface-container-high": "#eae7e9",
+                        "primary": "#000000",
+                        "primary-fixed": "#dae2fd",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#dcd9db",
+                        "on-secondary-fixed-variant": "#004395",
+                        "error": "#ba1a1a",
+                        "outline": "#76777d",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#0b1c30",
+                        "tertiary-fixed": "#d3e4fe",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "outline-variant": "#c6c6cd",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e4e2e4",
+                        "on-primary-fixed": "#131b2e",
+                        "inverse-on-surface": "#f3f0f2",
+                        "tertiary": "#000000",
+                        "background": "#fcf8fa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "container-padding": "24px",
+                        "stack-md": "16px",
+                        "unit": "4px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "table-header": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-bold": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "mono-data": ["Courier Prime"],
+                        "headline-sm": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "table-header": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-bold": ["13px", { "lineHeight": "18px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "mono-data": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background flex h-screen overflow-hidden text-on-surface font-body-md selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- SideNavBar (From JSON) -->
+<nav class="hidden md:flex bg-surface-container dark:bg-surface-container-lowest border-r border-outline-variant flex-col h-screen fixed left-0 top-0 py-stack-md px-4 gap-stack-sm docked left-0 h-full w-64 z-40"><div class="flex items-center gap-3 px-3 mb-8 mt-2">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shrink-0">
+<span class="material-symbols-outlined" data-icon="inventory_2" data-weight="fill" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed m-0 leading-none tracking-tight">Inventory Pro</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0 mt-1">Precision Management</p>
+</div>
+</div>
+<button class="mb-6 mx-2 w-auto bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary font-label-bold text-label-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all scale-98 active:opacity-80">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+            Add Item
+        </button>
+<div class="flex-1 flex flex-col gap-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all scale-98 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all scale-98 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="school">school</span>
+                Asignaturas
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all scale-98 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="inventory">inventory</span>
+                Inventario
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all scale-98 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="trending_up">trending_up</span>
+                Proyecciones
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary-container text-on-secondary-container font-bold font-label-bold text-label-bold scale-98 active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="shopping_cart" data-weight="fill" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+                Órdenes de Compra
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all scale-98 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="biotech">biotech</span>
+                Equipamiento
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all scale-98 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="analytics">analytics</span>
+                Reportes
+            </a>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all scale-98 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all scale-98 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="contact_support">contact_support</span>
+                Support
+            </a>
+</div></nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-0 md:ml-64 flex flex-col h-full bg-surface">
+<!-- Top App Bar equivalent (Mobile support + Page Header) -->
+<header class="flex flex-col sm:flex-row sm:items-center justify-between px-container-padding py-stack-md border-b border-outline-variant bg-surface-container-lowest sticky top-0 z-30 gap-4">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface m-0 tracking-tight">Generador de Órdenes</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Consolide escasez y genere documentos de compra formales.</p>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors font-label-bold text-label-bold h-10">
+<span class="material-symbols-outlined text-[18px]" data-icon="picture_as_pdf">picture_as_pdf</span>
+                    Descargar PDF
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary text-on-secondary hover:bg-on-secondary-fixed-variant transition-colors font-label-bold text-label-bold h-10 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="send">send</span>
+                    Enviar a Proveedor
+                </button>
+</div>
+</header>
+<!-- Scrollable Canvas Area -->
+<div class="flex-1 overflow-y-auto p-container-padding">
+<div class="max-w-[1440px] mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Shortages Card (Bento Layout) -->
+<section class="md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col shadow-sm">
+<div class="p-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-low">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface m-0">Suministros Escasos</h3>
+</div>
+<span class="bg-error-container text-on-error-container font-label-bold text-label-bold px-2 py-0.5 rounded-full text-[11px]">4 Ítems</span>
+</div>
+<div class="p-0 flex-1 overflow-y-auto">
+<ul class="m-0 p-0 list-none divide-y divide-outline-variant">
+<li class="p-4 hover:bg-surface transition-colors flex items-start gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="science">science</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-bold text-label-bold text-on-surface truncate m-0">Reactivos Ácido Clorhídrico 1L</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0 mt-0.5">Dep. Química • SKU-CHM-092</p>
+</div>
+<div class="text-right shrink-0">
+<p class="font-mono-data text-mono-data text-error m-0">-15 und</p>
+</div>
+</li>
+<li class="p-4 hover:bg-surface transition-colors flex items-start gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="brush">brush</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-bold text-label-bold text-on-surface truncate m-0">Set Pinceles Acrílico Fino</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0 mt-0.5">Dep. Arte • SKU-ART-114</p>
+</div>
+<div class="text-right shrink-0">
+<p class="font-mono-data text-mono-data text-error m-0">-8 und</p>
+</div>
+</li>
+<li class="p-4 hover:bg-surface transition-colors flex items-start gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="biotech">biotech</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-bold text-label-bold text-on-surface truncate m-0">Portaobjetos Microscopio (Caja 100)</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0 mt-0.5">Dep. Biología • SKU-BIO-005</p>
+</div>
+<div class="text-right shrink-0">
+<p class="font-mono-data text-mono-data text-error m-0">-22 und</p>
+</div>
+</li>
+<li class="p-4 hover:bg-surface transition-colors flex items-start gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="calculate">calculate</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-bold text-label-bold text-on-surface truncate m-0">Calculadoras Científicas TI-84</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0 mt-0.5">Dep. Matemáticas • SKU-MTH-441</p>
+</div>
+<div class="text-right shrink-0">
+<p class="font-mono-data text-mono-data text-error m-0">-5 und</p>
+</div>
+</li>
+</ul>
+</div>
+</section>
+<!-- Quotes Container (Bento Layout) -->
+<section class="md:col-span-8 flex flex-col gap-stack-md">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2 m-0">
+<span class="material-symbols-outlined text-secondary" data-icon="request_quote">request_quote</span>
+                            Cotizaciones Integradas
+                        </h3>
+<button class="text-secondary font-label-bold text-label-bold hover:underline flex items-center gap-1">
+                            Refrescar Tarifas <span class="material-symbols-outlined text-[16px]" data-icon="sync">sync</span>
+</button>
+</div>
+<!-- Vendor Quote Cards Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Preferred Vendor -->
+<div class="bg-surface-container-lowest border-2 border-secondary rounded-xl p-5 shadow-sm relative overflow-hidden group hover:border-secondary transition-colors cursor-pointer">
+<div class="absolute top-0 right-0 bg-secondary text-on-secondary px-3 py-1 rounded-bl-lg font-label-bold text-[11px] uppercase tracking-wider">
+                                Mejor Opción
+                            </div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-12 h-12 rounded-lg border border-outline-variant bg-surface overflow-hidden flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant" data-icon="local_shipping">local_shipping</span>
+</div>
+<div>
+<h4 class="font-label-bold text-label-bold text-on-surface m-0">Suministros Académicos Globales</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0 flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="verified">verified</span>
+                                        Proveedor Verificado
+                                    </p>
+</div>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex justify-between font-body-sm text-body-sm">
+<span class="text-on-surface-variant">Subtotal (4 Ítems)</span>
+<span class="font-mono-data text-mono-data text-on-surface">$1,450.00</span>
+</div>
+<div class="flex justify-between font-body-sm text-body-sm">
+<span class="text-on-surface-variant">Envío Estándar (3-5 días)</span>
+<span class="font-mono-data text-mono-data text-on-surface">$45.00</span>
+</div>
+<div class="h-px bg-outline-variant w-full my-2"></div>
+<div class="flex justify-between font-label-bold text-label-bold">
+<span class="text-on-surface">Total Estimado</span>
+<span class="font-mono-data text-[16px] text-on-surface">$1,495.00</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-4 pt-4 border-t border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-[#16a34a]"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Inventario disponible. Listo para enviar.</span>
+</div>
+</div>
+<!-- Alternative Vendor -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm relative group hover:border-outline transition-colors cursor-pointer opacity-80 hover:opacity-100">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-12 h-12 rounded-lg border border-outline-variant bg-surface overflow-hidden flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant" data-icon="storefront">storefront</span>
+</div>
+<div>
+<h4 class="font-label-bold text-label-bold text-on-surface m-0">Lab &amp; Art Distribuidora</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0 flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px]" data-icon="star">star</span>
+                                        Evaluación: 4.2/5
+                                    </p>
+</div>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex justify-between font-body-sm text-body-sm">
+<span class="text-on-surface-variant">Subtotal (4 Ítems)</span>
+<span class="font-mono-data text-mono-data text-on-surface">$1,390.00</span>
+</div>
+<div class="flex justify-between font-body-sm text-body-sm">
+<span class="text-on-surface-variant">Envío Express (1-2 días)</span>
+<span class="font-mono-data text-mono-data text-on-surface">$120.00</span>
+</div>
+<div class="h-px bg-outline-variant w-full my-2"></div>
+<div class="flex justify-between font-label-bold text-label-bold">
+<span class="text-on-surface">Total Estimado</span>
+<span class="font-mono-data text-[16px] text-on-surface">$1,510.00</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-4 pt-4 border-t border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Calculadoras en reserva (Demora 1 semana).</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Formal PO Document Preview (Full Width Bottom) -->
+<section class="md:col-span-12 mt-4">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm flex flex-col">
+<div class="p-4 border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface m-0 flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="description">description</span>
+                                Vista Previa: Orden de Compra #PO-2023-0891
+                            </h3>
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-md border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-bold text-[12px] text-on-surface uppercase tracking-wider">Borrador</span>
+</div>
+</div>
+<!-- Document Canvas -->
+<div class="p-8 bg-[#ffffff] min-h-[400px] font-mono-data">
+<!-- Header -->
+<div class="flex justify-between items-start mb-8 border-b border-outline-variant pb-8">
+<div>
+<h1 class="font-display-lg text-[28px] m-0 text-primary">ORDEN DE COMPRA</h1>
+<p class="text-on-surface-variant mt-2 text-[14px]">Fecha: 24 Oct 2023</p>
+<p class="text-on-surface-variant text-[14px]">Términos: Neto 30</p>
+</div>
+<div class="text-right">
+<h2 class="font-headline-sm m-0 text-on-surface">Inventory Pro Universidad</h2>
+<p class="text-on-surface-variant mt-1 text-[14px]">Av. Ciencias 1234<br>Ciudad Universitaria, 00100<br>compras@universidad.edu</p>
+</div>
+</div>
+<!-- Vendor Info -->
+<div class="mb-8">
+<h3 class="font-label-bold text-on-surface border-b border-outline-variant pb-1 mb-2 uppercase text-[12px] tracking-widest">Emitir a:</h3>
+<p class="text-[14px] text-on-surface m-0 font-bold">Suministros Académicos Globales</p>
+<p class="text-[14px] text-on-surface-variant m-0 mt-1">Parque Industrial Norte, Lote 45<br>Atención: Ventas Corporativas</p>
+</div>
+<!-- Line Items Table -->
+<table class="w-full text-left border-collapse mb-8">
+<thead>
+<tr class="border-b-2 border-primary text-on-surface font-bold text-[13px]">
+<th class="py-2 pr-4 w-16">Item #</th>
+<th class="py-2 pr-4">Descripción</th>
+<th class="py-2 px-4 text-right w-24">Cant.</th>
+<th class="py-2 px-4 text-right w-32">Precio Unit.</th>
+<th class="py-2 pl-4 text-right w-32">Total</th>
+</tr>
+</thead>
+<tbody class="text-[13px] text-on-surface">
+<tr class="border-b border-outline-variant">
+<td class="py-3 pr-4 text-on-surface-variant">001</td>
+<td class="py-3 pr-4">Reactivos Ácido Clorhídrico 1L (SKU-CHM-092)</td>
+<td class="py-3 px-4 text-right">15</td>
+<td class="py-3 px-4 text-right">$45.00</td>
+<td class="py-3 pl-4 text-right">$675.00</td>
+</tr>
+<tr class="border-b border-outline-variant">
+<td class="py-3 pr-4 text-on-surface-variant">002</td>
+<td class="py-3 pr-4">Set Pinceles Acrílico Fino (SKU-ART-114)</td>
+<td class="py-3 px-4 text-right">8</td>
+<td class="py-3 px-4 text-right">$12.50</td>
+<td class="py-3 pl-4 text-right">$100.00</td>
+</tr>
+<tr class="border-b border-outline-variant">
+<td class="py-3 pr-4 text-on-surface-variant">003</td>
+<td class="py-3 pr-4">Portaobjetos Microscopio C/100 (SKU-BIO-005)</td>
+<td class="py-3 px-4 text-right">22</td>
+<td class="py-3 px-4 text-right">$8.00</td>
+<td class="py-3 pl-4 text-right">$176.00</td>
+</tr>
+<tr class="border-b border-outline-variant">
+<td class="py-3 pr-4 text-on-surface-variant">004</td>
+<td class="py-3 pr-4">Calculadoras Científicas TI-84 (SKU-MTH-441)</td>
+<td class="py-3 px-4 text-right">5</td>
+<td class="py-3 px-4 text-right">$99.80</td>
+<td class="py-3 pl-4 text-right">$499.00</td>
+</tr>
+</tbody>
+</table>
+<!-- Totals -->
+<div class="flex justify-end">
+<div class="w-64">
+<div class="flex justify-between py-1 text-[13px] text-on-surface-variant">
+<span class="">Subtotal:</span>
+<span class="">$1,450.00</span>
+</div>
+<div class="flex justify-between py-1 text-[13px] text-on-surface-variant border-b border-outline-variant pb-2 mb-2">
+<span class="">Envío:</span>
+<span class="">$45.00</span>
+</div>
+<div class="flex justify-between py-2 text-[16px] font-bold text-on-surface">
+<span class="">Total:</span>
+<span class="">$1,495.00</span>
+</div>
+</div>
+</div>
+<!-- Signatures -->
+<div class="mt-16 flex justify-between">
+<div class="w-64 border-t border-outline-variant pt-2 text-center text-on-surface-variant text-[12px]">
+                                    Firma Autorizada - Departamento
+                                </div>
+<div class="w-64 border-t border-outline-variant pt-2 text-center text-on-surface-variant text-[12px]">
+                                    Aprobación Finanzas
+                                </div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+
+
+</body></html>

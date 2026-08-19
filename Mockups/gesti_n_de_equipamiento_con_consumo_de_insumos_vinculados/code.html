@@ -1,0 +1,459 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Gestión de Equipamiento - Academic Inventory Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Courier+Prime&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#303032",
+                        "surface-bright": "#fcf8fa",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#bec6e0",
+                        "background": "#fcf8fa",
+                        "secondary": "#0058be",
+                        "primary-fixed": "#dae2fd",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#eae7e9",
+                        "surface-container-highest": "#e4e2e4",
+                        "primary": "#000000",
+                        "on-background": "#1b1b1d",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#2170e4",
+                        "on-surface-variant": "#45464d",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface": "#fcf8fa",
+                        "outline-variant": "#c6c6cd",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f6f3f5",
+                        "inverse-primary": "#bec6e0",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-secondary-container": "#fefcff",
+                        "tertiary-fixed": "#d3e4fe",
+                        "outline": "#76777d",
+                        "on-error": "#ffffff",
+                        "tertiary": "#000000",
+                        "on-primary-fixed": "#131b2e",
+                        "inverse-on-surface": "#f3f0f2",
+                        "primary-container": "#131b2e",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#dcd9db",
+                        "on-tertiary-container": "#75859d",
+                        "on-secondary-fixed": "#001a42",
+                        "on-primary-container": "#7c839b",
+                        "on-secondary-fixed-variant": "#004395",
+                        "tertiary-container": "#0b1c30",
+                        "surface-tint": "#565e74",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-container": "#f0edef",
+                        "surface-variant": "#e4e2e4",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-surface": "#1b1b1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "unit": "4px",
+                        "stack-lg": "32px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "table-header": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "mono-data": ["Courier Prime"],
+                        "label-bold": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "table-header": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "mono-data": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-bold": ["13px", { "lineHeight": "18px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] text-on-surface font-body-md text-body-md antialiased flex">
+<!-- SideNavBar -->
+<aside class="bg-surface-container-lowest dark:bg-inverse-surface h-screen w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline flex flex-col py-stack-lg z-50">
+<div class="px-gutter mb-stack-lg flex items-center gap-stack-sm">
+<img alt="Academic Institution Logo" class="w-8 h-8 rounded" data-alt="A clean, minimalist logo for an academic inventory management system, featuring an open book and a stylized tracking symbol in primary blue and dark grey, set against a solid white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4RF0FBrxntCv8avxRoghKq0LWk8jcllVJPsr1oDwRxYT87a6dB7fJPLlUrfAnhemyholNXZJsX9n8aUoggHc7bE2QE--AmQWKiq18WPMhDXQiBYE9tVxLx8VA4aiqTNPu92B1jWc9fz0btqBl3NqM28y7T379DMDrGwwmLezqP5rX7Z87JV4sXfKtlR_glnxJZoGhiG14anq07NO-ee3BVnHjgVq-KVo5JauMdGc0zgDluxnKPw">
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-secondary dark:text-secondary-fixed">Inventory Pro</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Academic Management</p>
+</div>
+</div>
+<div class="px-gutter mb-stack-md">
+<button class="w-full bg-secondary text-on-secondary font-label-bold text-label-bold py-2 px-4 rounded-lg hover:bg-secondary-container transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                Add New Asset
+            </button>
+</div>
+<nav class="flex-1 px-unit overflow-y-auto"><ul class="space-y-unit"><li class=""><a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container dark:hover:bg-surface-variant transition-colors cursor-pointer transition-all duration-200" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-bold text-label-bold">Dashboard</span></a></li><li class=""><a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container dark:hover:bg-surface-variant transition-colors cursor-pointer transition-all duration-200" href="#"><span class="material-symbols-outlined text-[20px]">menu_book</span><span class="font-label-bold text-label-bold">Asignaturas</span></a></li><li class=""><a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container dark:hover:bg-surface-variant transition-colors cursor-pointer transition-all duration-200" href="#"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-bold text-label-bold">Inventario</span></a></li><li class=""><a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container dark:hover:bg-surface-variant transition-colors cursor-pointer transition-all duration-200" href="#"><span class="material-symbols-outlined text-[20px]">trending_up</span><span class="font-label-bold text-label-bold">Proyecciones</span></a></li><li class=""><a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container dark:hover:bg-surface-variant transition-colors cursor-pointer transition-all duration-200" href="#"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span class="font-label-bold text-label-bold">Órdenes de Compra</span></a></li><li class=""><a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary dark:text-secondary-fixed font-bold border-r-4 border-secondary dark:border-secondary-fixed bg-surface-container-low dark:bg-surface-container-high cursor-pointer transition-all duration-200" href="#"><span class="material-symbols-outlined text-[20px]">construction</span><span class="font-label-bold text-label-bold">Equipamiento</span></a></li><li class=""><a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container dark:hover:bg-surface-variant transition-colors cursor-pointer transition-all duration-200" href="#"><span class="material-symbols-outlined text-[20px]">monitoring</span><span class="font-label-bold text-label-bold">Reportes</span></a></li></ul></nav>
+<div class="px-unit mt-auto pt-stack-md border-t border-outline-variant dark:border-outline">
+<ul class="space-y-unit">
+<li class="">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container dark:hover:bg-surface-variant transition-colors cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-label-bold text-label-bold">Settings</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container dark:hover:bg-surface-variant transition-colors cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="font-label-bold text-label-bold">Support</span>
+</a>
+</li>
+</ul>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 ml-64 flex flex-col min-h-screen w-[calc(100%-256px)]">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-background docked full-width top-0 sticky z-40 border-b border-outline-variant dark:border-outline flex justify-between items-center h-16 px-container-padding">
+<div class="flex items-center gap-stack-lg">
+<span class="font-headline-sm text-headline-sm text-primary dark:text-on-background">Academic Inventory Management</span>
+<nav class="hidden md:flex gap-stack-md">
+<a class="text-on-surface-variant dark:text-on-primary-container font-label-bold text-label-bold hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors py-4" href="#">Semesters</a>
+<a class="text-on-surface-variant dark:text-on-primary-container font-label-bold text-label-bold hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors py-4" href="#">Reports</a>
+<a class="text-on-surface-variant dark:text-on-primary-container font-label-bold text-label-bold hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors py-4" href="#">Archive</a>
+</nav>
+</div>
+<div class="flex items-center gap-stack-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="pl-9 pr-4 py-1.5 bg-surface-container-low border border-outline-variant rounded-full font-body-sm text-body-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary w-48 lg:w-64" placeholder="Search..." type="text">
+</div>
+<button class="text-on-surface-variant hover:text-secondary transition-colors scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary transition-colors scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]">history</span>
+</button>
+<img alt="Administrator Profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover ml-2 cursor-pointer" data-alt="A small, professional portrait photo of a female administrator wearing glasses and a dark blazer, smiling slightly against a neutral grey background, used as a user profile avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR0JC9c0fDAS0W2FAy9cdh7LUmEOT0GlxnGQAKBSA0zSVX8ELNukwu9jDPN-l7jEQawoGyMI3d6AMWgJHXLe-gV5wB2hJHufsyAE_jZJa8Q5LIKJdFV8q2lIwSXibWE1-XT2nawamjAQIJ1CACWKAbpTaLi9Roibd-3MNDcaZuqTf0QSQXcTbIcIeoKHSmXc2FWyG0q0QtodTcjelNOZlNgu6_JjpTKX8iCC4B8gqVVgPviAM5Mw">
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 p-container-padding">
+<!-- Header Section -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-stack-lg gap-stack-md">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary mb-1">Inventario de Equipamiento</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Control de activos fijos, mantenimiento y ubicación</p>
+</div>
+<button class="bg-secondary hover:bg-secondary-container text-on-secondary font-label-bold text-label-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 shadow-sm whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    Agregar Equipo
+                </button>
+</div>
+<!-- KPI Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-stack-md mb-stack-lg">
+<!-- KPI 1 -->
+<div class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-stack-md flex items-center gap-stack-md hover:bg-[#F1F5F9] transition-colors cursor-default">
+<div class="w-12 h-12 rounded-lg bg-primary-fixed flex items-center justify-center text-primary-fixed-dim">
+<span class="material-symbols-outlined text-[24px]">payments</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-1">Valor Total en Equipos</p>
+<p class="font-headline-md text-headline-md text-primary">$1.2M</p>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-stack-md flex items-center gap-stack-md hover:bg-[#F1F5F9] transition-colors cursor-default">
+<div class="w-12 h-12 rounded-lg bg-[#ffedd5] flex items-center justify-center text-[#c2410c]">
+<span class="material-symbols-outlined text-[24px]">build</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-1">Equipos en Mantenimiento</p>
+<p class="font-headline-md text-headline-md text-primary">8</p>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-stack-md flex items-center gap-stack-md hover:bg-[#F1F5F9] transition-colors cursor-default">
+<div class="w-12 h-12 rounded-lg bg-[#f3e8ff] flex items-center justify-center text-[#7e22ce]">
+<span class="material-symbols-outlined text-[24px]">calendar_clock</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-1">Próximas Calibraciones</p>
+<p class="font-headline-md text-headline-md text-primary">5 <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">este mes</span></p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-stack-md flex items-center gap-stack-md hover:bg-[#F1F5F9] transition-colors cursor-default"><div class="w-12 h-12 rounded-lg bg-[#fee2e2] flex items-center justify-center text-[#b91c1c]"><span class="material-symbols-outlined text-[24px]">warning</span></div><div><p class="font-body-sm text-body-sm text-on-surface-variant mb-1">Alertas de Stock de Insumos</p><p class="font-headline-md text-headline-md text-primary">3 <span class="font-body-sm text-body-sm text-[#b91c1c] font-normal">críticas</span></p></div></div></div>
+<!-- Toolbar (Search & Filters) -->
+<div class="bg-surface-container-lowest border border-[#E2E8F0] border-b-0 rounded-t-xl p-stack-md flex flex-col lg:flex-row gap-stack-md justify-between items-center sticky top-[64px] z-30">
+<div class="relative w-full lg:w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full pl-9 pr-4 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg font-body-sm text-body-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="Buscar por código, serial o nombre..." type="text">
+</div>
+<div class="flex flex-wrap gap-stack-sm w-full lg:w-auto">
+<select class="bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg py-2 pl-3 pr-8 font-body-sm text-body-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 appearance-none bg-no-repeat" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2345464d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-position: right 0.7rem top 50%; background-size: 0.65rem auto;">
+<option value="">Categoría: Todas</option>
+<option value="laboratorio">Laboratorio</option>
+<option value="audiovisual">Audiovisual</option>
+<option value="oficina">Oficina</option>
+</select>
+<select class="bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg py-2 pl-3 pr-8 font-body-sm text-body-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 appearance-none bg-no-repeat" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2345464d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-position: right 0.7rem top 50%; background-size: 0.65rem auto;">
+<option value="">Estado: Todos</option>
+<option value="operativo">Operativo</option>
+<option value="mantenimiento">En Mantenimiento</option>
+<option value="fuera_servicio">Fuera de Servicio</option>
+</select>
+<button class="border border-[#CBD5E1] text-on-surface-variant font-label-bold text-label-bold py-2 px-3 rounded-lg hover:bg-surface-container transition-colors flex items-center gap-1 bg-[#F8FAFC]">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+<span class="">Más Filtros</span>
+</button>
+</div>
+</div>
+<!-- Data Table Container -->
+<div class="bg-surface-container-lowest border border-[#E2E8F0] rounded-b-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[900px]">
+<thead>
+<tr class="bg-[#F8FAFC] border-b border-[#E2E8F0]">
+<th class="py-3 px-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider whitespace-nowrap group cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-1">
+                                        Código / Serial
+                                        <span class="material-symbols-outlined text-[14px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_downward</span>
+</div>
+</th>
+<th class="py-3 px-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider group cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-1">
+                                        Nombre del Equipo
+                                        <span class="material-symbols-outlined text-[14px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_downward</span>
+</div>
+</th>
+<th class="py-3 px-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider">Categoría</th><th class="py-3 px-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider">Cantidad</th>
+<th class="py-3 px-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider">Ubicación</th>
+<th class="py-3 px-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider">Estado</th>
+<th class="py-3 px-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider">Stock Insumos Vinculados</th><th class="py-3 px-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider">Uso en Sección</th><th class="py-3 px-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider">Último Mant.</th>
+<th class="py-3 px-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider text-right sticky right-0 bg-[#F8FAFC]">Acciones</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm">
+<!-- Row 1: Operational -->
+<tr class="border-b border-[#E2E8F0] hover:bg-[#F1F5F9] transition-colors group">
+<td class="py-3 px-4 whitespace-nowrap">
+<div class="font-mono-data text-mono-data font-bold text-primary">EQ-001</div>
+<div class="text-on-surface-variant text-[11px]">SN-98765A</div>
+</td>
+<td class="py-3 px-4">
+<div class="font-label-bold text-label-bold text-primary">Microscopio Binocular OpticX</div>
+<div class="text-on-surface-variant truncate w-48 text-[11px]">Lente 100x, Iluminación LED</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">biotech</span>
+                                        Laboratorio
+                                    </div>
+</td><td class="py-3 px-4 text-on-surface-variant font-mono-data">12</td>
+<td class="py-3 px-4 text-on-surface-variant">Lab. Biología B-201</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#dcfce7] text-[#166534]">
+                                        Operativo
+                                    </span>
+</td>
+<td class="py-3 px-4"><div class="flex flex-col gap-1"><div class="flex items-center gap-2"><span class="font-label-bold text-label-bold">Aceite Inmersión</span><span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[#dcfce7] text-[#166534]">OK</span></div><div class="text-on-surface-variant text-[11px]">Stock: 45 (Min: 20 / Max: 100)</div><div class="flex items-center gap-1 mt-1"><input checked="" class="w-3 h-3 rounded border-outline-variant text-secondary focus:ring-secondary" type="checkbox"><span class="text-[10px] text-on-surface-variant">Dcto. Automático</span></div></div></td><td class="py-3 px-4"><div class="text-on-surface-variant">Sección A-12, B-05</div></td><td class="py-3 px-4 text-on-surface-variant">12 May 2023</td>
+<td class="py-3 px-4 text-right sticky right-0 bg-surface-container-lowest group-hover:bg-[#F1F5F9] transition-colors border-l border-transparent">
+<div class="flex items-center justify-end gap-2">
+<button class="text-on-surface-variant hover:text-secondary transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="text-on-surface-variant hover:text-[#c2410c] transition-colors" title="Mantenimiento">
+<span class="material-symbols-outlined text-[18px]">build</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors" title="Ver Historial">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Maintenance (Zebra striping slightly darker background) -->
+<tr class="bg-[#F8FAFC] border-b border-[#E2E8F0] hover:bg-[#F1F5F9] transition-colors group">
+<td class="py-3 px-4 whitespace-nowrap">
+<div class="font-mono-data text-mono-data font-bold text-primary">EQ-042</div>
+<div class="text-on-surface-variant text-[11px]">SN-11234X</div>
+</td>
+<td class="py-3 px-4">
+<div class="font-label-bold text-label-bold text-primary">Proyector Láser Epson 4K</div>
+<div class="text-on-surface-variant truncate w-48 text-[11px]">Lámpara en 85% de vida útil</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">videocam</span>
+                                        Audiovisual
+                                    </div>
+</td><td class="py-3 px-4 text-on-surface-variant font-mono-data">5</td>
+<td class="py-3 px-4 text-on-surface-variant">Auditorio Principal</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#ffedd5] text-[#9a3412]">
+                                        En Mantenimiento
+                                    </span>
+</td>
+<td class="py-3 px-4"><div class="flex flex-col gap-1"><div class="flex items-center gap-2"><span class="font-label-bold text-label-bold">Lámpara Repuesto</span><span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[#ffedd5] text-[#9a3412]">Bajo</span></div><div class="text-on-surface-variant text-[11px]">Stock: 2 (Min: 2 / Max: 5)</div><div class="flex items-center gap-1 mt-1"><input class="w-3 h-3 rounded border-outline-variant text-secondary focus:ring-secondary" type="checkbox"><span class="text-[10px] text-on-surface-variant">Dcto. Automático</span></div></div></td><td class="py-3 px-4"><div class="text-on-surface-variant">Auditorio Central</div></td><td class="py-3 px-4 text-on-surface-variant">01 Oct 2023</td>
+<td class="py-3 px-4 text-right sticky right-0 bg-[#F8FAFC] group-hover:bg-[#F1F5F9] transition-colors border-l border-transparent">
+<div class="flex items-center justify-end gap-2">
+<button class="text-on-surface-variant hover:text-secondary transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="text-on-surface-variant hover:text-[#c2410c] transition-colors" title="Mantenimiento">
+<span class="material-symbols-outlined text-[18px]">build</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors" title="Ver Historial">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Out of Service -->
+<tr class="border-b border-[#E2E8F0] hover:bg-[#F1F5F9] transition-colors group">
+<td class="py-3 px-4 whitespace-nowrap">
+<div class="font-mono-data text-mono-data font-bold text-primary">EQ-108</div>
+<div class="text-on-surface-variant text-[11px]">SN-55667Z</div>
+</td>
+<td class="py-3 px-4">
+<div class="font-label-bold text-label-bold text-primary">Impresora 3D MakerBot</div>
+<div class="text-on-surface-variant truncate w-48 text-[11px]">Extrusor bloqueado</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">print</span>
+                                        Taller
+                                    </div>
+</td><td class="py-3 px-4 text-on-surface-variant font-mono-data">8</td>
+<td class="py-3 px-4 text-on-surface-variant">Lab. Prototipado T-10</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#fee2e2] text-[#b91c1c]">
+                                        Fuera de Servicio
+                                    </span>
+</td>
+<td class="py-3 px-4"><div class="flex flex-col gap-1"><div class="flex items-center gap-2"><span class="font-label-bold text-label-bold">Filamento PLA</span><span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[#fee2e2] text-[#b91c1c]">Crítico</span></div><div class="text-on-surface-variant text-[11px]">Stock: 1 (Min: 5 / Max: 20)</div><div class="flex items-center gap-1 mt-1"><input checked="" class="w-3 h-3 rounded border-outline-variant text-secondary focus:ring-secondary" type="checkbox"><span class="text-[10px] text-on-surface-variant">Dcto. Automático</span></div></div></td><td class="py-3 px-4"><div class="text-on-surface-variant">Taller Mecatrónica</div></td><td class="py-3 px-4 text-on-surface-variant">28 Ago 2023</td>
+<td class="py-3 px-4 text-right sticky right-0 bg-surface-container-lowest group-hover:bg-[#F1F5F9] transition-colors border-l border-transparent">
+<div class="flex items-center justify-end gap-2">
+<button class="text-on-surface-variant hover:text-secondary transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="text-on-surface-variant hover:text-[#c2410c] transition-colors" title="Mantenimiento">
+<span class="material-symbols-outlined text-[18px]">build</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors" title="Ver Historial">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Operational -->
+<tr class="bg-[#F8FAFC] hover:bg-[#F1F5F9] transition-colors group">
+<td class="py-3 px-4 whitespace-nowrap">
+<div class="font-mono-data text-mono-data font-bold text-primary">EQ-015</div>
+<div class="text-on-surface-variant text-[11px]">SN-33445Y</div>
+</td>
+<td class="py-3 px-4">
+<div class="font-label-bold text-label-bold text-primary">Osciloscopio Digital Tektronix</div>
+<div class="text-on-surface-variant truncate w-48 text-[11px]">Calibración vigente hasta 2024</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">electrical_services</span>
+                                        Laboratorio
+                                    </div>
+</td><td class="py-3 px-4 text-on-surface-variant font-mono-data">15</td>
+<td class="py-3 px-4 text-on-surface-variant">Lab. Electrónica E-305</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#dcfce7] text-[#166534]">
+                                        Operativo
+                                    </span>
+</td>
+<td class="py-3 px-4"><div class="flex flex-col gap-1"><div class="flex items-center gap-2"><span class="font-label-bold text-label-bold">Puntas de Prueba</span><span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[#dcfce7] text-[#166534]">OK</span></div><div class="text-on-surface-variant text-[11px]">Stock: 12 (Min: 4 / Max: 15)</div><div class="flex items-center gap-1 mt-1"><input checked="" class="w-3 h-3 rounded border-outline-variant text-secondary focus:ring-secondary" type="checkbox"><span class="text-[10px] text-on-surface-variant">Dcto. Automático</span></div></div></td><td class="py-3 px-4"><div class="text-on-surface-variant">Lab. Electrónica II</div></td><td class="py-3 px-4 text-on-surface-variant">05 Ene 2023</td>
+<td class="py-3 px-4 text-right sticky right-0 bg-[#F8FAFC] group-hover:bg-[#F1F5F9] transition-colors border-l border-transparent">
+<div class="flex items-center justify-end gap-2">
+<button class="text-on-surface-variant hover:text-secondary transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="text-on-surface-variant hover:text-[#c2410c] transition-colors" title="Mantenimiento">
+<span class="material-symbols-outlined text-[18px]">build</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors" title="Ver Historial">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="bg-[#F8FAFC] border-t border-[#E2E8F0] px-4 py-3 flex items-center justify-between sm:px-6">
+<div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+<div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                                Mostrando <span class="font-bold text-primary">1</span> a <span class="font-bold text-primary">4</span> de <span class="font-bold text-primary">124</span> equipos
+                            </p>
+</div>
+<div>
+<nav aria-label="Pagination" class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+<button class="relative inline-flex items-center px-2 py-1.5 rounded-l-md border border-[#E2E8F0] bg-surface-container-lowest text-sm font-medium text-on-surface-variant hover:bg-[#F1F5F9]">
+<span class="sr-only">Anterior</span>
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="relative inline-flex items-center px-3 py-1.5 border border-[#E2E8F0] bg-secondary-fixed text-sm font-medium text-on-secondary-fixed">
+                                    1
+                                </button>
+<button class="relative inline-flex items-center px-3 py-1.5 border border-[#E2E8F0] bg-surface-container-lowest text-sm font-medium text-on-surface-variant hover:bg-[#F1F5F9]">
+                                    2
+                                </button>
+<button class="relative inline-flex items-center px-3 py-1.5 border border-[#E2E8F0] bg-surface-container-lowest text-sm font-medium text-on-surface-variant hover:bg-[#F1F5F9]">
+                                    3
+                                </button>
+<span class="relative inline-flex items-center px-3 py-1.5 border border-[#E2E8F0] bg-surface-container-lowest text-sm font-medium text-on-surface-variant">
+                                    ...
+                                </span>
+<button class="relative inline-flex items-center px-2 py-1.5 rounded-r-md border border-[#E2E8F0] bg-surface-container-lowest text-sm font-medium text-on-surface-variant hover:bg-[#F1F5F9]">
+<span class="sr-only">Siguiente</span>
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</nav>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+
+</body></html>

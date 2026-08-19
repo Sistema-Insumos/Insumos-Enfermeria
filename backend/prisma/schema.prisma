@@ -1,0 +1,257 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  PROFESSOR
+}
+
+enum EquipmentStatus {
+  OPERATIVE
+  MAINTENANCE
+  OUT_OF_SERVICE
+}
+
+enum PostClassAction {
+  DISCARD
+  REUSE
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  SENT
+  RECEIVED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model User {
+  id           String   @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String   @unique
+  passwordHash String
+  photoUrl     String?
+  role         Role     @default(PROFESSOR)
+  department   String?
+  createdAt    DateTime @default(now())
+
+  workshops         Workshop[]        @relation("WorkshopProfessor")
+  sections          Section[]         @relation("SectionProfessor")
+  consumptionEvents ConsumptionRecord[] @relation("ReportedBy")
+}
+
+model Subject {
+  id       String  @id @default(cuid())
+  name     String
+  code     String  @unique
+  category String
+  icon     String?
+
+  workshops Workshop[]
+  supplies  SupplyOnSubject[]
+
+  createdAt DateTime @default(now())
+}
+
+model Workshop {
+  id        String  @id @default(cuid())
+  code      String
+  name      String
+
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  professorId String?
+  professor   User?   @relation("WorkshopProfessor", fields: [professorId], references: [id])
+
+  sections Section[]
+
+  createdAt DateTime @default(now())
+}
+
+model Section {
+  id             String   @id @default(cuid())
+  code           String
+  year           Int
+  semester       Int
+  dayOfWeek      String?
+  startTime      String?
+  endTime        String?
+  location       String?
+  studentsCount  Int      @default(0)
+
+  workshopId String
+  workshop   Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+
+  professorId String?
+  professor   User?   @relation("SectionProfessor", fields: [professorId], references: [id])
+
+  consumptionRecords ConsumptionRecord[]
+  equipmentUsages    EquipmentUsage[]
+
+  createdAt DateTime @default(now())
+}
+
+model Supply {
+  id            String  @id @default(cuid())
+  sku           String  @unique
+  name          String
+  category      String
+  description   String?
+  locationType  String?
+  locationDetail String?
+  unit          String  @default("uds")
+  unitValue     Decimal @default(0) @db.Decimal(12, 2)
+
+  initialStock  Int @default(0)
+  currentStock  Int @default(0)
+  minStock      Int @default(0)
+  maxStock      Int?
+
+  newStock       Int @default(0)
+  reusableStock  Int @default(0)
+
+  subjects           SupplyOnSubject[]
+  consumptionRecords ConsumptionRecord[]
+  equipmentLinks     EquipmentSupplyLink[]
+  purchaseOrderItems PurchaseOrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SupplyOnSubject {
+  supplyId  String
+  supply    Supply  @relation(fields: [supplyId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@id([supplyId, subjectId])
+}
+
+model Equipment {
+  id       String          @id @default(cuid())
+  code     String          @unique
+  serial   String?
+  name     String
+  category String
+  quantity Int             @default(1)
+  location String?
+  status   EquipmentStatus @default(OPERATIVE)
+  unitValue Decimal        @default(0) @db.Decimal(12, 2)
+
+  lastMaintenanceAt   DateTime?
+  nextCalibrationAt   DateTime?
+
+  linkedSupplies EquipmentSupplyLink[]
+  usages         EquipmentUsage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EquipmentSupplyLink {
+  id          String  @id @default(cuid())
+  equipmentId String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  supplyId    String
+  supply      Supply    @relation(fields: [supplyId], references: [id], onDelete: Cascade)
+
+  minThreshold  Int     @default(0)
+  maxThreshold  Int?
+  autoDiscount  Boolean @default(false)
+
+  @@unique([equipmentId, supplyId])
+}
+
+model EquipmentUsage {
+  id          String   @id @default(cuid())
+  equipmentId String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  sectionId   String?
+  section     Section?  @relation(fields: [sectionId], references: [id])
+  usedAt      DateTime  @default(now())
+}
+
+model ConsumptionRecord {
+  id          String   @id @default(cuid())
+  sectionId   String
+  section     Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  supplyId    String
+  supply      Supply   @relation(fields: [supplyId], references: [id], onDelete: Cascade)
+
+  requiredQty Decimal  @db.Decimal(10, 2)
+  usedQty     Decimal  @db.Decimal(10, 2)
+  wasteQty    Decimal  @default(0) @db.Decimal(10, 2)
+
+  postClassAction PostClassAction?
+  reuseQty        Decimal?         @db.Decimal(10, 2)
+  instructorNotes String?
+
+  reportedByUserId String?
+  reportedBy       User?   @relation("ReportedBy", fields: [reportedByUserId], references: [id])
+
+  reportedAt DateTime @default(now())
+}
+
+model Supplier {
+  id      String @id @default(cuid())
+  name    String
+  rating  Decimal? @db.Decimal(2, 1)
+  contact String?
+
+  quotes PurchaseOrderQuote[]
+}
+
+model PurchaseOrder {
+  id        String              @id @default(cuid())
+  status    PurchaseOrderStatus @default(DRAFT)
+  createdAt DateTime            @default(now())
+
+  items  PurchaseOrderItem[]
+  quotes PurchaseOrderQuote[]
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  supplyId        String
+  supply          Supply        @relation(fields: [supplyId], references: [id])
+  quantity        Int
+  estimatedCost   Decimal       @db.Decimal(12, 2)
+}
+
+model PurchaseOrderQuote {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  supplierId      String
+  supplier        Supplier      @relation(fields: [supplierId], references: [id])
+  subtotal        Decimal       @db.Decimal(12, 2)
+  shipping        Decimal       @default(0) @db.Decimal(12, 2)
+  total           Decimal       @db.Decimal(12, 2)
+  availability    String?
+}
+
+model FutureSupplyNeed {
+  id            String   @id @default(cuid())
+  name          String
+  category      String
+  estimatedQty  Int
+  requiredDate  DateTime
+  priority      Priority @default(MEDIUM)
+  createdAt     DateTime @default(now())
+}

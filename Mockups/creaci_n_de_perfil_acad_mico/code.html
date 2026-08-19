@@ -1,0 +1,358 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Profile Creation - Academic Inventory System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime&amp;family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-tint": "#565e74",
+                      "surface-container-highest": "#e4e2e4",
+                      "error-container": "#ffdad6",
+                      "surface-bright": "#fcf8fa",
+                      "on-surface-variant": "#45464d",
+                      "background": "#fcf8fa",
+                      "surface-container-low": "#f6f3f5",
+                      "error": "#ba1a1a",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-container": "#fefcff",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "surface-dim": "#dcd9db",
+                      "secondary-fixed": "#d8e2ff",
+                      "outline": "#76777d",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-error-container": "#93000a",
+                      "inverse-on-surface": "#f3f0f2",
+                      "inverse-primary": "#bec6e0",
+                      "secondary-container": "#2170e4",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed": "#d3e4fe",
+                      "surface-container-high": "#eae7e9",
+                      "surface": "#fcf8fa",
+                      "on-primary-container": "#7c839b",
+                      "on-primary-fixed": "#131b2e",
+                      "primary-fixed-dim": "#bec6e0",
+                      "on-tertiary-container": "#75859d",
+                      "on-surface": "#1b1b1d",
+                      "secondary": "#0058be",
+                      "primary-fixed": "#dae2fd",
+                      "on-secondary-fixed-variant": "#004395",
+                      "on-primary": "#ffffff",
+                      "inverse-surface": "#303032",
+                      "on-tertiary-fixed": "#0b1c30",
+                      "tertiary-fixed-dim": "#b7c8e1",
+                      "on-tertiary-fixed-variant": "#38485d",
+                      "primary-container": "#131b2e",
+                      "outline-variant": "#c6c6cd",
+                      "on-secondary-fixed": "#001a42",
+                      "tertiary": "#000000",
+                      "on-background": "#1b1b1d",
+                      "tertiary-container": "#0b1c30",
+                      "primary": "#000000",
+                      "surface-container": "#f0edef",
+                      "on-error": "#ffffff",
+                      "surface-variant": "#e4e2e4",
+                      "on-tertiary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-sm": "8px",
+                      "stack-md": "16px",
+                      "unit": "4px",
+                      "stack-lg": "32px",
+                      "gutter": "16px",
+                      "container-padding": "24px"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "mono-data": [
+                              "Courier Prime"
+                      ],
+                      "label-bold": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "table-header": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "mono-data": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-bold": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "table-header": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: #f8fafc; /* Canvas background from style guide */
+        }
+        
+        /* Custom Input Styling based on Style Guidance */
+        .form-input {
+            border: 1px solid #CBD5E1;
+            border-radius: 0.125rem; /* DEFAULT radius */
+            padding: 8px 12px;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #0058be; /* Secondary blue */
+            box-shadow: 0 0 0 2px rgba(0, 88, 190, 0.2); /* 2px blue outer glow */
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 4px;
+            color: #45464d; /* on-surface-variant */
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            line-height: 18px;
+        }
+
+        /* Hide Top/Side Navs as this is a linear/transactional intent screen */
+    </style>
+</head>
+<body class="bg-[#F8FAFC] text-on-surface min-h-screen flex"><div class="flex min-h-screen w-full bg-[#F8FAFC]">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-outline-variant flex flex-col h-screen sticky top-0">
+        <div class="p-6 border-b border-outline-variant">
+            <h2 class="font-headline-sm text-headline-sm text-primary">Academic Inventory</h2>
+        </div>
+        
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded transition-colors">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="font-label-bold">Dashboard</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded transition-colors">
+                <span class="material-symbols-outlined">menu_book</span>
+                <span class="font-label-bold">Subjects (Asignaturas)</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded transition-colors">
+                <span class="material-symbols-outlined">inventory_2</span>
+                <span class="font-label-bold">Inventory (Inventario)</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded transition-colors">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span class="font-label-bold">Projections (Proyecciones)</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded transition-colors">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="font-label-bold">Purchase Orders</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded transition-colors">
+                <span class="material-symbols-outlined">precision_manufacturing</span>
+                <span class="font-label-bold">Equipment</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded transition-colors">
+                <span class="material-symbols-outlined">monitoring</span>
+                <span class="font-label-bold">Monitoring (Reportes)</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-outline-variant space-y-2">
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded transition-colors">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="font-label-bold">Settings</span>
+            </a>
+            <div class="flex items-center gap-3 px-4 py-2">
+                <div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+                    <span class="material-symbols-outlined text-sm">person</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-label-bold text-on-surface">User Profile</span>
+                    <span class="text-body-sm text-on-surface-variant">Admin</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex items-center justify-center p-8">
+        <main class="w-full max-w-[640px] bg-white border border-[#E2E8F0] rounded-xl shadow-[0_4px_12px_rgba(15,23,42,0.08)] overflow-hidden">
+            <div class="p-container-padding border-b border-[#E2E8F0] bg-[#F8FAFC] text-center">
+                <h1 class="font-headline-md text-headline-md text-on-surface mb-2">Create Academic Profile</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant">Register to access the University Academic Inventory System.</p>
+            </div>
+            <form class="p-container-padding space-y-stack-lg">
+                <section>
+                    <div class="flex items-center gap-2 mb-stack-md pb-unit border-b border-outline-variant">
+                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">person</span>
+                        <h2 class="font-headline-sm text-headline-sm text-on-surface">Personal Information</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md mb-stack-md">
+                        <div>
+                            <label class="form-label" for="firstName">First Name</label>
+                            <input class="form-input font-body-md text-body-md" id="firstName" placeholder="Jane" type="text">
+                        </div>
+                        <div>
+                            <label class="form-label" for="lastName">Last Name</label>
+                            <input class="form-input font-body-md text-body-md" id="lastName" placeholder="Doe" type="text">
+                        </div>
+                    </div>
+                    <div class="mb-stack-md">
+                        <label class="form-label" for="email">University Email</label>
+                        <input class="form-input font-body-md text-body-md" id="email" placeholder="jane.doe@university.edu" type="email">
+                    </div>
+                    <div>
+                        <label class="form-label">Profile Photo</label>
+                        <div class="flex items-center gap-stack-md mt-unit">
+                            <div class="w-16 h-16 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-on-surface-variant overflow-hidden">
+                                <span class="material-symbols-outlined text-2xl">account_circle</span>
+                            </div>
+                            <button class="px-4 py-2 border border-slate-400 text-on-surface-variant font-label-bold text-label-bold rounded hover:bg-[#F1F5F9] transition-colors" type="button">Upload Photo</button>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant">JPG, PNG under 2MB</span>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="flex items-center gap-2 mb-stack-md pb-unit border-b border-outline-variant">
+                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">badge</span>
+                        <h2 class="font-headline-sm text-headline-sm text-on-surface">Academic Assignment</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+                        <div>
+                            <label class="form-label" for="role">Academic Role</label>
+                            <select class="form-input font-body-md text-body-md bg-white" id="role">
+                                <option value="">Select Role...</option>
+                                <option value="admin">Administrator</option>
+                                <option value="professor">Professor</option>
+                                <option value="assistant">Lab Assistant</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" for="department">Department</label>
+                            <select class="form-input font-body-md text-body-md bg-white" id="department">
+                                <option value="">Select Department...</option>
+                                <option value="science">Science</option>
+                                <option value="arts">Arts</option>
+                                <option value="engineering">Engineering</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="flex items-center gap-2 mb-stack-md pb-unit border-b border-outline-variant">
+                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">lock</span>
+                        <h2 class="font-headline-sm text-headline-sm text-on-surface">Security</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+                        <div>
+                            <label class="form-label" for="password">Password</label>
+                            <input class="form-input font-body-md text-body-md" id="password" type="password">
+                        </div>
+                        <div>
+                            <label class="form-label" for="confirmPassword">Confirm Password</label>
+                            <input class="form-input font-body-md text-body-md" id="confirmPassword" type="password">
+                        </div>
+                    </div>
+                </section>
+                <div class="flex items-center justify-end gap-stack-md pt-stack-md border-t border-[#E2E8F0]">
+                    <button class="px-6 py-2 border border-slate-400 text-on-surface font-label-bold text-label-bold rounded hover:bg-[#F1F5F9] transition-colors" type="button">Cancel</button>
+                    <button class="px-6 py-2 bg-secondary text-white font-label-bold text-label-bold rounded hover:opacity-90 transition-opacity flex items-center gap-2" type="submit">
+                        Create Profile
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+</div></body></html>

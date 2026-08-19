@@ -1,0 +1,448 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Monitoreo Anual - Inventory Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Courier+Prime&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline-variant": "#c6c6cd",
+                      "outline": "#76777d",
+                      "surface-container": "#f0edef",
+                      "on-secondary-fixed": "#001a42",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed-dim": "#b7c8e1",
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed-variant": "#004395",
+                      "on-tertiary-container": "#75859d",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed": "#131b2e",
+                      "secondary-container": "#2170e4",
+                      "surface-tint": "#565e74",
+                      "secondary": "#0058be",
+                      "surface": "#fcf8fa",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed": "#0b1c30",
+                      "surface-bright": "#fcf8fa",
+                      "on-primary-container": "#7c839b",
+                      "inverse-primary": "#bec6e0",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "inverse-surface": "#303032",
+                      "primary": "#000000",
+                      "error-container": "#ffdad6",
+                      "on-surface": "#1b1b1d",
+                      "surface-container-high": "#eae7e9",
+                      "tertiary-container": "#0b1c30",
+                      "on-background": "#1b1b1d",
+                      "background": "#fcf8fa",
+                      "surface-variant": "#e4e2e4",
+                      "primary-container": "#131b2e",
+                      "inverse-on-surface": "#f3f0f2",
+                      "tertiary": "#000000",
+                      "surface-container-highest": "#e4e2e4",
+                      "primary-fixed-dim": "#bec6e0",
+                      "on-tertiary-fixed-variant": "#38485d",
+                      "tertiary-fixed": "#d3e4fe",
+                      "primary-fixed": "#dae2fd",
+                      "surface-container-low": "#f6f3f5",
+                      "surface-dim": "#dcd9db",
+                      "on-error": "#ffffff",
+                      "secondary-fixed": "#d8e2ff",
+                      "on-surface-variant": "#45464d",
+                      "on-secondary-container": "#fefcff",
+                      "surface-container-lowest": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-md": "16px",
+                      "stack-sm": "8px",
+                      "unit": "4px",
+                      "stack-lg": "32px",
+                      "gutter": "16px",
+                      "container-padding": "24px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "mono-data": [
+                              "Courier Prime"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-bold": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "table-header": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "mono-data": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-bold": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "table-header": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .material-symbols-outlined {
+                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
+            .material-symbols-outlined[data-weight="fill"] {
+                font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 py-stack-md gap-stack-sm bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline z-40"><div class="px-container-padding pb-stack-md border-b border-outline-variant/30 flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" data-weight="fill">school</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-inverse-on-surface leading-tight">Inventory Systems</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Academic Support Unit</p>
+</div>
+</div>
+<div class="px-gutter pt-stack-sm pb-stack-md">
+<button class="w-full flex items-center justify-center gap-2 bg-secondary text-on-secondary py-2 px-4 rounded-lg font-label-bold text-label-bold hover:bg-secondary-container hover:text-on-secondary-container transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                Add New Entry
+            </button>
+</div>
+<div class="flex-1 overflow-y-auto px-unit flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">dashboard</span>
+<span class="font-label-bold text-label-bold">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">book</span>
+<span class="font-label-bold text-label-bold">Subjects (Asignaturas)</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">inventory_2</span>
+<span class="font-label-bold text-label-bold">Inventory (Inventario)</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">trending_up</span>
+<span class="font-label-bold text-label-bold">Projections (Proyecciones)</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">shopping_cart</span>
+<span class="font-label-bold text-label-bold">Purchase Orders (Órdenes de Compra)</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">construction</span>
+<span class="font-label-bold text-label-bold">Equipment (Equipamiento)</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-secondary dark:text-secondary-fixed font-bold border-r-4 border-secondary dark:border-secondary-fixed bg-secondary-container/10 transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-weight="fill">analytics</span>
+<span class="font-label-bold text-label-bold">Monitoring (Reportes)</span>
+</a>
+</div>
+<div class="mt-auto px-unit flex flex-col gap-1 border-t border-outline-variant/30 pt-stack-sm">
+<a class="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">settings</span>
+<span class="font-label-bold text-label-bold">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">contact_support</span>
+<span class="font-label-bold text-label-bold">Support</span>
+</a>
+</div></nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-container-padding w-full h-16 sticky top-0 z-30 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline backdrop-blur-sm bg-opacity-90">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-on-surface-variant p-2 -ml-2 rounded-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary hidden md:block">
+                    Academic Inventory
+                </div>
+</div>
+<!-- Search Bar Left/Center -->
+<div class="flex-1 max-w-md mx-4 hidden sm:block">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg leading-5 bg-surface-container-lowest placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary sm:text-sm transition-all" placeholder="Search inventory, reports, SKUs..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors duration-200" title="notifications">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors duration-200" title="help">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-px h-6 bg-outline-variant mx-1"></div>
+<button class="p-1 rounded-full text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors duration-200 flex items-center gap-2" title="account_circle">
+<span class="material-symbols-outlined text-[28px]">account_circle</span>
+<span class="font-label-bold text-label-bold hidden lg:block pr-2">J. Doe</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 p-container-padding bg-background max-w-[1440px] mx-auto w-full">
+<!-- Header & Hierarchical Nav -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md mb-stack-lg">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary mb-1">Annual Monitoring</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Supply lifecycle and efficiency metrics across academic terms.</p>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low p-1 rounded-lg border border-outline-variant/50"><div class="flex items-center gap-2 mr-2">
+<button class="flex items-center gap-2 bg-secondary text-on-secondary py-1.5 px-3 rounded-md font-label-bold text-label-bold hover:bg-secondary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">download</span>
+        Download Report
+    </button>
+<button class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant text-on-surface py-1.5 px-3 rounded-md font-label-bold text-label-bold hover:bg-surface-container-highest transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">analytics</span>
+        Generate Estimated Purchase Report
+    </button>
+</div>
+<div class="w-px h-5 bg-outline-variant/50 mx-1"></div>
+<div class="relative">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-md py-1.5 pl-3 pr-8 font-label-bold text-label-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary cursor-pointer">
+<option>2024</option>
+<option>2023</option>
+<option>2022</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+</div>
+<div class="w-px h-5 bg-outline-variant/50 mx-1"></div>
+<div class="relative">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-md py-1.5 pl-3 pr-8 font-label-bold text-label-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary cursor-pointer">
+<option value="">Seleccionar Mes</option>
+<option>Enero</option>
+<option>Febrero</option>
+<option>Marzo</option>
+<option>Abril</option>
+<option>Mayo</option>
+<option>Junio</option>
+<option>Julio</option>
+<option>Agosto</option>
+<option>Septiembre</option>
+<option>Octubre</option>
+<option>Noviembre</option>
+<option>Diciembre</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+</div>
+<div class="w-px h-5 bg-outline-variant/50 mx-1"></div><div class="flex rounded-md overflow-hidden border border-outline-variant/50"><button class="px-3 py-1.5 font-label-bold text-label-bold bg-secondary text-on-secondary transition-colors">Anual</button><button class="px-3 py-1.5 font-label-bold text-label-bold bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-highest transition-colors">Primer Semestre</button><button class="px-3 py-1.5 font-label-bold text-label-bold bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-highest transition-colors">Segundo Semestre</button></div>
+</div>
+</div>
+<!-- KPIs -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-stack-lg">
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-stack-md hover:bg-[#F1F5F9] transition-colors shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<p class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider">Total Reused</p>
+<div class="p-1.5 bg-[#ECFDF5] rounded-md text-[#059669]">
+<span class="material-symbols-outlined text-[20px]">recycling</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-display-lg text-display-lg text-primary">14,230</h3>
+<span class="font-body-sm text-body-sm text-[#059669] flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 12%</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Units saved in selected period</p>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-stack-md hover:bg-[#F1F5F9] transition-colors shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<p class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider">Total Discarded</p>
+<div class="p-1.5 bg-[#FEF2F2] rounded-md text-[#DC2626]">
+<span class="material-symbols-outlined text-[20px]">delete_sweep</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-display-lg text-display-lg text-primary">3,845</h3>
+<span class="font-body-sm text-body-sm text-[#DC2626] flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 4%</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Units discarded in selected period</p>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-stack-md hover:bg-[#F1F5F9] transition-colors shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<p class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider">Avg. Efficiency Rate</p>
+<div class="p-1.5 bg-secondary-container/20 rounded-md text-secondary">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-display-lg text-display-lg text-primary">78.6%</h3>
+<span class="font-body-sm text-body-sm text-[#059669] flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 2.1%</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Efficiency rate for selected period</p>
+</div>
+</div><section class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl overflow-hidden shadow-sm">
+<div class="p-container-padding border-b border-outline-variant/30 flex justify-between items-center">
+<h3 class="font-headline-sm text-headline-sm text-primary">Monitoreo Detallado de Recursos (Vista Mensual/Anual)</h3>
+<div class="flex items-center gap-2">
+<span class="text-body-sm text-on-surface-variant">Showing 1-5 of 42 items</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/30">
+<th class="px-6 py-3 font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider">Item Name</th>
+<th class="px-6 py-3 font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider">Category</th>
+<th class="px-6 py-3 font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider text-right">Total Reused</th>
+<th class="px-6 py-3 font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider text-right">Total Discarded</th>
+<th class="px-6 py-3 font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider text-right">Efficiency</th>
+<th class="px-6 py-3 font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider text-right">Estimated Need</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-4 font-label-bold text-on-surface">Microscope Slides (72pk)</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant">Biology Lab</td>
+<td class="px-6 py-4 text-right text-body-md">1,240</td>
+<td class="px-6 py-4 text-right text-body-md">150</td>
+<td class="px-6 py-4 text-right">
+<span class="text-[#059669] font-label-bold">89.2%</span>
+</td>
+<td class="px-6 py-4 text-right text-body-md font-bold">200 units</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-4 font-label-bold text-on-surface">Nitrile Gloves (M)</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant">Safety Gear</td>
+<td class="px-6 py-4 text-right text-body-md">4,500</td>
+<td class="px-6 py-4 text-right text-body-md">2,100</td>
+<td class="px-6 py-4 text-right">
+<span class="text-on-surface-variant font-label-bold">68.1%</span>
+</td>
+<td class="px-6 py-4 text-right text-body-md font-bold">3,000 units</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-4 font-label-bold text-on-surface">Pipette Tips (10ul)</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant">Chemistry Lab</td>
+<td class="px-6 py-4 text-right text-body-md">8,200</td>
+<td class="px-6 py-4 text-right text-body-md">940</td>
+<td class="px-6 py-4 text-right">
+<span class="text-[#059669] font-label-bold">89.7%</span>
+</td>
+<td class="px-6 py-4 text-right text-body-md font-bold">1,500 units</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-4 font-label-bold text-on-surface">Glass Beakers (250ml)</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant">Glassware</td>
+<td class="px-6 py-4 text-right text-body-md">290</td>
+<td class="px-6 py-4 text-right text-body-md">655</td>
+<td class="px-6 py-4 text-right">
+<span class="text-[#DC2626] font-label-bold">30.6%</span>
+</td>
+<td class="px-6 py-4 text-right text-body-md font-bold">800 units</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-low/30 border-t border-outline-variant/30 flex justify-center">
+<button class="text-secondary font-label-bold text-label-bold hover:underline">View Full Inventory Report</button>
+</div>
+</section>
+</main>
+</div>
+
+
+
+
+
+
+</body></html>

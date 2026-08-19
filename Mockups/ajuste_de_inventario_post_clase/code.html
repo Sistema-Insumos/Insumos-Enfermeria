@@ -1,0 +1,439 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Detalle de Inventario - Laboratorio de Química Orgánica</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime&amp;family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#b7c8e1",
+                      "surface-container-lowest": "#ffffff",
+                      "surface": "#fcf8fa",
+                      "on-background": "#1b1b1d",
+                      "on-tertiary-container": "#75859d",
+                      "surface-tint": "#565e74",
+                      "tertiary-container": "#0b1c30",
+                      "primary-fixed-dim": "#bec6e0",
+                      "inverse-primary": "#bec6e0",
+                      "on-error-container": "#93000a",
+                      "on-primary": "#ffffff",
+                      "surface-variant": "#e4e2e4",
+                      "secondary": "#0058be",
+                      "surface-container": "#f0edef",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "on-error": "#ffffff",
+                      "on-secondary-fixed-variant": "#004395",
+                      "inverse-surface": "#303032",
+                      "outline": "#76777d",
+                      "secondary-container": "#2170e4",
+                      "inverse-on-surface": "#f3f0f2",
+                      "surface-container-low": "#f6f3f5",
+                      "primary-container": "#131b2e",
+                      "tertiary-fixed": "#d3e4fe",
+                      "on-secondary-container": "#fefcff",
+                      "tertiary": "#000000",
+                      "error": "#ba1a1a",
+                      "outline-variant": "#c6c6cd",
+                      "on-tertiary-fixed": "#0b1c30",
+                      "surface-container-highest": "#e4e2e4",
+                      "secondary-fixed": "#d8e2ff",
+                      "error-container": "#ffdad6",
+                      "on-primary-fixed": "#131b2e",
+                      "on-surface-variant": "#45464d",
+                      "on-primary-container": "#7c839b",
+                      "primary": "#000000",
+                      "on-secondary": "#ffffff",
+                      "surface-bright": "#fcf8fa",
+                      "surface-dim": "#dcd9db",
+                      "primary-fixed": "#dae2fd",
+                      "on-secondary-fixed": "#001a42",
+                      "surface-container-high": "#eae7e9",
+                      "background": "#fcf8fa",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-surface": "#1b1b1d",
+                      "on-tertiary-fixed-variant": "#38485d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "container-padding": "24px",
+                      "stack-md": "16px",
+                      "gutter": "16px",
+                      "stack-lg": "32px",
+                      "stack-sm": "8px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "mono-data": [
+                              "Courier Prime"
+                      ],
+                      "table-header": [
+                              "Inter"
+                      ],
+                      "label-bold": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "mono-data": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "table-header": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-bold": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col md:flex-row">
+<!-- Mobile Nav (TopAppBar) -->
+<header class="flex justify-between items-center w-full px-container-padding h-16 sticky top-0 z-50 md:hidden bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline">
+<div class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">
+            Academic Inventory
+        </div>
+<div class="flex items-center gap-stack-sm">
+<button aria-label="notifications" class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors duration-200 rounded-full">
+<span class="material-symbols-outlined text-secondary dark:text-secondary-fixed">notifications</span>
+</button>
+<button aria-label="help" class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors duration-200 rounded-full">
+<span class="material-symbols-outlined text-secondary dark:text-secondary-fixed">help</span>
+</button>
+<img alt="User profile" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A small, circular avatar portrait of a university professor wearing a white lab coat. The lighting is bright and even, typical of an ID photo, highlighting a professional and welcoming demeanor. The background is a clean, neutral gray to ensure the face stands out clearly within the academic inventory dashboard interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB22QoRG3F0BIRlhVgAfnRwR3qlgjNQuI5HntRWGpip2lxNxAPBM32oFNi6kIQ4A4OS3Ebr--X31myZldtsd-wDhcWMr46PUC_VJvWQ6ZtVUi6z5AaYAgJKDEnWH-aQcP94arkXNVFM5TjCL69of3gODE3jfHZoZwCyOpPu5LdO75KuV02KB2QStwfB91GK5N7SiEWMqdeCbdI3LB92OREDRlyUnBuMYWssMVEgFfLDuEyriELloA">
+</div>
+</header>
+<!-- Desktop Side Nav -->
+<nav class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-4 gap-stack-sm bg-surface-container dark:bg-surface-container-lowest border-r border-outline-variant w-64 z-40">
+<div class="mb-stack-lg flex items-center gap-3">
+<img alt="Academic Logo" class="w-10 h-10 rounded-DEFAULT object-cover" data-alt="A minimalist logo for an academic inventory system. The design features a stylized graduation cap integrated with a subtle bar chart motif, rendered in crisp white and deep navy blue. The logo is set against a clean white background, conveying precision, organization, and a modern corporate academic aesthetic suitable for the 'Inventory Pro' brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC3Fz9CwgVORZwiYxqZPM_MPaBWVhhk83K3vsl92JkRt9dBD9M5oXgDadshm9q7UGw0pTOwxeTZT2yaZaEuPWXGA2w2IMfX8SqprXXjHAZpL0Q9RSgnx2urEbDZY_RgwTgxYBLsZEZYrgdzVkuWrHDsfytn4ey3acgtMWpqJYSxT1c99MucTdVBofwnS-5fiQKfPjHsH0QJHy33_wdlWwvhC_hy8dU59zt82RCaZAAvunsCqW26Q">
+<div>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed leading-tight">Inventory Pro</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Precision Management</p>
+</div>
+</div>
+<button class="w-full flex justify-center items-center gap-2 bg-secondary text-on-secondary font-label-bold py-2 px-4 rounded-lg hover:bg-secondary-container transition-all mb-4">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            Add Item
+        </button>
+<ul class="flex flex-col gap-1 flex-grow"><li class="">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg font-label-bold text-label-bold text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant scale-98 active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container rounded-lg font-bold font-label-bold text-label-bold scale-98 active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">school</span>
+                    Asignaturas
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg font-label-bold text-label-bold text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant scale-98 active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+                    Inventario
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg font-label-bold text-label-bold text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant scale-98 active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+                    Proyecciones
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg font-label-bold text-label-bold text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant scale-98 active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+                    Órdenes de Compra
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg font-label-bold text-label-bold text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant scale-98 active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">biotech</span>
+                    Equipamiento
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg font-label-bold text-label-bold text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant scale-98 active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+                    Reportes
+                </a>
+</li></ul>
+<div class="mt-auto border-t border-outline-variant pt-4 flex flex-col gap-1"><div class="flex items-center gap-3 px-3 py-2 mb-2">
+<img alt="User profile" class="w-8 h-8 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB22QoRG3F0BIRlhVgAfnRwR3qlgjNQuI5HntRWGpip2lxNxAPBM32oFNi6kIQ4A4OS3Ebr--X31myZldtsd-wDhcWMr46PUC_VJvWQ6ZtVUi6z5AaYAgJKDEnWH-aQcP94arkXNVFM5TjCL69of3gODE3jfHZoZwCyOpPu5LdO75KuV02KB2QStwfB91GK5N7SiEWMqdeCbdI3LB92OREDRlyUnBuMYWssMVEgFfLDuEyriELloA">
+<div class="overflow-hidden">
+<p class="text-label-bold font-label-bold text-on-surface truncate">Dra. Elena Rosales</p>
+<p class="text-[10px] text-on-surface-variant truncate">Administrador</p>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg font-label-bold text-label-bold text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant scale-98 active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Configuración
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg font-label-bold text-label-bold text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant scale-98 active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+                Soporte
+            </a></div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-container-padding max-w-[1440px] mx-auto w-full flex flex-col gap-stack-lg">
+<!-- Header Section -->
+<header class="bg-surface-container-lowest p-stack-md rounded-xl border border-surface-variant flex flex-col md:flex-row justify-between items-start md:items-center gap-stack-md shadow-sm">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-primary-container text-on-primary-container font-label-bold text-xs px-2 py-1 rounded-DEFAULT uppercase tracking-wider">CHM-204</span>
+<span class="bg-surface-variant text-on-surface-variant font-label-bold text-xs px-2 py-1 rounded-DEFAULT">Semestre Otoño</span>
+</div>
+<h2 class="font-display-lg text-display-lg text-on-background mb-2">Laboratorio de Química Orgánica</h2>
+<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">person</span>
+                        Dra. Elena Rosales
+                    </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                        Mar/Jue 14:00 - 17:00
+                    </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                        Edificio Ciencias, Lab 302
+                    </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">groups</span>
+                        24 Alumnos
+                    </div></div>
+</div>
+<div class="flex gap-2 w-full md:w-auto"><button class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-surface-container-lowest border border-outline font-label-bold text-label-bold text-on-surface px-4 py-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+                    Duplicar para otra sección
+                </button>
+<button class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-surface-container-lowest border border-outline font-label-bold text-label-bold text-on-surface px-4 py-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    Descargar Guía
+                </button>
+<button class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-secondary text-on-secondary font-label-bold text-label-bold px-4 py-2 rounded-lg hover:bg-secondary-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
+                    Reportar Consumo
+                </button>
+</div>
+</header>
+<!-- Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Main Inventory Table -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-xl border border-surface-variant overflow-hidden shadow-sm flex flex-col">
+<div class="p-4 border-b border-surface-variant flex justify-between items-center bg-surface-bright">
+<h3 class="font-headline-sm text-headline-sm text-on-background">Lista de Materiales y Reactivos</h3>
+<button class="flex items-center gap-2 bg-secondary text-on-secondary font-label-bold text-sm px-4 py-1.5 rounded-lg hover:bg-secondary-container transition-colors mr-4">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+  Confirmar Ajuste Final
+</button><div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="pl-9 pr-4 py-1.5 text-body-sm bg-surface-container-lowest border border-outline-variant rounded-DEFAULT focus:border-secondary focus:ring-1 focus:ring-secondary w-64" placeholder="Buscar insumo..." type="text">
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-surface-variant">
+<th class="p-3 pl-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider">Insumo</th>
+<th class="p-3 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider text-right">Req. <span class="text-[10px] block normal-case font-normal opacity-70">Total (x24)</span></th>
+<th class="p-3 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider text-right">Util.</th>
+<th class="p-3 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider text-right">Merma</th>
+<th class="p-3 pr-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider">Estado</th><th class="p-3 pr-4 font-table-header text-table-header text-on-surface-variant uppercase tracking-wider">Acción Post-Clase</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md">
+<tr class="border-b border-surface-variant hover:bg-surface transition-colors">
+<td class="p-3 pl-4">
+<div class="font-label-bold text-on-background">Acetona (Grado HPLC)</div>
+<div class="font-mono-data text-mono-data text-on-surface-variant mt-0.5">CAS: 67-64-1</div>
+</td>
+<td class="p-3 text-right font-mono-data text-mono-data">5.0 L <div class="text-[10px] text-on-surface-variant font-body-sm">0.2L/est.</div></td>
+<td class="p-3 text-right font-mono-data text-mono-data">4.2 L</td>
+<td class="p-3 text-right font-mono-data text-mono-data text-on-surface-variant">-0.8 L</td>
+<td class="p-3 pr-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-label-bold bg-[#dcfce7] text-[#166534]">Ajustado</span>
+</td><td class="p-3 pr-4 flex gap-2"><div class="flex items-center gap-2"><button class="flex items-center gap-1 px-2 py-1 border border-error text-error rounded-lg hover:bg-error-container transition-colors text-xs font-label-bold"><span class="material-symbols-outlined text-[16px]">delete_outline</span> Desechar</button><div class="flex items-center border border-[#166534] rounded-lg overflow-hidden"><input type="number" placeholder="Cant." class="w-12 px-1 py-1 text-xs border-none focus:ring-0 text-center" value="4.2"><button class="bg-[#dcfce7] text-[#166534] px-2 py-1 hover:bg-surface transition-colors text-xs font-label-bold border-l border-[#166534]"><span class="material-symbols-outlined text-[16px] block">refresh</span></button></div></div></td>
+</tr>
+<tr class="bg-surface-bright border-b border-surface-variant hover:bg-surface transition-colors">
+<td class="p-3 pl-4">
+<div class="font-label-bold text-on-background">Matraz Erlenmeyer 250ml</div>
+<div class="font-mono-data text-mono-data text-on-surface-variant mt-0.5">Vidrio Borosilicato</div>
+</td>
+<td class="p-3 text-right font-mono-data text-mono-data">30 un <div class="text-[10px] text-on-surface-variant font-body-sm">1.25/est.</div></td>
+<td class="p-3 text-right font-mono-data text-mono-data">28 un</td>
+<td class="p-3 text-right font-mono-data text-mono-data text-error">2 rotos</td>
+<td class="p-3 pr-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-label-bold bg-[#ffedd5] text-[#9a3412]">Bajo</span>
+</td><td class="p-3 pr-4 flex gap-2"><div class="flex items-center gap-2"><button class="flex items-center gap-1 px-2 py-1 border border-error text-error rounded-lg hover:bg-error-container transition-colors text-xs font-label-bold"><span class="material-symbols-outlined text-[16px]">delete_outline</span> Desechar</button><div class="flex items-center border border-[#166534] rounded-lg overflow-hidden"><input type="number" placeholder="Cant." class="w-12 px-1 py-1 text-xs border-none focus:ring-0 text-center"><button class="bg-[#dcfce7] text-[#166534] px-2 py-1 hover:bg-surface transition-colors text-xs font-label-bold border-l border-[#166534]"><span class="material-symbols-outlined text-[16px] block">refresh</span></button></div></div></td>
+</tr>
+<tr class="border-b border-surface-variant hover:bg-surface transition-colors">
+<td class="p-3 pl-4">
+<div class="font-label-bold text-on-background">Ácido Sulfúrico 98%</div>
+<div class="font-mono-data text-mono-data text-on-surface-variant mt-0.5">CAS: 7664-93-9</div>
+</td>
+<td class="p-3 text-right font-mono-data text-mono-data">2.5 L <div class="text-[10px] text-on-surface-variant font-body-sm">0.1L/est.</div></td>
+<td class="p-3 text-right font-mono-data text-mono-data">2.4 L</td>
+<td class="p-3 text-right font-mono-data text-mono-data text-on-surface-variant">-0.1 L</td>
+<td class="p-3 pr-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-label-bold bg-[#fee2e2] text-[#991b1b]">Crítico</span>
+</td><td class="p-3 pr-4 flex gap-2"><div class="flex items-center gap-2"><button class="flex items-center gap-1 px-2 py-1 border border-error text-error rounded-lg hover:bg-error-container transition-colors text-xs font-label-bold"><span class="material-symbols-outlined text-[16px]">delete_outline</span> Desechar</button><div class="flex items-center border border-[#166534] rounded-lg overflow-hidden"><input type="number" placeholder="Cant." class="w-12 px-1 py-1 text-xs border-none focus:ring-0 text-center"><button class="bg-[#dcfce7] text-[#166534] px-2 py-1 hover:bg-surface transition-colors text-xs font-label-bold border-l border-[#166534]"><span class="material-symbols-outlined text-[16px] block">refresh</span></button></div></div></td>
+</tr>
+<tr class="bg-surface-bright border-b border-surface-variant hover:bg-surface transition-colors">
+<td class="p-3 pl-4">
+<div class="font-label-bold text-on-background">Papel Filtro Cualitativo</div>
+<div class="font-mono-data text-mono-data text-on-surface-variant mt-0.5">150mm, Pk/100</div>
+</td>
+<td class="p-3 text-right font-mono-data text-mono-data">5 pk <div class="text-[10px] text-on-surface-variant font-body-sm">0.2/est.</div></td>
+<td class="p-3 text-right font-mono-data text-mono-data">2 pk</td>
+<td class="p-3 text-right font-mono-data text-mono-data text-on-surface-variant">-</td>
+<td class="p-3 pr-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-label-bold bg-[#dcfce7] text-[#166534]">Ajustado</span>
+</td><td class="p-3 pr-4 flex gap-2"><div class="flex items-center gap-2"><button class="flex items-center gap-1 px-2 py-1 border border-error text-error rounded-lg hover:bg-error-container transition-colors text-xs font-label-bold"><span class="material-symbols-outlined text-[16px]">delete_outline</span> Desechar</button><div class="flex items-center border border-[#166534] rounded-lg overflow-hidden"><input type="number" placeholder="Cant." class="w-12 px-1 py-1 text-xs border-none focus:ring-0 text-center" value="2"><button class="bg-[#dcfce7] text-[#166534] px-2 py-1 hover:bg-surface transition-colors text-xs font-label-bold border-l border-[#166534]"><span class="material-symbols-outlined text-[16px] block">refresh</span></button></div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-3 border-t border-surface-variant bg-surface-bright flex justify-end">
+<button class="text-secondary font-label-bold text-sm hover:underline flex items-center gap-1">
+                        Ver catálogo completo
+                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Side Panels -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Efficiency Metrics -->
+<div class="bg-surface-container-lowest rounded-xl border border-surface-variant p-4 shadow-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-container">analytics</span>
+                        Métricas de Eficiencia
+                    </h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface p-3 rounded-lg border border-outline-variant/30">
+<div class="text-body-sm text-on-surface-variant mb-1">Tasa Reutilización</div>
+<div class="font-display-lg text-display-lg text-on-background leading-none">84%</div>
+<div class="text-xs text-[#166534] mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+                                +2% vs ciclo ant.
+                            </div>
+</div>
+<div class="bg-surface p-3 rounded-lg border border-outline-variant/30">
+<div class="text-body-sm text-on-surface-variant mb-1">Índice de Merma</div>
+<div class="font-display-lg text-display-lg text-on-background leading-none">3.2%</div>
+<div class="text-xs text-on-surface-variant mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">horizontal_rule</span>
+                                Estable
+                            </div>
+</div>
+</div>
+</div>
+<!-- Instructor Notes -->
+<div class="bg-[#fefce8] rounded-xl border border-[#fef08a] p-4 shadow-sm flex-1">
+<h3 class="font-headline-sm text-headline-sm text-[#854d0e] mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-[#854d0e]">edit_note</span>
+                        Notas del Instructor
+                    </h3>
+<p class="font-body-md text-body-md text-[#713f12] mb-3">
+                        Por favor, asegurar que los matraces de destilación sean revisados meticulosamente por microfisuras antes de la práctica del jueves. Hubo un incidente menor el semestre pasado debido a estrés térmico.
+                    </p>
+<p class="font-body-sm text-body-sm text-[#713f12] opacity-80 italic">
+                        - Actualizado por Dra. Rosales, hace 2 días.
+                    </p>
+</div>
+</div>
+</div>
+</main>
+
+
+
+
+</body></html>

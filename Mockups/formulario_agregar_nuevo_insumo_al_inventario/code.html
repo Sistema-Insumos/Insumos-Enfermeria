@@ -1,0 +1,442 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Agregar Nuevo Insumo - Gestión Académica</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;family=Courier+Prime:wght@400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary": "#ffffff",
+                      "surface-container": "#f0edef",
+                      "on-secondary-fixed": "#001a42",
+                      "secondary-container": "#2170e4",
+                      "error": "#ba1a1a",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-primary": "#bec6e0",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#0b1c30",
+                      "outline": "#76777d",
+                      "on-error": "#ffffff",
+                      "primary-fixed-dim": "#bec6e0",
+                      "surface": "#fcf8fa",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "inverse-surface": "#303032",
+                      "secondary-fixed": "#d8e2ff",
+                      "tertiary-fixed": "#d3e4fe",
+                      "on-tertiary-fixed-variant": "#38485d",
+                      "background": "#fcf8fa",
+                      "surface-tint": "#565e74",
+                      "tertiary": "#000000",
+                      "on-tertiary-fixed": "#0b1c30",
+                      "on-error-container": "#93000a",
+                      "outline-variant": "#c6c6cd",
+                      "surface-dim": "#dcd9db",
+                      "surface-container-low": "#f6f3f5",
+                      "on-background": "#1b1b1d",
+                      "surface-container-high": "#eae7e9",
+                      "on-surface": "#1b1b1d",
+                      "primary-container": "#131b2e",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "surface-bright": "#fcf8fa",
+                      "tertiary-fixed-dim": "#b7c8e1",
+                      "on-primary-container": "#7c839b",
+                      "on-secondary-container": "#fefcff",
+                      "surface-container-highest": "#e4e2e4",
+                      "primary": "#000000",
+                      "on-primary": "#ffffff",
+                      "on-surface-variant": "#45464d",
+                      "on-primary-fixed": "#131b2e",
+                      "secondary": "#0058be",
+                      "on-tertiary-container": "#75859d",
+                      "on-secondary-fixed-variant": "#004395",
+                      "surface-variant": "#e4e2e4",
+                      "primary-fixed": "#dae2fd",
+                      "error-container": "#ffdad6",
+                      "inverse-on-surface": "#f3f0f2"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-sm": "8px",
+                      "container-padding": "24px",
+                      "stack-lg": "32px",
+                      "gutter": "16px",
+                      "stack-md": "16px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-bold": [
+                              "Inter"
+                      ],
+                      "mono-data": [
+                              "Courier Prime"
+                      ],
+                      "table-header": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-bold": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "mono-data": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "table-header": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface dark:bg-surface-dim h-screen w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline flex flex-col h-full py-container-padding z-50">
+<div class="px-gutter mb-stack-lg">
+<div class="flex items-center gap-stack-sm mb-stack-md">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="Escudo de la Universidad" class="w-full h-full object-cover" data-alt="University crest shield logo in modern flat design with primary blue and white colors, academic setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbnBh42c8S2nElvieUL6DEZ9zXjOOXYAK8BEZ8XODGWw7ncdGowLay6jJ0DuSMutLWAMUYSJ5rIL4fYsBJy8lEnmy5DRtDvJujI3H5hFBHKAXdfhL37JDE9thNMOEGac5i4dQrOY8QVq314qUACG8QAiicQMJa7QEIy9s4zmF4Tg8e4-N1MiF2MlCqqbPzK0ACDRkrkvo_6c-ow2cKY0nQa2WCN9XIxbkYptnSaYNq6EBHl1goRQ">
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-inverse-on-surface">Gestión Académica</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Admin Inventario</p>
+</div>
+</div>
+<button class="w-full bg-secondary text-on-secondary rounded-lg py-2 px-4 font-label-bold text-label-bold flex items-center justify-center gap-2 hover:bg-secondary/90 scale-95 active:scale-100 transition-transform">
+<span class="material-symbols-outlined">add</span>
+                Nuevo Item
+            </button>
+</div>
+<div class="flex-1 overflow-y-auto px-gutter">
+<ul class="space-y-1">
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                        Dashboard
+                    </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">school</span>
+                        Asignaturas
+                    </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary dark:text-secondary-fixed font-bold border-r-4 border-secondary dark:border-secondary-fixed bg-secondary-container/10 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined icon-fill">inventory_2</span>
+                        Inventario
+                    </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+                        Proyecciones
+                    </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+                        Órdenes de Compra
+                    </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">biotech</span>
+                        Equipamiento
+                    </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#"><span class="material-symbols-outlined">monitoring</span>
+                        Monitoreo</a>
+</li>
+</ul>
+</div>
+<div class="mt-auto px-gutter pt-stack-md border-t border-outline-variant dark:border-outline">
+<ul class="space-y-1">
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">settings</span>
+                        Ajustes
+                    </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">logout</span>
+                        Cerrar Sesión
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 ml-64 flex flex-col h-screen relative">
+<!-- TopAppBar -->
+<header class="bg-white dark:bg-surface-container-lowest border-b border-outline-variant dark:border-outline fixed top-0 right-0 w-[calc(100%-16rem)] h-16 flex justify-between items-center px-container-padding z-40 transition-all duration-200">
+<div class="flex-1 flex items-center">
+<h1 class="font-headline-md text-headline-md font-black text-primary dark:text-inverse-primary mr-8">AcademicInventory</h1>
+<!-- Search bar would go here, simplified for modal view -->
+<div class="hidden md:flex relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 rounded-full border border-outline-variant focus:border-secondary focus:ring-1 focus:ring-secondary text-body-sm font-body-sm bg-surface-container-low text-on-surface" placeholder="Buscar SKU, nombre..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-secondary dark:hover:text-secondary-fixed-dim transition-all duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary dark:hover:text-secondary-fixed-dim transition-all duration-200">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-variant border border-outline-variant">
+<img alt="Avatar del Administrador" class="w-full h-full object-cover" data-alt="Portrait photo of a professional academic administrator looking confident, corporate lighting, minimalist background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuChrZNA-ZiESrD5NovmWeM7v4POLYvJlwGlZULFAMrMXo_l89_CNU7ApIJRfsR_XBfsAqrelJuJHDcZWDJ-dqPTJYXEVvu6YntfIroFMzj1FnF2V5dTuvXpbvs2jU06EQ5UGHQ4xVgEq3ylR4G4FmZ6xE3gZ1E4QIDrMAE7oKUT8xXr4yFoxaftw-fFIIVA94PwuXsQvwUxsiMeYJCY9EilEZmzypZEY2HNt8XiKmvPF43B1wnrXA">
+</div>
+</div>
+</header>
+<!-- Overlay for Modal -->
+<div class="absolute inset-0 bg-on-background/40 z-40 backdrop-blur-sm pt-16 flex items-center justify-center p-container-padding overflow-y-auto">
+<!-- Modal Container -->
+<div class="bg-white dark:bg-surface-container-lowest w-full max-w-4xl rounded-xl shadow-[0px_4px_12px_rgba(15,23,42,0.08)] flex flex-col max-h-full overflow-hidden border border-outline-variant">
+<!-- Modal Header -->
+<div class="px-container-padding py-stack-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary">Agregar Nuevo Insumo</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Complete los detalles para registrar un nuevo elemento en el inventario.</p>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Body -->
+<div class="p-container-padding overflow-y-auto flex-1">
+<form class="space-y-stack-lg">
+<!-- Grid 1: Basic Info -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="space-y-unit">
+<label class="font-label-bold text-label-bold text-on-surface">Nombre del Insumo *</label>
+<input class="w-full rounded-DEFAULT border border-outline-variant px-3 py-2 text-body-md font-body-md focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all" placeholder="Ej. Pipeta Graduada 10ml" type="text">
+</div>
+<div class="space-y-unit">
+<label class="font-label-bold text-label-bold text-on-surface flex justify-between">
+<span class="">SKU/Código</span>
+<span class="text-on-surface-variant font-normal font-body-sm">Opcional</span>
+</label>
+<div class="flex gap-2">
+<input class="flex-1 rounded-DEFAULT border border-outline-variant px-3 py-2 font-mono-data text-mono-data focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all bg-surface-container-lowest" placeholder="Ej. CHM-PIP-001" type="text">
+<button class="px-3 py-2 border border-outline-variant rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center justify-center" title="Autogenerar" type="button">
+<span class="material-symbols-outlined text-[20px]">autorenew</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Grid 2: Classification & Location -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="space-y-unit">
+<label class="font-label-bold text-label-bold text-on-surface">Categoría *</label>
+<div class="relative">
+<select class="w-full rounded-DEFAULT border border-outline-variant px-3 py-2 text-body-md font-body-md focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none appearance-none bg-white">
+<option disabled="" selected="" value="">Seleccione...</option>
+<option value="ciencias">Ciencias</option>
+<option value="tecnologia">Tecnología</option>
+<option value="artes">Artes</option>
+<option value="general">Uso General</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="space-y-unit md:col-span-2">
+<label class="font-label-bold text-label-bold text-on-surface">Ubicación Física</label>
+<div class="flex gap-2">
+<select class="w-1/2 rounded-DEFAULT border border-outline-variant px-3 py-2 text-body-md font-body-md focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none bg-white">
+<option disabled="" selected="" value="">Laboratorio / Aula</option>
+<option value="lab1">Lab Química 1</option>
+<option value="lab2">Lab Física</option>
+<option value="alm1">Almacén Central</option>
+</select>
+<input class="w-1/2 rounded-DEFAULT border border-outline-variant px-3 py-2 text-body-md font-body-md focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none" placeholder="Estante / Pasillo (Ej. E-04)" type="text">
+</div>
+</div>
+</div>
+<!-- Grid 3: Stock Metrics -->
+<div class="bg-surface-container-low p-gutter rounded-lg border border-outline-variant">
+<h3 class="font-label-bold text-label-bold text-on-surface mb-stack-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">inventory</span>
+                                Métricas de Inventario
+                            </h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
+<div class="space-y-unit">
+<label class="font-body-sm text-body-sm text-on-surface-variant">Stock Inicial</label>
+<input class="w-full rounded-DEFAULT border border-outline-variant px-3 py-2 font-mono-data text-mono-data focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none text-right" min="0" type="number" value="0">
+</div>
+<div class="space-y-unit">
+<label class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+                                        Stock Mínimo
+                                        <span class="material-symbols-outlined text-[14px] text-error" title="Nivel de alerta">warning</span>
+</label>
+<input class="w-full rounded-DEFAULT border border-error/50 px-3 py-2 font-mono-data text-mono-data focus:border-error focus:ring-2 focus:ring-error/20 outline-none text-right bg-error-container/10" min="0" type="number" value="5">
+</div>
+<div class="space-y-unit">
+<label class="font-body-sm text-body-sm text-on-surface-variant">Stock Máximo</label>
+<input class="w-full rounded-DEFAULT border border-outline-variant px-3 py-2 font-mono-data text-mono-data focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none text-right" min="0" type="number">
+</div>
+<div class="space-y-unit">
+<label class="font-body-sm text-body-sm text-on-surface-variant">Unidad</label>
+<select class="w-full rounded-DEFAULT border border-outline-variant px-3 py-2 text-body-md font-body-md focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none bg-white">
+<option value="uds">Unidades (uds)</option>
+<option value="ml">Mililitros (ml)</option>
+<option value="gr">Gramos (gr)</option>
+<option value="cajas">Cajas</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Description -->
+<div class="space-y-unit">
+<label class="font-label-bold text-label-bold text-on-surface">Descripción</label>
+<textarea class="w-full rounded-DEFAULT border border-outline-variant px-3 py-2 text-body-md font-body-md focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none resize-none" placeholder="Detalles adicionales, especificaciones técnicas o notas de seguridad..." rows="3"></textarea>
+</div>
+<!-- Subject Linking -->
+<div class="border-t border-outline-variant pt-stack-md">
+<h3 class="font-label-bold text-label-bold text-on-surface mb-stack-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">school</span>
+                                Vincular a Asignaturas
+                            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-stack-md">Seleccione las asignaturas que utilizan este insumo para facilitar la planificación por semestre.</p>
+<div class="flex flex-wrap gap-2">
+<!-- Chips for subjects -->
+<label class="inline-flex items-center cursor-pointer">
+<input class="peer sr-only" type="checkbox">
+<span class="px-3 py-1.5 rounded-full border border-outline-variant text-body-sm font-body-sm text-on-surface-variant peer-checked:bg-secondary-container peer-checked:text-on-secondary peer-checked:border-secondary-container transition-colors select-none flex items-center gap-1">
+                                        Química I
+                                    </span>
+</label>
+<label class="inline-flex items-center cursor-pointer">
+<input class="peer sr-only" type="checkbox">
+<span class="px-3 py-1.5 rounded-full border border-outline-variant text-body-sm font-body-sm text-on-surface-variant peer-checked:bg-secondary-container peer-checked:text-on-secondary peer-checked:border-secondary-container transition-colors select-none flex items-center gap-1">
+                                        Biología Celular
+                                    </span>
+</label>
+<label class="inline-flex items-center cursor-pointer">
+<input class="peer sr-only" type="checkbox">
+<span class="px-3 py-1.5 rounded-full border border-outline-variant text-body-sm font-body-sm text-on-surface-variant peer-checked:bg-secondary-container peer-checked:text-on-secondary peer-checked:border-secondary-container transition-colors select-none flex items-center gap-1">
+                                        Física General
+                                    </span>
+</label>
+<button class="px-3 py-1.5 rounded-full border border-dashed border-outline text-body-sm font-body-sm text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                                    Buscar más
+                                </button>
+</div>
+</div>
+</form>
+</div>
+<!-- Modal Footer -->
+<div class="px-container-padding py-stack-md border-t border-outline-variant bg-surface-container-low flex justify-end gap-3">
+<button class="px-4 py-2 rounded-DEFAULT border border-outline text-on-surface-variant font-label-bold text-label-bold hover:bg-surface-container-high transition-colors" type="button">
+                        Cancelar
+                    </button>
+<button class="px-4 py-2 rounded-DEFAULT bg-secondary text-on-secondary font-label-bold text-label-bold hover:bg-secondary/90 transition-colors shadow-sm flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                        Guardar Insumo
+                    </button>
+</div>
+</div>
+</div>
+</div>
+
+
+</body></html>
