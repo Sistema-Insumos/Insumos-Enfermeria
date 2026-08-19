@@ -250,11 +250,11 @@ model PurchaseOrderQuote {
 }
 
 model FutureSupplyNeed {
-  id            String   @id @default(cuid())
-  name          String
-  category      String
-  estimatedQty  Int
-  requiredDate  DateTime
-  priority      Priority @default(MEDIUM)
-  createdAt     DateTime @default(now())
+  id           String    @id @default(cuid())
+  name         String
+  category     String?
+  estimatedQty Int
+  requiredDate DateTime?
+  priority     Priority  @default(MEDIUM)
+  createdAt    DateTime  @default(now())
 }

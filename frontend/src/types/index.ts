@@ -103,20 +103,24 @@ export interface ProjectionItem {
   diff: number;
   status: "CRITICO" | "ATENCION" | "SUFICIENTE";
   estimatedCost: number;
+  upcomingStudents: number;
+  basedOnHistoricalData: boolean;
 }
 
 export interface ProjectionResponse {
   items: ProjectionItem[];
   criticalCount: number;
   totalEstimatedCost: number;
+  year: number;
+  semester: number;
 }
 
 export interface FutureSupplyNeed {
   id: string;
   name: string;
-  category: string;
+  category: string | null;
   estimatedQty: number;
-  requiredDate: string;
+  requiredDate: string | null;
   priority: "LOW" | "MEDIUM" | "HIGH";
 }
 

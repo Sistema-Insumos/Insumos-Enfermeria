@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
-import { requireAuth } from "../middleware/auth";
+import { requireAdmin, requireAuth } from "../middleware/auth";
 import { asyncHandler } from "../utils/asyncHandler";
 
 export const projectionsRouter = Router();
@@ -9,17 +9,57 @@ projectionsRouter.use(requireAuth);
 
 projectionsRouter.get(
   "/",
-  asyncHandler(async (_req, res) => {
+  asyncHandler(async (req, res) => {
+    const now = new Date();
+    const year = req.query.year ? Number(req.query.year) : now.getFullYear();
+    const semester = req.query.semester ? Number(req.query.semester) : 1;
+
     const supplies = await prisma.supply.findMany({
-      include: { consumptionRecords: true },
+      include: {
+        consumptionRecords: { include: { section: { select: { studentsCount: true } } } },
+        subjects: {
+          include: {
+            subject: {
+              include: {
+                workshops: {
+                  include: {
+                    sections: { where: { year, semester }, select: { studentsCount: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     const items = supplies.map((supply) => {
-      const historicalDemand = supply.consumptionRecords.reduce(
-        (sum, r) => sum + Number(r.requiredQty),
-        0
-      );
-      const projectedNeed = historicalDemand > 0 ? historicalDemand : supply.minStock * 2;
+      let totalRequiredHistorical = 0;
+      let totalStudentsHistorical = 0;
+      for (const record of supply.consumptionRecords) {
+        if (record.section.studentsCount > 0) {
+          totalRequiredHistorical += Number(record.requiredQty);
+          totalStudentsHistorical += record.section.studentsCount;
+        }
+      }
+      const ratePerStudent =
+        totalStudentsHistorical > 0 ? totalRequiredHistorical / totalStudentsHistorical : 0;
+
+      const upcomingStudents = supply.subjects.reduce((sum, { subject }) => {
+        return (
+          sum +
+          subject.workshops.reduce(
+            (wSum, w) => wSum + w.sections.reduce((sSum, s) => sSum + s.studentsCount, 0),
+            0
+          )
+        );
+      }, 0);
+
+      const basedOnHistoricalData = ratePerStudent > 0 && upcomingStudents > 0;
+      const projectedNeed = basedOnHistoricalData
+        ? Math.ceil(ratePerStudent * upcomingStudents)
+        : supply.minStock * 2;
+
       const diff = supply.currentStock - projectedNeed;
 
       let status: "CRITICO" | "ATENCION" | "SUFICIENTE" = "SUFICIENTE";
@@ -38,28 +78,30 @@ projectionsRouter.get(
         diff,
         status,
         estimatedCost,
+        upcomingStudents,
+        basedOnHistoricalData,
       };
     });
 
     const criticalCount = items.filter((i) => i.status === "CRITICO").length;
     const totalEstimatedCost = items.reduce((sum, i) => sum + i.estimatedCost, 0);
 
-    res.json({ items, criticalCount, totalEstimatedCost });
+    res.json({ items, criticalCount, totalEstimatedCost, year, semester });
   })
 );
 
 const futureNeedSchema = z.object({
   name: z.string().min(1),
-  category: z.string().min(1),
+  category: z.string().optional(),
   estimatedQty: z.number().int().min(0),
-  requiredDate: z.string(),
+  requiredDate: z.string().optional(),
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM"),
 });
 
 projectionsRouter.get(
   "/future-needs",
   asyncHandler(async (_req, res) => {
-    const needs = await prisma.futureSupplyNeed.findMany({ orderBy: { requiredDate: "asc" } });
+    const needs = await prisma.futureSupplyNeed.findMany({ orderBy: { createdAt: "desc" } });
     res.json(needs);
   })
 );
@@ -69,8 +111,17 @@ projectionsRouter.post(
   asyncHandler(async (req, res) => {
     const data = futureNeedSchema.parse(req.body);
     const need = await prisma.futureSupplyNeed.create({
-      data: { ...data, requiredDate: new Date(data.requiredDate) },
+      data: { ...data, requiredDate: data.requiredDate ? new Date(data.requiredDate) : undefined },
     });
     res.status(201).json(need);
+  })
+);
+
+projectionsRouter.delete(
+  "/future-needs/:id",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    await prisma.futureSupplyNeed.delete({ where: { id: req.params.id } });
+    res.status(204).send();
   })
 );
