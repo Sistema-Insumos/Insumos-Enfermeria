@@ -15,14 +15,13 @@ reportsRouter.get(
       .filter((s) => s.consumptionRecords.length > 0)
       .map((supply) => {
         const totalReused = supply.consumptionRecords.reduce(
-          (sum, r) => sum + (r.postClassAction === "REUSE" ? Number(r.reuseQty ?? 0) : 0),
+          (sum, r) => sum + Number(r.reusedQty),
           0
         );
-        const totalDiscarded = supply.consumptionRecords.reduce((sum, r) => {
-          const used = Number(r.usedQty);
-          const reused = r.postClassAction === "REUSE" ? Number(r.reuseQty ?? 0) : 0;
-          return sum + Number(r.wasteQty) + (used - reused);
-        }, 0);
+        const totalDiscarded = supply.consumptionRecords.reduce(
+          (sum, r) => sum + Number(r.wasteQty) + Number(r.discardedQty),
+          0
+        );
 
         const total = totalReused + totalDiscarded;
         const efficiency = total > 0 ? (totalReused / total) * 100 : 0;

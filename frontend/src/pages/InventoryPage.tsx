@@ -85,8 +85,11 @@ export function InventoryPage() {
               <th className="px-4 py-3">Nombre del Insumo</th>
               <th className="px-4 py-3">Categoría</th>
               <th className="px-4 py-3">Ubicación</th>
+              <th className="px-4 py-3 text-right">Stock Máximo</th>
               <th className="px-4 py-3 text-right">Stock Actual</th>
               <th className="px-4 py-3 text-right">Stock Mínimo</th>
+              <th className="px-4 py-3 text-right">Nuevos</th>
+              <th className="px-4 py-3 text-right">Reutilizados</th>
               {isAdmin && <th className="px-4 py-3 text-right">Acciones</th>}
             </tr>
           </thead>
@@ -99,6 +102,7 @@ export function InventoryPage() {
                 <td className="px-4 py-3 text-on-surface-variant">
                   {[supply.locationType, supply.locationDetail].filter(Boolean).join(", ") || "—"}
                 </td>
+                <td className="px-4 py-3 text-right text-on-surface-variant">{supply.maxStock ?? "—"}</td>
                 <td
                   className={`px-4 py-3 text-right font-semibold ${
                     supply.currentStock < supply.minStock ? "text-danger" : "text-on-surface"
@@ -107,6 +111,8 @@ export function InventoryPage() {
                   {supply.currentStock}
                 </td>
                 <td className="px-4 py-3 text-right text-on-surface-variant">{supply.minStock}</td>
+                <td className="px-4 py-3 text-right text-success">{supply.newStock}</td>
+                <td className="px-4 py-3 text-right text-secondary">{supply.reusableStock}</td>
                 {isAdmin && (
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">
@@ -131,7 +137,7 @@ export function InventoryPage() {
             ))}
             {!suppliesQuery.isLoading && supplies.length === 0 && (
               <tr>
-                <td colSpan={isAdmin ? 7 : 6} className="px-4 py-8 text-center text-on-surface-variant">
+                <td colSpan={isAdmin ? 10 : 9} className="px-4 py-8 text-center text-on-surface-variant">
                   No hay insumos registrados todavía.
                 </td>
               </tr>

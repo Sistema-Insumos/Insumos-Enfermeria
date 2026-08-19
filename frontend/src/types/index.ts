@@ -161,8 +161,8 @@ export interface ConsumptionRecord {
   requiredQty: string;
   usedQty: string;
   wasteQty: string;
-  postClassAction: "DISCARD" | "REUSE" | null;
-  reuseQty: string | null;
+  reusedQty: string;
+  discardedQty: string;
   instructorNotes: string | null;
   reportedAt: string;
 }

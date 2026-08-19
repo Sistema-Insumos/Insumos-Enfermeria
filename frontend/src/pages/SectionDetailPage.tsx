@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
-import { RefreshCw, Trash2, Wrench } from "lucide-react";
+import { Wrench } from "lucide-react";
 import { api } from "../lib/api";
 import type { Equipment, Section, Supply } from "../types";
 
@@ -32,8 +32,8 @@ export function SectionDetailPage() {
     requiredQty: 0,
     usedQty: 0,
     wasteQty: 0,
-    postClassAction: "DISCARD" as "DISCARD" | "REUSE",
-    reuseQty: 0,
+    reusedQty: 0,
+    discardedQty: 0,
     instructorNotes: "",
   });
 
@@ -44,7 +44,16 @@ export function SectionDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["section", sectionId] });
       queryClient.invalidateQueries({ queryKey: ["supplies"] });
-      setDraft((d) => ({ ...d, supplyId: "", requiredQty: 0, usedQty: 0, wasteQty: 0, reuseQty: 0, instructorNotes: "" }));
+      setDraft((d) => ({
+        ...d,
+        supplyId: "",
+        requiredQty: 0,
+        usedQty: 0,
+        wasteQty: 0,
+        reusedQty: 0,
+        discardedQty: 0,
+        instructorNotes: "",
+      }));
     },
   });
 
@@ -80,7 +89,8 @@ export function SectionDetailPage() {
                 <th className="px-4 py-2 text-right">Req.</th>
                 <th className="px-4 py-2 text-right">Util.</th>
                 <th className="px-4 py-2 text-right">Merma</th>
-                <th className="px-4 py-2">Acción</th>
+                <th className="px-4 py-2 text-right">Reutilizado</th>
+                <th className="px-4 py-2 text-right">Desechado</th>
               </tr>
             </thead>
             <tbody>
@@ -89,25 +99,14 @@ export function SectionDetailPage() {
                   <td className="px-4 py-2 font-medium">{record.supply.name}</td>
                   <td className="px-4 py-2 text-right">{record.requiredQty}</td>
                   <td className="px-4 py-2 text-right">{record.usedQty}</td>
-                  <td className="px-4 py-2 text-right text-danger">{record.wasteQty}</td>
-                  <td className="px-4 py-2">
-                    <span className="flex items-center gap-1 text-xs text-on-surface-variant">
-                      {record.postClassAction === "REUSE" ? (
-                        <>
-                          <RefreshCw size={14} /> Reutilizado ({record.reuseQty})
-                        </>
-                      ) : (
-                        <>
-                          <Trash2 size={14} /> Desechado
-                        </>
-                      )}
-                    </span>
-                  </td>
+                  <td className="px-4 py-2 text-right text-warning">{record.wasteQty}</td>
+                  <td className="px-4 py-2 text-right text-success">{record.reusedQty}</td>
+                  <td className="px-4 py-2 text-right text-danger">{record.discardedQty}</td>
                 </tr>
               ))}
               {section && section.consumptionRecords.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-on-surface-variant">
+                  <td colSpan={6} className="px-4 py-6 text-center text-on-surface-variant">
                     Sin ajustes reportados todavía.
                   </td>
                 </tr>
@@ -120,11 +119,11 @@ export function SectionDetailPage() {
               e.preventDefault();
               mutation.mutate();
             }}
-            className="grid grid-cols-6 gap-2 border-t border-outline-variant p-4"
+            className="grid grid-cols-3 gap-2 border-t border-outline-variant p-4"
           >
             <select
               required
-              className="input col-span-2"
+              className="input col-span-3"
               value={draft.supplyId}
               onChange={(e) => setDraft((d) => ({ ...d, supplyId: e.target.value }))}
             >
@@ -138,7 +137,7 @@ export function SectionDetailPage() {
             <input
               type="number"
               min={0}
-              placeholder="Req."
+              placeholder="Requerido"
               className="input"
               value={draft.requiredQty}
               onChange={(e) => setDraft((d) => ({ ...d, requiredQty: Number(e.target.value) }))}
@@ -146,38 +145,46 @@ export function SectionDetailPage() {
             <input
               type="number"
               min={0}
-              placeholder="Util."
+              placeholder="Utilizado"
               className="input"
               value={draft.usedQty}
               onChange={(e) => setDraft((d) => ({ ...d, usedQty: Number(e.target.value) }))}
             />
-            <select
+            <input
+              type="number"
+              min={0}
+              placeholder="Merma"
               className="input"
-              value={draft.postClassAction}
-              onChange={(e) =>
-                setDraft((d) => ({ ...d, postClassAction: e.target.value as "DISCARD" | "REUSE" }))
-              }
-            >
-              <option value="DISCARD">Desechar</option>
-              <option value="REUSE">Reutilizar</option>
-            </select>
-            <button
-              type="submit"
-              disabled={mutation.isPending || !draft.supplyId}
-              className="rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
-            >
-              Reportar
-            </button>
-            {draft.postClassAction === "REUSE" && (
+              value={draft.wasteQty}
+              onChange={(e) => setDraft((d) => ({ ...d, wasteQty: Number(e.target.value) }))}
+            />
+            <label className="text-sm">
+              <span className="mb-1 block text-xs font-semibold text-success">Cant. Reutilizada</span>
               <input
                 type="number"
                 min={0}
-                placeholder="Cant. a reutilizar"
-                className="input col-span-2"
-                value={draft.reuseQty}
-                onChange={(e) => setDraft((d) => ({ ...d, reuseQty: Number(e.target.value) }))}
+                className="input"
+                value={draft.reusedQty}
+                onChange={(e) => setDraft((d) => ({ ...d, reusedQty: Number(e.target.value) }))}
               />
-            )}
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block text-xs font-semibold text-danger">Cant. Desechada</span>
+              <input
+                type="number"
+                min={0}
+                className="input"
+                value={draft.discardedQty}
+                onChange={(e) => setDraft((d) => ({ ...d, discardedQty: Number(e.target.value) }))}
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={mutation.isPending || !draft.supplyId}
+              className="self-end rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
+            >
+              Reportar
+            </button>
           </form>
           {mutation.isError && (
             <p className="px-4 pb-4 text-sm text-danger">No se pudo registrar el ajuste.</p>

@@ -70,8 +70,8 @@ const consumptionSchema = z.object({
   requiredQty: z.number().min(0),
   usedQty: z.number().min(0),
   wasteQty: z.number().min(0).default(0),
-  postClassAction: z.enum(["DISCARD", "REUSE"]).optional(),
-  reuseQty: z.number().min(0).optional(),
+  reusedQty: z.number().min(0).default(0),
+  discardedQty: z.number().min(0).default(0),
   instructorNotes: z.string().optional(),
 });
 
@@ -86,12 +86,12 @@ sectionsRouter.post(
         data: { ...data, sectionId, reportedByUserId: req.auth?.userId },
       });
 
-      const reuseQty = data.postClassAction === "REUSE" ? data.reuseQty ?? 0 : 0;
       await tx.supply.update({
         where: { id: data.supplyId },
         data: {
-          currentStock: { increment: reuseQty - data.usedQty },
-          reusableStock: { increment: reuseQty },
+          currentStock: { increment: data.reusedQty - data.usedQty },
+          newStock: { decrement: data.usedQty },
+          reusableStock: { increment: data.reusedQty },
         },
       });
 
