@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, X } from "lucide-react";
+import { Plus, Sparkles, X } from "lucide-react";
 import { api } from "../lib/api";
 import type { PurchaseOrder, Supply } from "../types";
 
@@ -22,6 +22,10 @@ export function PurchaseOrdersPage() {
     },
   });
 
+  const orders = [...(ordersQuery.data ?? [])].sort((a, b) =>
+    a.isPreliminary === b.isPreliminary ? 0 : a.isPreliminary ? -1 : 1
+  );
+
   return (
     <div>
       <div className="mb-6 flex items-start justify-between">
@@ -39,17 +43,38 @@ export function PurchaseOrdersPage() {
       </div>
 
       <div className="flex flex-col gap-4">
-        {ordersQuery.data?.map((order) => (
-          <div key={order.id} className="rounded-lg border border-outline-variant bg-surface-lowest p-4">
+        {orders.map((order) => (
+          <div
+            key={order.id}
+            className={`rounded-lg border p-4 ${
+              order.isPreliminary
+                ? "border-secondary/40 bg-secondary/5"
+                : "border-outline-variant bg-surface-lowest"
+            }`}
+          >
             <div className="mb-3 flex items-center justify-between">
-              <p className="font-mono text-xs text-on-surface-variant">
-                Orden #{order.id.slice(-6).toUpperCase()} ·{" "}
-                {new Date(order.createdAt).toLocaleDateString()}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="font-mono text-xs text-on-surface-variant">
+                  Orden #{order.id.slice(-6).toUpperCase()} ·{" "}
+                  {new Date(order.createdAt).toLocaleDateString()}
+                </p>
+                {order.isPreliminary && (
+                  <span className="flex items-center gap-1 rounded-full bg-secondary/15 px-2 py-0.5 text-xs font-semibold text-secondary">
+                    <Sparkles size={12} />
+                    Preliminar · se actualiza sola
+                  </span>
+                )}
+              </div>
               <span className="rounded-full bg-surface-container px-2 py-0.5 text-xs font-semibold text-on-surface-variant">
                 {STATUS_LABEL[order.status]}
               </span>
             </div>
+            {order.isPreliminary && (
+              <p className="mb-3 text-xs text-on-surface-variant">
+                Se arma automáticamente con los insumos que caen bajo su stock mínimo al reportar consumo o
+                uso de equipamiento.
+              </p>
+            )}
 
             <table className="w-full text-left text-sm">
               <thead className="text-xs uppercase tracking-wide text-on-surface-variant">

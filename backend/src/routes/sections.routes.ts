@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "../lib/prisma";
 import { requireAdmin, requireAuth } from "../middleware/auth";
 import { asyncHandler } from "../utils/asyncHandler";
+import { syncPreliminaryPurchaseOrder } from "../lib/purchaseOrderSync";
 
 export const sectionsRouter = Router();
 sectionsRouter.use(requireAuth);
@@ -95,6 +96,8 @@ sectionsRouter.post(
         },
       });
 
+      await syncPreliminaryPurchaseOrder(tx, data.supplyId);
+
       return created;
     });
 
@@ -124,6 +127,8 @@ sectionsRouter.post(
         where: { id: data.supplyId },
         data: { currentStock: { decrement: data.quantity } },
       });
+
+      await syncPreliminaryPurchaseOrder(tx, data.supplyId);
 
       return created;
     });

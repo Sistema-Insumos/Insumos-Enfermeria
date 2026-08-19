@@ -152,6 +152,7 @@ export interface PurchaseOrderQuote {
 export interface PurchaseOrder {
   id: string;
   status: "DRAFT" | "SENT" | "RECEIVED" | "CANCELLED";
+  isPreliminary: boolean;
   createdAt: string;
   items: PurchaseOrderItem[];
   quotes: PurchaseOrderQuote[];
