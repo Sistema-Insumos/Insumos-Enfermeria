@@ -55,6 +55,18 @@ export interface Section {
   professorId: string | null;
   professor?: AuthUser | null;
   consumptionRecords: ConsumptionRecord[];
+  equipmentUsages: EquipmentUsage[];
+}
+
+export interface EquipmentUsage {
+  id: string;
+  equipmentId: string;
+  equipment: Equipment;
+  sectionId: string | null;
+  supplyId: string | null;
+  supply: Supply | null;
+  quantity: string;
+  usedAt: string;
 }
 
 export interface EquipmentLinkedSupply {

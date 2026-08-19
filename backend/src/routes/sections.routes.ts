@@ -16,6 +16,7 @@ sectionsRouter.get(
         professor: true,
         workshop: { include: { subject: true } },
         consumptionRecords: { include: { supply: true }, orderBy: { reportedAt: "desc" } },
+        equipmentUsages: { include: { equipment: true, supply: true }, orderBy: { usedAt: "desc" } },
       },
     });
     if (!section) return res.status(404).json({ error: "Sección no encontrada" });
@@ -98,5 +99,35 @@ sectionsRouter.post(
     });
 
     res.status(201).json(record);
+  })
+);
+
+const equipmentUsageSchema = z.object({
+  equipmentId: z.string().min(1),
+  supplyId: z.string().min(1),
+  quantity: z.number().min(0),
+});
+
+sectionsRouter.post(
+  "/:id/equipment-usage",
+  asyncHandler(async (req, res) => {
+    const data = equipmentUsageSchema.parse(req.body);
+    const sectionId = req.params.id;
+
+    const usage = await prisma.$transaction(async (tx) => {
+      const created = await tx.equipmentUsage.create({
+        data: { ...data, sectionId },
+        include: { equipment: true, supply: true },
+      });
+
+      await tx.supply.update({
+        where: { id: data.supplyId },
+        data: { currentStock: { decrement: data.quantity } },
+      });
+
+      return created;
+    });
+
+    res.status(201).json(usage);
   })
 );
