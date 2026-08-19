@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { GraduationCap, Plus, Trash2, X } from "lucide-react";
+import { GraduationCap, Pencil, Plus, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import type { SubjectSummary } from "../types";
@@ -15,6 +15,8 @@ export function SubjectsPage() {
   const [year, setYear] = useState(CURRENT_YEAR);
   const [semester, setSemester] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingSubject, setEditingSubject] = useState<SubjectSummary | null>(null);
+  const isAdmin = user?.role === "ADMIN";
 
   const subjectsQuery = useQuery({
     queryKey: ["subjects", year, semester],
@@ -39,6 +41,12 @@ export function SubjectsPage() {
     if (confirm(`¿Eliminar la asignatura "${subject.name}"? Esto también elimina sus talleres y secciones.`)) {
       deleteMutation.mutate(subject.id);
     }
+  }
+
+  function handleEdit(e: React.MouseEvent, subject: SubjectSummary) {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingSubject(subject);
   }
 
   return (
@@ -106,14 +114,23 @@ export function SubjectsPage() {
                 >
                   {subject.stockStatus === "ALERTA" ? "Alerta Stock" : "Stock Normal"}
                 </span>
-                {user?.role === "ADMIN" && (
-                  <button
-                    onClick={(e) => handleDelete(e, subject)}
-                    title="Eliminar asignatura"
-                    className="rounded-md p-1 text-on-surface-variant hover:bg-danger-bg hover:text-danger"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                {isAdmin && (
+                  <>
+                    <button
+                      onClick={(e) => handleEdit(e, subject)}
+                      title="Editar asignatura"
+                      className="rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                    <button
+                      onClick={(e) => handleDelete(e, subject)}
+                      title="Eliminar asignatura"
+                      className="rounded-md p-1 text-on-surface-variant hover:bg-danger-bg hover:text-danger"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </>
                 )}
               </div>
             </div>
@@ -133,18 +150,48 @@ export function SubjectsPage() {
         )}
       </div>
 
-      {modalOpen && <NewSubjectModal onClose={() => setModalOpen(false)} />}
+      {modalOpen && (
+        <SubjectFormModal defaultYear={year} defaultSemester={semester} onClose={() => setModalOpen(false)} />
+      )}
+      {editingSubject && (
+        <SubjectFormModal
+          defaultYear={editingSubject.year}
+          defaultSemester={editingSubject.semester}
+          editing={editingSubject}
+          onClose={() => setEditingSubject(null)}
+        />
+      )}
     </div>
   );
 }
 
-function NewSubjectModal({ onClose }: { onClose: () => void }) {
+function SubjectFormModal({
+  onClose,
+  defaultYear,
+  defaultSemester,
+  editing,
+}: {
+  onClose: () => void;
+  defaultYear: number;
+  defaultSemester: number;
+  editing?: SubjectSummary;
+}) {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState({ name: "", code: "", category: "" });
+  const [form, setForm] = useState({
+    name: editing?.name ?? "",
+    code: editing?.code ?? "",
+    category: editing?.category ?? "",
+    year: defaultYear,
+    semester: defaultSemester,
+  });
 
   const mutation = useMutation({
     mutationFn: async () => {
-      await api.post("/api/subjects", form);
+      if (editing) {
+        await api.patch(`/api/subjects/${editing.id}`, form);
+      } else {
+        await api.post("/api/subjects", form);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
@@ -156,7 +203,9 @@ function NewSubjectModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-md rounded-lg bg-surface-lowest p-6 shadow-xl">
         <div className="mb-4 flex items-start justify-between">
-          <h2 className="text-xl font-bold text-on-surface">Nueva Asignatura</h2>
+          <h2 className="text-xl font-bold text-on-surface">
+            {editing ? "Editar Asignatura" : "Nueva Asignatura"}
+          </h2>
           <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface">
             <X size={20} />
           </button>
@@ -198,7 +247,36 @@ function NewSubjectModal({ onClose }: { onClose: () => void }) {
               placeholder="Ej. Ciencias"
             />
           </label>
-          {mutation.isError && <p className="text-sm text-danger">No se pudo crear la asignatura.</p>}
+          <div className="grid grid-cols-2 gap-4">
+            <label className="text-sm">
+              <span className="mb-1 block font-semibold text-on-surface">Año</span>
+              <select
+                className="input"
+                value={form.year}
+                onChange={(e) => setForm((f) => ({ ...f, year: Number(e.target.value) }))}
+              >
+                {YEARS.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block font-semibold text-on-surface">Semestre</span>
+              <select
+                className="input"
+                value={form.semester}
+                onChange={(e) => setForm((f) => ({ ...f, semester: Number(e.target.value) }))}
+              >
+                <option value={1}>Primer Semestre</option>
+                <option value={2}>Segundo Semestre</option>
+              </select>
+            </label>
+          </div>
+          {mutation.isError && (
+            <p className="text-sm text-danger">No se pudo guardar la asignatura.</p>
+          )}
           <div className="mt-2 flex justify-end gap-3">
             <button
               type="button"
@@ -212,7 +290,7 @@ function NewSubjectModal({ onClose }: { onClose: () => void }) {
               disabled={mutation.isPending}
               className="rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
             >
-              {mutation.isPending ? "Creando..." : "Crear"}
+              {mutation.isPending ? "Guardando..." : editing ? "Guardar Cambios" : "Crear"}
             </button>
           </div>
         </form>

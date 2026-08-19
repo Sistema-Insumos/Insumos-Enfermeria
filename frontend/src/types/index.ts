@@ -14,6 +14,8 @@ export interface Subject {
   code: string;
   category: string;
   icon: string | null;
+  year: number;
+  semester: number;
 }
 
 export interface SubjectSummary extends Subject {

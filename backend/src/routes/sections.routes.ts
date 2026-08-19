@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
-import { requireAuth } from "../middleware/auth";
+import { requireAdmin, requireAuth } from "../middleware/auth";
 import { asyncHandler } from "../utils/asyncHandler";
 
 export const sectionsRouter = Router();
@@ -47,6 +47,7 @@ sectionsRouter.post(
 
 sectionsRouter.patch(
   "/:id",
+  requireAdmin,
   asyncHandler(async (req, res) => {
     const data = sectionSchema.partial().parse(req.body);
     const section = await prisma.section.update({ where: { id: req.params.id }, data });
@@ -56,6 +57,7 @@ sectionsRouter.patch(
 
 sectionsRouter.delete(
   "/:id",
+  requireAdmin,
   asyncHandler(async (req, res) => {
     await prisma.section.delete({ where: { id: req.params.id } });
     res.status(204).send();

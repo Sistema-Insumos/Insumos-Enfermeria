@@ -58,6 +58,8 @@ model Subject {
   code     String  @unique
   category String
   icon     String?
+  year     Int
+  semester Int
 
   workshops Workshop[]
   supplies  SupplyOnSubject[]

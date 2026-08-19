@@ -1,11 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Pencil, Plus, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
-import type { Workshop, Subject } from "../types";
+import { useAuth } from "../lib/auth";
+import type { Workshop, Subject, Section } from "../types";
 
 export function WorkshopDetailPage() {
   const { subjectId, workshopId } = useParams<{ subjectId: string; workshopId: string }>();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [editingSection, setEditingSection] = useState<Section | null>(null);
+  const isAdmin = user?.role === "ADMIN";
 
   const workshopQuery = useQuery({
     queryKey: ["workshop", workshopId],
@@ -14,6 +20,29 @@ export function WorkshopDetailPage() {
       return data as Workshop & { subject: Subject };
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (sectionId: string) => {
+      await api.delete(`/api/sections/${sectionId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workshop", workshopId] });
+    },
+  });
+
+  function handleDelete(e: React.MouseEvent, section: Section) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm(`¿Eliminar la sección "${section.code}"? Esto también elimina sus ajustes de consumo.`)) {
+      deleteMutation.mutate(section.id);
+    }
+  }
+
+  function handleEdit(e: React.MouseEvent, section: Section) {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingSection(section);
+  }
 
   const workshop = workshopQuery.data;
   const totalStudents = workshop?.sections.reduce((sum, s) => sum + s.studentsCount, 0) ?? 0;
@@ -74,7 +103,27 @@ export function WorkshopDetailPage() {
             >
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-semibold text-on-surface">{section.code}</span>
-                <span className="text-sm text-on-surface-variant">{section.studentsCount} alumnos</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-on-surface-variant">{section.studentsCount} alumnos</span>
+                  {isAdmin && (
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={(e) => handleEdit(e, section)}
+                        title="Editar sección"
+                        className="rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={(e) => handleDelete(e, section)}
+                        title="Eliminar sección"
+                        className="rounded-md p-1 text-on-surface-variant hover:bg-danger-bg hover:text-danger"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
               <p className="text-sm text-on-surface-variant">
                 {[section.dayOfWeek, section.startTime && section.endTime ? `${section.startTime} - ${section.endTime}` : null]
@@ -91,6 +140,139 @@ export function WorkshopDetailPage() {
             Este taller no tiene secciones todavía.
           </p>
         )}
+      </div>
+
+      {editingSection && workshopId && (
+        <EditSectionModal
+          section={editingSection}
+          workshopId={workshopId}
+          onClose={() => setEditingSection(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function EditSectionModal({
+  section,
+  workshopId,
+  onClose,
+}: {
+  section: Section;
+  workshopId: string;
+  onClose: () => void;
+}) {
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState({
+    code: section.code,
+    dayOfWeek: section.dayOfWeek ?? "",
+    startTime: section.startTime ?? "",
+    endTime: section.endTime ?? "",
+    location: section.location ?? "",
+    studentsCount: section.studentsCount,
+  });
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      await api.patch(`/api/sections/${section.id}`, form);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workshop", workshopId] });
+      onClose();
+    },
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+      <div className="w-full max-w-md rounded-lg bg-surface-lowest p-6 shadow-xl">
+        <div className="mb-4 flex items-start justify-between">
+          <h2 className="text-xl font-bold text-on-surface">Editar Sección</h2>
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface">
+            <X size={20} />
+          </button>
+        </div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            mutation.mutate();
+          }}
+          className="flex flex-col gap-4"
+        >
+          <div className="grid grid-cols-2 gap-4">
+            <label className="text-sm">
+              <span className="mb-1 block font-semibold text-on-surface">Código</span>
+              <input
+                required
+                className="input"
+                value={form.code}
+                onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))}
+              />
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block font-semibold text-on-surface">Ubicación</span>
+              <input
+                className="input"
+                value={form.location}
+                onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
+              />
+            </label>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <label className="text-sm">
+              <span className="mb-1 block font-semibold text-on-surface">Día</span>
+              <input
+                className="input"
+                value={form.dayOfWeek}
+                onChange={(e) => setForm((f) => ({ ...f, dayOfWeek: e.target.value }))}
+              />
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block font-semibold text-on-surface">Inicio</span>
+              <input
+                type="time"
+                className="input"
+                value={form.startTime}
+                onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
+              />
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block font-semibold text-on-surface">Término</span>
+              <input
+                type="time"
+                className="input"
+                value={form.endTime}
+                onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}
+              />
+            </label>
+          </div>
+          <label className="text-sm">
+            <span className="mb-1 block font-semibold text-on-surface">Cantidad de Alumnos</span>
+            <input
+              type="number"
+              min={0}
+              className="input"
+              value={form.studentsCount}
+              onChange={(e) => setForm((f) => ({ ...f, studentsCount: Number(e.target.value) }))}
+            />
+          </label>
+          {mutation.isError && <p className="text-sm text-danger">No se pudo guardar la sección.</p>}
+          <div className="mt-2 flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-md border border-outline-variant px-4 py-2 text-sm font-semibold hover:bg-surface-container"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={mutation.isPending}
+              className="rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
+            >
+              {mutation.isPending ? "Guardando..." : "Guardar Cambios"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
