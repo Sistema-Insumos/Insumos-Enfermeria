@@ -105,6 +105,84 @@ sectionsRouter.post(
   })
 );
 
+const consumptionUpdateSchema = z.object({
+  requiredQty: z.number().min(0).optional(),
+  usedQty: z.number().min(0).optional(),
+  wasteQty: z.number().min(0).optional(),
+  reusedQty: z.number().min(0).optional(),
+  discardedQty: z.number().min(0).optional(),
+  instructorNotes: z.string().optional(),
+});
+
+sectionsRouter.patch(
+  "/:sectionId/consumption/:recordId",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const data = consumptionUpdateSchema.parse(req.body);
+    const { recordId } = req.params;
+
+    const record = await prisma.$transaction(async (tx) => {
+      const existing = await tx.consumptionRecord.findUnique({ where: { id: recordId } });
+      if (!existing) return null;
+
+      const oldUsedQty = Number(existing.usedQty);
+      const oldReusedQty = Number(existing.reusedQty);
+      const newUsedQty = data.usedQty ?? oldUsedQty;
+      const newReusedQty = data.reusedQty ?? oldReusedQty;
+
+      await tx.supply.update({
+        where: { id: existing.supplyId },
+        data: {
+          currentStock: { increment: newReusedQty - newUsedQty - (oldReusedQty - oldUsedQty) },
+          newStock: { decrement: newUsedQty - oldUsedQty },
+          reusableStock: { increment: newReusedQty - oldReusedQty },
+        },
+      });
+
+      const updated = await tx.consumptionRecord.update({
+        where: { id: recordId },
+        data,
+        include: { supply: true },
+      });
+
+      await syncPreliminaryPurchaseOrder(tx, existing.supplyId);
+      return updated;
+    });
+
+    if (!record) return res.status(404).json({ error: "Ajuste no encontrado" });
+    res.json(record);
+  })
+);
+
+sectionsRouter.delete(
+  "/:sectionId/consumption/:recordId",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const { recordId } = req.params;
+
+    const found = await prisma.$transaction(async (tx) => {
+      const existing = await tx.consumptionRecord.findUnique({ where: { id: recordId } });
+      if (!existing) return false;
+
+      await tx.supply.update({
+        where: { id: existing.supplyId },
+        data: {
+          currentStock: { increment: Number(existing.usedQty) - Number(existing.reusedQty) },
+          newStock: { increment: Number(existing.usedQty) },
+          reusableStock: { decrement: Number(existing.reusedQty) },
+        },
+      });
+
+      await tx.consumptionRecord.delete({ where: { id: recordId } });
+      await syncPreliminaryPurchaseOrder(tx, existing.supplyId);
+      return true;
+    });
+
+    if (!found) return res.status(404).json({ error: "Ajuste no encontrado" });
+    res.status(204).send();
+  })
+);
+
 const equipmentUsageSchema = z.object({
   equipmentId: z.string().min(1),
   supplyId: z.string().min(1),
@@ -140,5 +218,80 @@ sectionsRouter.post(
     });
 
     res.status(201).json(usage);
+  })
+);
+
+const equipmentUsageUpdateSchema = z.object({
+  usedQty: z.number().min(0).optional(),
+  reusedQty: z.number().min(0).optional(),
+  discardedQty: z.number().min(0).optional(),
+});
+
+sectionsRouter.patch(
+  "/:sectionId/equipment-usage/:usageId",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const data = equipmentUsageUpdateSchema.parse(req.body);
+    const { usageId } = req.params;
+
+    const usage = await prisma.$transaction(async (tx) => {
+      const existing = await tx.equipmentUsage.findUnique({ where: { id: usageId } });
+      if (!existing || !existing.supplyId) return null;
+
+      const oldUsedQty = Number(existing.usedQty);
+      const oldReusedQty = Number(existing.reusedQty);
+      const newUsedQty = data.usedQty ?? oldUsedQty;
+      const newReusedQty = data.reusedQty ?? oldReusedQty;
+
+      await tx.supply.update({
+        where: { id: existing.supplyId },
+        data: {
+          currentStock: { increment: newReusedQty - newUsedQty - (oldReusedQty - oldUsedQty) },
+          newStock: { decrement: newUsedQty - oldUsedQty },
+          reusableStock: { increment: newReusedQty - oldReusedQty },
+        },
+      });
+
+      const updated = await tx.equipmentUsage.update({
+        where: { id: usageId },
+        data,
+        include: { equipment: true, supply: true },
+      });
+
+      await syncPreliminaryPurchaseOrder(tx, existing.supplyId);
+      return updated;
+    });
+
+    if (!usage) return res.status(404).json({ error: "Uso de equipamiento no encontrado" });
+    res.json(usage);
+  })
+);
+
+sectionsRouter.delete(
+  "/:sectionId/equipment-usage/:usageId",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const { usageId } = req.params;
+
+    const found = await prisma.$transaction(async (tx) => {
+      const existing = await tx.equipmentUsage.findUnique({ where: { id: usageId } });
+      if (!existing || !existing.supplyId) return false;
+
+      await tx.supply.update({
+        where: { id: existing.supplyId },
+        data: {
+          currentStock: { increment: Number(existing.usedQty) - Number(existing.reusedQty) },
+          newStock: { increment: Number(existing.usedQty) },
+          reusableStock: { decrement: Number(existing.reusedQty) },
+        },
+      });
+
+      await tx.equipmentUsage.delete({ where: { id: usageId } });
+      await syncPreliminaryPurchaseOrder(tx, existing.supplyId);
+      return true;
+    });
+
+    if (!found) return res.status(404).json({ error: "Uso de equipamiento no encontrado" });
+    res.status(204).send();
   })
 );
