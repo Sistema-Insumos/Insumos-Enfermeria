@@ -219,16 +219,24 @@ function EquipmentFormModal({ onClose, editing }: { onClose: () => void; editing
     location: editing?.location ?? "",
     status: editing?.status ?? ("OPERATIVE" as Equipment["status"]),
     unitValue: editing ? Number(editing.unitValue) : 0,
-    linkedSupplyId: editing?.linkedSupplies[0]?.supplyId ?? "",
+    linkedSupplyIds: editing?.linkedSupplies.map((l) => l.supplyId) ?? ([] as string[]),
   });
+
+  function toggleLinkedSupply(supplyId: string) {
+    setForm((f) => ({
+      ...f,
+      linkedSupplyIds: f.linkedSupplyIds.includes(supplyId)
+        ? f.linkedSupplyIds.filter((id) => id !== supplyId)
+        : [...f.linkedSupplyIds, supplyId],
+    }));
+  }
 
   const mutation = useMutation({
     mutationFn: async () => {
+      const { linkedSupplyIds, ...rest } = form;
       const payload = {
-        ...form,
-        linkedSupplies: form.linkedSupplyId
-          ? [{ supplyId: form.linkedSupplyId, autoDiscount: true }]
-          : [],
+        ...rest,
+        linkedSupplies: linkedSupplyIds.map((supplyId) => ({ supplyId, autoDiscount: true })),
       };
       if (editing) {
         await api.patch(`/api/equipment/${editing.id}`, payload);
@@ -338,20 +346,30 @@ function EquipmentFormModal({ onClose, editing }: { onClose: () => void; editing
             </Field>
           </div>
 
-          <Field label="Insumo Vinculado (descuento automático)">
-            <select
-              className="input"
-              value={form.linkedSupplyId}
-              onChange={(e) => setForm((f) => ({ ...f, linkedSupplyId: e.target.value }))}
-            >
-              <option value="">Ninguno</option>
+          <div>
+            <p className="mb-2 text-sm font-semibold text-on-surface">
+              Insumos Vinculados (descuento automático)
+            </p>
+            <div className="flex flex-wrap gap-2">
               {suppliesQuery.data?.map((s) => (
-                <option key={s.id} value={s.id}>
+                <button
+                  type="button"
+                  key={s.id}
+                  onClick={() => toggleLinkedSupply(s.id)}
+                  className={`rounded-full border px-3 py-1 text-xs font-medium ${
+                    form.linkedSupplyIds.includes(s.id)
+                      ? "border-secondary bg-secondary text-on-secondary"
+                      : "border-outline-variant text-on-surface-variant hover:bg-surface-container"
+                  }`}
+                >
                   {s.name}
-                </option>
+                </button>
               ))}
-            </select>
-          </Field>
+              {suppliesQuery.data?.length === 0 && (
+                <p className="text-xs text-on-surface-variant">No hay insumos registrados todavía.</p>
+              )}
+            </div>
+          </div>
 
           {mutation.isError && <p className="text-sm text-danger">No se pudo guardar el equipo.</p>}
 

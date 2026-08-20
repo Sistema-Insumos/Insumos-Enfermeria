@@ -108,7 +108,9 @@ sectionsRouter.post(
 const equipmentUsageSchema = z.object({
   equipmentId: z.string().min(1),
   supplyId: z.string().min(1),
-  quantity: z.number().min(0),
+  usedQty: z.number().min(0),
+  reusedQty: z.number().min(0).default(0),
+  discardedQty: z.number().min(0).default(0),
 });
 
 sectionsRouter.post(
@@ -125,7 +127,11 @@ sectionsRouter.post(
 
       await tx.supply.update({
         where: { id: data.supplyId },
-        data: { currentStock: { decrement: data.quantity } },
+        data: {
+          currentStock: { increment: data.reusedQty - data.usedQty },
+          newStock: { decrement: data.usedQty },
+          reusableStock: { increment: data.reusedQty },
+        },
       });
 
       await syncPreliminaryPurchaseOrder(tx, data.supplyId);

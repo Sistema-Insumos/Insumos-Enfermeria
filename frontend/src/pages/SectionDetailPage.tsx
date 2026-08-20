@@ -99,6 +99,7 @@ export function SectionDetailPage() {
                 <th className="px-4 py-2 text-right">Merma</th>
                 <th className="px-4 py-2 text-right">Reutilizado</th>
                 <th className="px-4 py-2 text-right">Desechado</th>
+                <th className="px-4 py-2 text-right">Stock Actual</th>
               </tr>
             </thead>
             <tbody>
@@ -110,11 +111,18 @@ export function SectionDetailPage() {
                   <td className="px-4 py-2 text-right text-warning">{record.wasteQty}</td>
                   <td className="px-4 py-2 text-right text-success">{record.reusedQty}</td>
                   <td className="px-4 py-2 text-right text-danger">{record.discardedQty}</td>
+                  <td
+                    className={`px-4 py-2 text-right font-semibold ${
+                      record.supply.currentStock < record.supply.minStock ? "text-danger" : "text-on-surface"
+                    }`}
+                  >
+                    {record.supply.currentStock}
+                  </td>
                 </tr>
               ))}
               {section && section.consumptionRecords.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-on-surface-variant">
+                  <td colSpan={7} className="px-4 py-6 text-center text-on-surface-variant">
                     Sin ajustes reportados todavía.
                   </td>
                 </tr>
@@ -241,25 +249,38 @@ function EquipmentUsageCard({
     },
   });
 
-  const [draft, setDraft] = useState({ equipmentId: "", quantity: 0 });
+  const [draft, setDraft] = useState({
+    equipmentId: "",
+    supplyId: "",
+    usedQty: 0,
+    reusedQty: 0,
+    discardedQty: 0,
+  });
   const selectedEquipment = equipmentQuery.data?.find((e) => e.id === draft.equipmentId);
-  const linkedSupply = selectedEquipment?.linkedSupplies[0]?.supply ?? null;
+  const linkedSupply = selectedEquipment?.linkedSupplies.find((l) => l.supplyId === draft.supplyId)?.supply ?? null;
 
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!linkedSupply) return;
+      const { equipmentId, supplyId, usedQty, reusedQty, discardedQty } = draft;
       await api.post(`/api/sections/${sectionId}/equipment-usage`, {
-        equipmentId: draft.equipmentId,
-        supplyId: linkedSupply.id,
-        quantity: draft.quantity,
+        equipmentId,
+        supplyId,
+        usedQty,
+        reusedQty,
+        discardedQty,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["section", sectionId] });
       queryClient.invalidateQueries({ queryKey: ["supplies"] });
-      setDraft({ equipmentId: "", quantity: 0 });
+      setDraft({ equipmentId: "", supplyId: "", usedQty: 0, reusedQty: 0, discardedQty: 0 });
     },
   });
+
+  function selectEquipment(equipmentId: string) {
+    const eq = equipmentQuery.data?.find((e) => e.id === equipmentId);
+    setDraft((d) => ({ ...d, equipmentId, supplyId: eq?.linkedSupplies[0]?.supplyId ?? "" }));
+  }
 
   const equipmentWithSupplies = equipmentQuery.data?.filter((e) => e.linkedSupplies.length > 0) ?? [];
 
@@ -275,7 +296,9 @@ function EquipmentUsageCard({
           <tr>
             <th className="px-4 py-2">Equipo</th>
             <th className="px-4 py-2">Insumo Asociado</th>
-            <th className="px-4 py-2 text-right">Cantidad Utilizada</th>
+            <th className="px-4 py-2 text-right">Utilizado</th>
+            <th className="px-4 py-2 text-right">Reutilizado</th>
+            <th className="px-4 py-2 text-right">Desechado</th>
           </tr>
         </thead>
         <tbody>
@@ -283,12 +306,14 @@ function EquipmentUsageCard({
             <tr key={usage.id} className="border-t border-outline-variant">
               <td className="px-4 py-2 font-medium">{usage.equipment.name}</td>
               <td className="px-4 py-2 text-on-surface-variant">{usage.supply?.name ?? "—"}</td>
-              <td className="px-4 py-2 text-right">{usage.quantity}</td>
+              <td className="px-4 py-2 text-right">{usage.usedQty}</td>
+              <td className="px-4 py-2 text-right text-success">{usage.reusedQty}</td>
+              <td className="px-4 py-2 text-right text-danger">{usage.discardedQty}</td>
             </tr>
           ))}
           {section && section.equipmentUsages.length === 0 && (
             <tr>
-              <td colSpan={3} className="px-4 py-6 text-center text-on-surface-variant">
+              <td colSpan={5} className="px-4 py-6 text-center text-on-surface-variant">
                 Sin equipamiento utilizado reportado todavía.
               </td>
             </tr>
@@ -301,33 +326,71 @@ function EquipmentUsageCard({
           e.preventDefault();
           mutation.mutate();
         }}
-        className="grid grid-cols-6 gap-2 border-t border-outline-variant p-4"
+        className="grid grid-cols-3 gap-2 border-t border-outline-variant p-4"
       >
         <select
           required
           className="input col-span-3"
           value={draft.equipmentId}
-          onChange={(e) => setDraft((d) => ({ ...d, equipmentId: e.target.value }))}
+          onChange={(e) => selectEquipment(e.target.value)}
         >
           <option value="">Seleccionar equipo...</option>
           {equipmentWithSupplies.map((eq) => (
             <option key={eq.id} value={eq.id}>
-              {eq.name} ({eq.linkedSupplies[0].supply.name})
+              {eq.name}
             </option>
           ))}
         </select>
-        <input
-          type="number"
-          min={0}
-          placeholder="Cantidad de insumo"
-          className="input col-span-2"
-          value={numOrEmpty(draft.quantity)}
-          onChange={(e) => setDraft((d) => ({ ...d, quantity: parseQty(e.target.value) }))}
-        />
+
+        {selectedEquipment && selectedEquipment.linkedSupplies.length > 1 && (
+          <select
+            required
+            className="input col-span-3"
+            value={draft.supplyId}
+            onChange={(e) => setDraft((d) => ({ ...d, supplyId: e.target.value }))}
+          >
+            {selectedEquipment.linkedSupplies.map((l) => (
+              <option key={l.supplyId} value={l.supplyId}>
+                {l.supply.name}
+              </option>
+            ))}
+          </select>
+        )}
+
+        <label className="text-sm">
+          <span className="mb-1 block text-xs font-semibold text-on-surface-variant">Cant. Utilizada</span>
+          <input
+            type="number"
+            min={0}
+            className="input"
+            value={numOrEmpty(draft.usedQty)}
+            onChange={(e) => setDraft((d) => ({ ...d, usedQty: parseQty(e.target.value) }))}
+          />
+        </label>
+        <label className="text-sm">
+          <span className="mb-1 block text-xs font-semibold text-success">Cant. Reutilizada</span>
+          <input
+            type="number"
+            min={0}
+            className="input"
+            value={numOrEmpty(draft.reusedQty)}
+            onChange={(e) => setDraft((d) => ({ ...d, reusedQty: parseQty(e.target.value) }))}
+          />
+        </label>
+        <label className="text-sm">
+          <span className="mb-1 block text-xs font-semibold text-danger">Cant. Desechada</span>
+          <input
+            type="number"
+            min={0}
+            className="input"
+            value={numOrEmpty(draft.discardedQty)}
+            onChange={(e) => setDraft((d) => ({ ...d, discardedQty: parseQty(e.target.value) }))}
+          />
+        </label>
         <button
           type="submit"
-          disabled={mutation.isPending || !draft.equipmentId}
-          className="rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
+          disabled={mutation.isPending || !draft.equipmentId || !draft.supplyId}
+          className="col-span-3 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
         >
           Reportar
         </button>

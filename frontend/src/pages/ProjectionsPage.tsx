@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, X } from "lucide-react";
+import { ArrowRight, Pencil, Plus, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import type { FutureSupplyNeed, ProjectionResponse } from "../types";
@@ -30,6 +30,7 @@ export function ProjectionsPage() {
   const [year, setYear] = useState(CURRENT_YEAR);
   const [semester, setSemester] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingNeed, setEditingNeed] = useState<FutureSupplyNeed | null>(null);
 
   const projectionQuery = useQuery({
     queryKey: ["projections", year, semester],
@@ -54,7 +55,22 @@ export function ProjectionsPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["future-needs"] }),
   });
 
+  const statusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: FutureSupplyNeed["status"] }) => {
+      await api.patch(`/api/projections/future-needs/${id}`, { status });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["future-needs"] }),
+  });
+
+  function handleDelete(need: FutureSupplyNeed) {
+    if (confirm(`¿Eliminar "${need.name}" de insumos futuros?`)) {
+      deleteMutation.mutate(need.id);
+    }
+  }
+
   const data = projectionQuery.data;
+  const pendingNeeds = futureNeedsQuery.data?.filter((n) => n.status === "PENDING") ?? [];
+  const inProgressNeeds = futureNeedsQuery.data?.filter((n) => n.status === "IN_PROGRESS") ?? [];
 
   return (
     <div>
@@ -194,7 +210,7 @@ export function ProjectionsPage() {
             </tr>
           </thead>
           <tbody>
-            {futureNeedsQuery.data?.map((need) => (
+            {pendingNeeds.map((need) => (
               <tr key={need.id} className="border-t border-outline-variant hover:bg-surface-low">
                 <td className="px-4 py-3 font-medium">{need.name}</td>
                 <td className="px-4 py-3 text-right">{need.estimatedQty}</td>
@@ -204,26 +220,93 @@ export function ProjectionsPage() {
                   </span>
                 </td>
                 {isAdmin && (
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => {
-                        if (confirm(`¿Eliminar "${need.name}" de insumos futuros?`)) {
-                          deleteMutation.mutate(need.id);
-                        }
-                      }}
-                      title="Eliminar"
-                      className="rounded-md p-1 text-on-surface-variant hover:bg-danger-bg hover:text-danger"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-1">
+                      <button
+                        onClick={() => statusMutation.mutate({ id: need.id, status: "IN_PROGRESS" })}
+                        title="Pasar a Compra"
+                        className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-secondary hover:bg-secondary/10"
+                      >
+                        Pasar a Compra
+                        <ArrowRight size={12} />
+                      </button>
+                      <button
+                        onClick={() => setEditingNeed(need)}
+                        title="Editar"
+                        className="rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(need)}
+                        title="Eliminar"
+                        className="rounded-md p-1 text-on-surface-variant hover:bg-danger-bg hover:text-danger"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </td>
                 )}
               </tr>
             ))}
-            {futureNeedsQuery.data?.length === 0 && (
+            {pendingNeeds.length === 0 && (
               <tr>
                 <td colSpan={isAdmin ? 4 : 3} className="px-4 py-8 text-center text-on-surface-variant">
-                  No hay insumos futuros registrados todavía.
+                  No hay insumos futuros pendientes.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 className="mt-8 mb-4 text-lg font-semibold text-on-surface">Insumos en Trámite</h2>
+      <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-lowest">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-surface-container text-xs uppercase tracking-wide text-on-surface-variant">
+            <tr>
+              <th className="px-4 py-3">Artículo / Insumo</th>
+              <th className="px-4 py-3 text-right">Cantidad Estimada</th>
+              <th className="px-4 py-3">Prioridad</th>
+              {isAdmin && <th className="px-4 py-3 text-right">Acciones</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {inProgressNeeds.map((need) => (
+              <tr key={need.id} className="border-t border-outline-variant hover:bg-surface-low">
+                <td className="px-4 py-3 font-medium">{need.name}</td>
+                <td className="px-4 py-3 text-right">{need.estimatedQty}</td>
+                <td className="px-4 py-3">
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${PRIORITY_TONE[need.priority]}`}>
+                    {PRIORITY_LABEL[need.priority]}
+                  </span>
+                </td>
+                {isAdmin && (
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-1">
+                      <button
+                        onClick={() => statusMutation.mutate({ id: need.id, status: "PENDING" })}
+                        title="Devolver a Insumos Futuros"
+                        className="rounded-md px-2 py-1 text-xs font-semibold text-on-surface-variant hover:bg-surface-container"
+                      >
+                        Devolver
+                      </button>
+                      <button
+                        onClick={() => handleDelete(need)}
+                        title="Eliminar"
+                        className="rounded-md p-1 text-on-surface-variant hover:bg-danger-bg hover:text-danger"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                )}
+              </tr>
+            ))}
+            {inProgressNeeds.length === 0 && (
+              <tr>
+                <td colSpan={isAdmin ? 4 : 3} className="px-4 py-8 text-center text-on-surface-variant">
+                  No hay insumos en trámite.
                 </td>
               </tr>
             )}
@@ -232,21 +315,26 @@ export function ProjectionsPage() {
       </div>
 
       {modalOpen && <FutureNeedModal onClose={() => setModalOpen(false)} />}
+      {editingNeed && <FutureNeedModal editing={editingNeed} onClose={() => setEditingNeed(null)} />}
     </div>
   );
 }
 
-function FutureNeedModal({ onClose }: { onClose: () => void }) {
+function FutureNeedModal({ onClose, editing }: { onClose: () => void; editing?: FutureSupplyNeed }) {
   const queryClient = useQueryClient();
   const [form, setForm] = useState({
-    name: "",
-    estimatedQty: 0,
-    priority: "MEDIUM" as "LOW" | "MEDIUM" | "HIGH",
+    name: editing?.name ?? "",
+    estimatedQty: editing?.estimatedQty ?? 0,
+    priority: editing?.priority ?? ("MEDIUM" as "LOW" | "MEDIUM" | "HIGH"),
   });
 
   const mutation = useMutation({
     mutationFn: async () => {
-      await api.post("/api/projections/future-needs", form);
+      if (editing) {
+        await api.patch(`/api/projections/future-needs/${editing.id}`, form);
+      } else {
+        await api.post("/api/projections/future-needs", form);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["future-needs"] });
@@ -258,7 +346,9 @@ function FutureNeedModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-md rounded-lg bg-surface-lowest p-6 shadow-xl">
         <div className="mb-4 flex items-start justify-between">
-          <h2 className="text-xl font-bold text-on-surface">Añadir a Insumos Futuros</h2>
+          <h2 className="text-xl font-bold text-on-surface">
+            {editing ? "Editar Insumo Futuro" : "Añadir a Insumos Futuros"}
+          </h2>
           <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface">
             <X size={20} />
           </button>
@@ -317,7 +407,7 @@ function FutureNeedModal({ onClose }: { onClose: () => void }) {
               disabled={mutation.isPending}
               className="rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
             >
-              {mutation.isPending ? "Guardando..." : "Añadir"}
+              {mutation.isPending ? "Guardando..." : editing ? "Guardar Cambios" : "Añadir"}
             </button>
           </div>
         </form>

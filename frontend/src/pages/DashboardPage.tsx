@@ -44,6 +44,7 @@ export function DashboardPage() {
           label="Artículos Bajo Stock"
           value={String(stats?.lowStockCount ?? "—")}
           tone={stats && stats.lowStockCount > 0 ? "danger" : "default"}
+          to="/inventario?lowStock=1"
         />
         <StatCard
           icon={ShoppingCart}
@@ -69,25 +70,37 @@ function StatCard({
   label,
   value,
   tone = "default",
+  to,
 }: {
   icon: typeof DollarSign;
   label: string;
   value: string;
   tone?: "default" | "danger";
+  to?: string;
 }) {
-  return (
-    <div
-      className={`rounded-lg border p-4 ${
-        tone === "danger" ? "border-danger/30 bg-danger-bg/40" : "border-outline-variant bg-surface-lowest"
-      }`}
-    >
+  const className = `rounded-lg border p-4 ${
+    tone === "danger" ? "border-danger/30 bg-danger-bg/40" : "border-outline-variant bg-surface-lowest"
+  } ${to ? "block transition-shadow hover:shadow-sm" : ""}`;
+
+  const content = (
+    <>
       <div className="mb-2 flex items-center justify-between">
         <p className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">{label}</p>
         <Icon size={16} className="text-on-surface-variant" />
       </div>
       <p className={`text-2xl font-bold ${tone === "danger" ? "text-danger" : "text-on-surface"}`}>{value}</p>
-    </div>
+    </>
   );
+
+  if (to) {
+    return (
+      <Link to={to} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={className}>{content}</div>;
 }
 
 function QuickLink({ to, title, description }: { to: string; title: string; description: string }) {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
@@ -8,15 +9,17 @@ import type { Subject, Supply } from "../types";
 export function InventoryPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingSupply, setEditingSupply] = useState<Supply | null>(null);
   const isAdmin = user?.role === "ADMIN";
+  const lowStockOnly = searchParams.get("lowStock") === "1";
 
   const suppliesQuery = useQuery({
     queryKey: ["supplies", search],
     queryFn: async () => {
-      const { data } = await api.get("/api/supplies", { params: { search } });
+      const { data } = await api.get("/api/supplies", { params: { search, pageSize: 100 } });
       return data as { items: Supply[]; total: number };
     },
   });
@@ -36,8 +39,9 @@ export function InventoryPage() {
     }
   }
 
-  const supplies = suppliesQuery.data?.items ?? [];
-  const lowStockCount = supplies.filter((s) => s.currentStock < s.minStock).length;
+  const allSupplies = suppliesQuery.data?.items ?? [];
+  const lowStockCount = allSupplies.filter((s) => s.currentStock < s.minStock).length;
+  const supplies = lowStockOnly ? allSupplies.filter((s) => s.currentStock < s.minStock) : allSupplies;
 
   return (
     <div>
@@ -64,8 +68,24 @@ export function InventoryPage() {
           value={String(lowStockCount)}
           tone={lowStockCount > 0 ? "danger" : "default"}
         />
-        <StatCard label="Categorías Activas" value={String(new Set(supplies.map((s) => s.category)).size)} />
+        <StatCard label="Categorías Activas" value={String(new Set(allSupplies.map((s) => s.category)).size)} />
       </div>
+
+      {lowStockOnly && (
+        <div className="mb-4 flex items-center justify-between rounded-md border border-danger/30 bg-danger-bg/40 px-4 py-2 text-sm text-danger">
+          <span>Mostrando solo artículos bajo stock mínimo.</span>
+          <button
+            onClick={() => {
+              const next = new URLSearchParams(searchParams);
+              next.delete("lowStock");
+              setSearchParams(next);
+            }}
+            className="font-semibold underline"
+          >
+            Quitar filtro
+          </button>
+        </div>
+      )}
 
       <div className="mb-4 flex items-center gap-2 rounded-md border border-outline-variant bg-surface-lowest px-3 py-2">
         <Search size={18} className="text-on-surface-variant" />

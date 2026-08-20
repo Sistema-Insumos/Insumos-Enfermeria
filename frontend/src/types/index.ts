@@ -65,7 +65,9 @@ export interface EquipmentUsage {
   sectionId: string | null;
   supplyId: string | null;
   supply: Supply | null;
-  quantity: string;
+  usedQty: string;
+  reusedQty: string;
+  discardedQty: string;
   usedAt: string;
 }
 
@@ -122,6 +124,7 @@ export interface FutureSupplyNeed {
   estimatedQty: number;
   requiredDate: string | null;
   priority: "LOW" | "MEDIUM" | "HIGH";
+  status: "PENDING" | "IN_PROGRESS";
 }
 
 export interface Supplier {

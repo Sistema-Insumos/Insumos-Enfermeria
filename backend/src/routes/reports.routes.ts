@@ -8,8 +8,16 @@ reportsRouter.use(requireAuth);
 
 reportsRouter.get(
   "/annual",
-  asyncHandler(async (_req, res) => {
-    const supplies = await prisma.supply.findMany({ include: { consumptionRecords: true } });
+  asyncHandler(async (req, res) => {
+    const year = req.query.year ? Number(req.query.year) : undefined;
+    const semester = req.query.semester ? Number(req.query.semester) : undefined;
+    const sectionFilter = year || semester ? { year, semester } : undefined;
+
+    const supplies = await prisma.supply.findMany({
+      include: {
+        consumptionRecords: sectionFilter ? { where: { section: sectionFilter } } : true,
+      },
+    });
 
     const items = supplies
       .filter((s) => s.consumptionRecords.length > 0)
@@ -26,6 +34,10 @@ reportsRouter.get(
         const total = totalReused + totalDiscarded;
         const efficiency = total > 0 ? (totalReused / total) * 100 : 0;
 
+        const maxStock = supply.maxStock;
+        const stockRatio = maxStock ? Math.min(supply.currentStock / maxStock, 1) * 100 : null;
+        const qtyToBuy = maxStock ? Math.max(maxStock - supply.currentStock, 0) : 0;
+
         return {
           id: supply.id,
           name: supply.name,
@@ -33,6 +45,10 @@ reportsRouter.get(
           totalReused,
           totalDiscarded,
           efficiency,
+          currentStock: supply.currentStock,
+          maxStock,
+          stockRatio,
+          qtyToBuy,
         };
       });
 
@@ -47,6 +63,6 @@ reportsRouter.get(
     const avgEfficiency =
       items.length > 0 ? items.reduce((sum, i) => sum + i.efficiency, 0) / items.length : 0;
 
-    res.json({ items, ...totals, avgEfficiency });
+    res.json({ items, ...totals, avgEfficiency, year: year ?? null, semester: semester ?? null });
   })
 );

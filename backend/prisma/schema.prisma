@@ -31,6 +31,11 @@ enum Priority {
   HIGH
 }
 
+enum FutureNeedStatus {
+  PENDING
+  IN_PROGRESS
+}
+
 model User {
   id           String   @id @default(cuid())
   firstName    String
@@ -183,7 +188,10 @@ model EquipmentUsage {
 
   supplyId String?
   supply   Supply? @relation(fields: [supplyId], references: [id])
-  quantity Decimal @default(0) @db.Decimal(10, 2)
+
+  usedQty      Decimal @default(0) @db.Decimal(10, 2)
+  reusedQty    Decimal @default(0) @db.Decimal(10, 2)
+  discardedQty Decimal @default(0) @db.Decimal(10, 2)
 
   usedAt DateTime @default(now())
 }
@@ -253,11 +261,12 @@ model PurchaseOrderQuote {
 }
 
 model FutureSupplyNeed {
-  id           String    @id @default(cuid())
+  id           String           @id @default(cuid())
   name         String
   category     String?
   estimatedQty Int
   requiredDate DateTime?
-  priority     Priority  @default(MEDIUM)
-  createdAt    DateTime  @default(now())
+  priority     Priority         @default(MEDIUM)
+  status       FutureNeedStatus @default(PENDING)
+  createdAt    DateTime         @default(now())
 }

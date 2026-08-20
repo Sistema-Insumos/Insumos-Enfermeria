@@ -16,7 +16,13 @@ projectionsRouter.get(
 
     const supplies = await prisma.supply.findMany({
       include: {
-        consumptionRecords: { include: { section: { select: { studentsCount: true } } } },
+        // Only the same semester's historical pattern is used to project that
+        // semester again — Primer/Segundo Semestre courses differ enough that
+        // mixing their consumption history would skew the rate.
+        consumptionRecords: {
+          where: { section: { semester } },
+          include: { section: { select: { studentsCount: true } } },
+        },
         subjects: {
           include: {
             subject: {
@@ -96,6 +102,7 @@ const futureNeedSchema = z.object({
   estimatedQty: z.number().int().min(0),
   requiredDate: z.string().optional(),
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM"),
+  status: z.enum(["PENDING", "IN_PROGRESS"]).optional(),
 });
 
 projectionsRouter.get(
@@ -114,6 +121,19 @@ projectionsRouter.post(
       data: { ...data, requiredDate: data.requiredDate ? new Date(data.requiredDate) : undefined },
     });
     res.status(201).json(need);
+  })
+);
+
+projectionsRouter.patch(
+  "/future-needs/:id",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const data = futureNeedSchema.partial().parse(req.body);
+    const need = await prisma.futureSupplyNeed.update({
+      where: { id: req.params.id },
+      data: { ...data, requiredDate: data.requiredDate ? new Date(data.requiredDate) : undefined },
+    });
+    res.json(need);
   })
 );
 
