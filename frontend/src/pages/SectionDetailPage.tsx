@@ -5,6 +5,14 @@ import { Wrench } from "lucide-react";
 import { api } from "../lib/api";
 import type { Equipment, Section, Supply } from "../types";
 
+function numOrEmpty(n: number): number | string {
+  return n === 0 ? "" : n;
+}
+
+function parseQty(value: string): number {
+  return value === "" ? 0 : Number(value);
+}
+
 export function SectionDetailPage() {
   const { sectionId } = useParams<{ sectionId: string }>();
   const queryClient = useQueryClient();
@@ -134,48 +142,56 @@ export function SectionDetailPage() {
                 </option>
               ))}
             </select>
-            <input
-              type="number"
-              min={0}
-              placeholder="Requerido"
-              className="input"
-              value={draft.requiredQty}
-              onChange={(e) => setDraft((d) => ({ ...d, requiredQty: Number(e.target.value) }))}
-            />
-            <input
-              type="number"
-              min={0}
-              placeholder="Utilizado"
-              className="input"
-              value={draft.usedQty}
-              onChange={(e) => setDraft((d) => ({ ...d, usedQty: Number(e.target.value) }))}
-            />
-            <input
-              type="number"
-              min={0}
-              placeholder="Merma"
-              className="input"
-              value={draft.wasteQty}
-              onChange={(e) => setDraft((d) => ({ ...d, wasteQty: Number(e.target.value) }))}
-            />
             <label className="text-sm">
-              <span className="mb-1 block text-xs font-semibold text-success">Cant. Reutilizada</span>
+              <span className="mb-1 block text-xs font-semibold text-on-surface-variant">Cant. Requerida</span>
               <input
                 type="number"
                 min={0}
                 className="input"
-                value={draft.reusedQty}
-                onChange={(e) => setDraft((d) => ({ ...d, reusedQty: Number(e.target.value) }))}
+                value={numOrEmpty(draft.requiredQty)}
+                onChange={(e) => setDraft((d) => ({ ...d, requiredQty: parseQty(e.target.value) }))}
               />
             </label>
             <label className="text-sm">
-              <span className="mb-1 block text-xs font-semibold text-danger">Cant. Desechada</span>
+              <span className="mb-1 block text-xs font-semibold text-on-surface-variant">
+                Cant. Utilizada en la Clase
+              </span>
               <input
                 type="number"
                 min={0}
                 className="input"
-                value={draft.discardedQty}
-                onChange={(e) => setDraft((d) => ({ ...d, discardedQty: Number(e.target.value) }))}
+                value={numOrEmpty(draft.usedQty)}
+                onChange={(e) => setDraft((d) => ({ ...d, usedQty: parseQty(e.target.value) }))}
+              />
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block text-xs font-semibold text-warning">Cant. Merma</span>
+              <input
+                type="number"
+                min={0}
+                className="input"
+                value={numOrEmpty(draft.wasteQty)}
+                onChange={(e) => setDraft((d) => ({ ...d, wasteQty: parseQty(e.target.value) }))}
+              />
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block text-xs font-semibold text-success">Cant. Reutilizada de esos</span>
+              <input
+                type="number"
+                min={0}
+                className="input"
+                value={numOrEmpty(draft.reusedQty)}
+                onChange={(e) => setDraft((d) => ({ ...d, reusedQty: parseQty(e.target.value) }))}
+              />
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block text-xs font-semibold text-danger">Cant. Desechada de esos</span>
+              <input
+                type="number"
+                min={0}
+                className="input"
+                value={numOrEmpty(draft.discardedQty)}
+                onChange={(e) => setDraft((d) => ({ ...d, discardedQty: parseQty(e.target.value) }))}
               />
             </label>
             <button
@@ -305,8 +321,8 @@ function EquipmentUsageCard({
           min={0}
           placeholder="Cantidad de insumo"
           className="input col-span-2"
-          value={draft.quantity}
-          onChange={(e) => setDraft((d) => ({ ...d, quantity: Number(e.target.value) }))}
+          value={numOrEmpty(draft.quantity)}
+          onChange={(e) => setDraft((d) => ({ ...d, quantity: parseQty(e.target.value) }))}
         />
         <button
           type="submit"

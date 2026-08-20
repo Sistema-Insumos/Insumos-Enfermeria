@@ -97,7 +97,12 @@ export function InventoryPage() {
             {supplies.map((supply) => (
               <tr key={supply.id} className="border-t border-outline-variant hover:bg-surface-low">
                 <td className="px-4 py-3 font-mono text-xs text-on-surface-variant">{supply.sku}</td>
-                <td className="px-4 py-3 font-medium">{supply.name}</td>
+                <td className="px-4 py-3">
+                  <p className="font-medium">{supply.name}</p>
+                  {supply.description && (
+                    <p className="text-xs text-on-surface-variant">{supply.description}</p>
+                  )}
+                </td>
                 <td className="px-4 py-3">{supply.category}</td>
                 <td className="px-4 py-3 text-on-surface-variant">
                   {[supply.locationType, supply.locationDetail].filter(Boolean).join(", ") || "—"}
@@ -193,7 +198,7 @@ function SupplyFormModal({ onClose, editing }: { onClose: () => void; editing?: 
     category: editing?.category ?? "",
     locationType: editing?.locationType ?? "",
     locationDetail: editing?.locationDetail ?? "",
-    initialStock: editing?.initialStock ?? 0,
+    stockValue: editing ? editing.currentStock : 0,
     minStock: editing?.minStock ?? 0,
     maxStock: editing?.maxStock != null ? String(editing.maxStock) : "",
     unit: editing?.unit ?? "uds",
@@ -203,7 +208,12 @@ function SupplyFormModal({ onClose, editing }: { onClose: () => void; editing?: 
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const payload = { ...form, maxStock: form.maxStock ? Number(form.maxStock) : undefined };
+      const { stockValue, ...rest } = form;
+      const payload = {
+        ...rest,
+        maxStock: form.maxStock ? Number(form.maxStock) : undefined,
+        ...(editing ? { currentStock: stockValue } : { initialStock: stockValue }),
+      };
       if (editing) {
         await api.patch(`/api/supplies/${editing.id}`, payload);
       } else {
@@ -310,13 +320,13 @@ function SupplyFormModal({ onClose, editing }: { onClose: () => void; editing?: 
           <div className="rounded-md border border-outline-variant bg-surface-container p-4">
             <p className="mb-3 text-sm font-semibold text-on-surface">Métricas de Inventario</p>
             <div className="grid grid-cols-3 gap-4">
-              <Field label="Stock Inicial">
+              <Field label="Stock Actual">
                 <input
                   type="number"
                   min={0}
                   className="input"
-                  value={form.initialStock}
-                  onChange={(e) => setForm((f) => ({ ...f, initialStock: Number(e.target.value) }))}
+                  value={form.stockValue}
+                  onChange={(e) => setForm((f) => ({ ...f, stockValue: Number(e.target.value) }))}
                 />
               </Field>
               <Field label="Stock Mínimo">

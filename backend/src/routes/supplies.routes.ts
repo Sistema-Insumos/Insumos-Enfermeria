@@ -59,6 +59,7 @@ const supplySchema = z.object({
   locationDetail: z.string().optional(),
   unit: z.string().default("uds"),
   initialStock: z.number().int().min(0).default(0),
+  currentStock: z.number().int().min(0).optional(),
   minStock: z.number().int().min(0).default(0),
   maxStock: z.number().int().min(0).optional(),
   subjectIds: z.array(z.string()).default([]),
@@ -106,12 +107,17 @@ suppliesRouter.patch(
   requireAdmin,
   asyncHandler(async (req, res) => {
     const data = supplySchema.partial().parse(req.body);
-    const { subjectIds, ...rest } = data;
+    const { subjectIds, currentStock, ...rest } = data;
 
     const supply = await prisma.supply.update({
       where: { id: req.params.id },
       data: {
         ...rest,
+        // A manual stock correction resets the new/reusable split: the corrected
+        // total is treated as fresh stock rather than guessing how to divide it.
+        ...(currentStock !== undefined
+          ? { currentStock, newStock: currentStock, reusableStock: 0 }
+          : {}),
         ...(subjectIds
           ? {
               subjects: {
