@@ -40,9 +40,7 @@ export function SectionDetailPage() {
 
   const [draft, setDraft] = useState({
     supplyId: "",
-    requiredQty: 0,
     usedQty: 0,
-    wasteQty: 0,
     reusedQty: 0,
     discardedQty: 0,
     instructorNotes: "",
@@ -50,7 +48,11 @@ export function SectionDetailPage() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      await api.post(`/api/sections/${sectionId}/consumption`, draft);
+      await api.post(`/api/sections/${sectionId}/consumption`, {
+        ...draft,
+        requiredQty: draft.usedQty,
+        wasteQty: 0,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["section", sectionId] });
@@ -58,9 +60,7 @@ export function SectionDetailPage() {
       setDraft((d) => ({
         ...d,
         supplyId: "",
-        requiredQty: 0,
         usedQty: 0,
-        wasteQty: 0,
         reusedQty: 0,
         discardedQty: 0,
         instructorNotes: "",
@@ -305,19 +305,7 @@ export function SectionDetailPage() {
               ))}
             </select>
             <label className="text-sm">
-              <span className="mb-1 block text-xs font-semibold text-on-surface-variant">Cant. Requerida</span>
-              <input
-                type="number"
-                min={0}
-                className="input"
-                value={numOrEmpty(draft.requiredQty)}
-                onChange={(e) => setDraft((d) => ({ ...d, requiredQty: parseQty(e.target.value) }))}
-              />
-            </label>
-            <label className="text-sm">
-              <span className="mb-1 block text-xs font-semibold text-on-surface-variant">
-                Cant. Utilizada en la Clase
-              </span>
+              <span className="mb-1 block text-xs font-semibold text-on-surface-variant">Cantidad Utilizada</span>
               <input
                 type="number"
                 min={0}
@@ -327,17 +315,7 @@ export function SectionDetailPage() {
               />
             </label>
             <label className="text-sm">
-              <span className="mb-1 block text-xs font-semibold text-warning">Cant. Merma</span>
-              <input
-                type="number"
-                min={0}
-                className="input"
-                value={numOrEmpty(draft.wasteQty)}
-                onChange={(e) => setDraft((d) => ({ ...d, wasteQty: parseQty(e.target.value) }))}
-              />
-            </label>
-            <label className="text-sm">
-              <span className="mb-1 block text-xs font-semibold text-success">Cant. Reutilizada de esos</span>
+              <span className="mb-1 block text-xs font-semibold text-success">Cantidad Reutilizada</span>
               <input
                 type="number"
                 min={0}
@@ -347,7 +325,7 @@ export function SectionDetailPage() {
               />
             </label>
             <label className="text-sm">
-              <span className="mb-1 block text-xs font-semibold text-danger">Cant. Desechada de esos</span>
+              <span className="mb-1 block text-xs font-semibold text-danger">Cantidad Desechada</span>
               <input
                 type="number"
                 min={0}
@@ -359,7 +337,7 @@ export function SectionDetailPage() {
             <button
               type="submit"
               disabled={mutation.isPending || !draft.supplyId}
-              className="self-end rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
+              className="col-span-3 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
             >
               Reportar
             </button>
