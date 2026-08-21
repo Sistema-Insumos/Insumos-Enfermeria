@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ArrowRight, FileDown, Pencil, Plus, Trash2, X } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import type { FutureSupplyNeed, ProjectionResponse } from "../types";
@@ -21,6 +23,24 @@ const PRIORITY_TONE = {
   MEDIUM: "bg-warning-bg text-warning",
   LOW: "bg-success-bg text-success",
 };
+
+function exportFutureNeedsToPdf(needs: FutureSupplyNeed[]) {
+  const doc = new jsPDF();
+
+  doc.setFontSize(16);
+  doc.text("Insumos Futuros", 14, 18);
+  doc.setFontSize(10);
+  doc.setTextColor(100);
+  doc.text(`Generado: ${new Date().toLocaleDateString("es-CL")}`, 14, 24);
+
+  autoTable(doc, {
+    startY: 30,
+    head: [["Artículo / Insumo", "Cantidad Estimada", "Prioridad"]],
+    body: needs.map((n) => [n.name, String(n.estimatedQty), PRIORITY_LABEL[n.priority]]),
+  });
+
+  doc.save(`insumos-futuros-${new Date().toISOString().slice(0, 10)}.pdf`);
+}
 
 export function ProjectionsPage() {
   const { user } = useAuth();
@@ -190,13 +210,23 @@ export function ProjectionsPage() {
 
       <div className="mt-8 mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-on-surface">Insumos Futuros</h2>
-        <button
-          onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary hover:opacity-90"
-        >
-          <Plus size={18} />
-          Añadir a Insumos Futuros
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => exportFutureNeedsToPdf(pendingNeeds)}
+            disabled={pendingNeeds.length === 0}
+            className="flex items-center gap-2 rounded-md border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <FileDown size={18} />
+            Exportar PDF
+          </button>
+          <button
+            onClick={() => setModalOpen(true)}
+            className="flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary hover:opacity-90"
+          >
+            <Plus size={18} />
+            Añadir a Insumos Futuros
+          </button>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-lowest">
