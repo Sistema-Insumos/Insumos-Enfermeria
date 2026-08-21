@@ -11,6 +11,7 @@ import { NewSectionPage } from "./pages/NewSectionPage";
 import { SectionDetailPage } from "./pages/SectionDetailPage";
 import { EquipmentPage } from "./pages/EquipmentPage";
 import { RoomDetailPage } from "./pages/RoomDetailPage";
+import { AllEquipmentPage } from "./pages/AllEquipmentPage";
 import { ProjectionsPage } from "./pages/ProjectionsPage";
 import { PurchaseOrdersPage } from "./pages/PurchaseOrdersPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -40,6 +41,7 @@ export function App() {
           <Route path="/proyecciones" element={<ProjectionsPage />} />
           <Route path="/ordenes-compra" element={<PurchaseOrdersPage />} />
           <Route path="/equipamiento" element={<EquipmentPage />} />
+          <Route path="/equipamiento/general" element={<AllEquipmentPage />} />
           <Route path="/equipamiento/:roomId" element={<RoomDetailPage />} />
           <Route path="/reportes" element={<ReportsPage />} />
         </Route>
