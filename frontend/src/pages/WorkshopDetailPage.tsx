@@ -46,18 +46,7 @@ export function WorkshopDetailPage() {
 
   const duplicateMutation = useMutation({
     mutationFn: async (section: Section) => {
-      await api.post("/api/sections", {
-        workshopId: section.workshopId,
-        code: `${section.code} (Copia)`,
-        year: section.year,
-        semester: section.semester,
-        dayOfWeek: section.dayOfWeek ?? undefined,
-        startTime: section.startTime ?? undefined,
-        endTime: section.endTime ?? undefined,
-        location: section.location ?? undefined,
-        studentsCount: section.studentsCount,
-        professorId: section.professorId ?? undefined,
-      });
+      await api.post(`/api/sections/${section.id}/duplicate`, {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workshop", workshopId] });

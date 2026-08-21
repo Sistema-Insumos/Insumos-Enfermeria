@@ -66,6 +66,106 @@ sectionsRouter.delete(
   })
 );
 
+const duplicateSchema = z.object({ code: z.string().min(1).optional() });
+
+sectionsRouter.post(
+  "/:id/duplicate",
+  asyncHandler(async (req, res) => {
+    const data = duplicateSchema.parse(req.body ?? {});
+    const sourceId = req.params.id;
+
+    const newSection = await prisma.$transaction(async (tx) => {
+      const source = await tx.section.findUnique({
+        where: { id: sourceId },
+        include: { consumptionRecords: true, equipmentUsages: true },
+      });
+      if (!source) return null;
+
+      const created = await tx.section.create({
+        data: {
+          workshopId: source.workshopId,
+          code: data.code ?? `${source.code} (Copia)`,
+          year: source.year,
+          semester: source.semester,
+          dayOfWeek: source.dayOfWeek ?? undefined,
+          startTime: source.startTime ?? undefined,
+          endTime: source.endTime ?? undefined,
+          location: source.location ?? undefined,
+          studentsCount: source.studentsCount,
+          professorId: source.professorId ?? undefined,
+        },
+      });
+
+      const affectedSupplyIds = new Set<string>();
+
+      for (const record of source.consumptionRecords) {
+        await tx.consumptionRecord.create({
+          data: {
+            sectionId: created.id,
+            supplyId: record.supplyId,
+            requiredQty: record.requiredQty,
+            usedQty: record.usedQty,
+            wasteQty: record.wasteQty,
+            reusedQty: record.reusedQty,
+            discardedQty: record.discardedQty,
+            instructorNotes: record.instructorNotes ?? undefined,
+            reportedByUserId: req.auth?.userId,
+          },
+        });
+        await tx.supply.update({
+          where: { id: record.supplyId },
+          data: {
+            currentStock: { increment: Number(record.reusedQty) - Number(record.usedQty) },
+            newStock: { decrement: Number(record.usedQty) },
+            reusableStock: { increment: Number(record.reusedQty) },
+          },
+        });
+        affectedSupplyIds.add(record.supplyId);
+      }
+
+      for (const usage of source.equipmentUsages) {
+        await tx.equipmentUsage.create({
+          data: {
+            sectionId: created.id,
+            equipmentId: usage.equipmentId,
+            supplyId: usage.supplyId,
+            usedQty: usage.usedQty,
+            reusedQty: usage.reusedQty,
+            discardedQty: usage.discardedQty,
+          },
+        });
+        if (usage.supplyId) {
+          await tx.supply.update({
+            where: { id: usage.supplyId },
+            data: {
+              currentStock: { increment: Number(usage.reusedQty) - Number(usage.usedQty) },
+              newStock: { decrement: Number(usage.usedQty) },
+              reusableStock: { increment: Number(usage.reusedQty) },
+            },
+          });
+          affectedSupplyIds.add(usage.supplyId);
+        }
+      }
+
+      for (const supplyId of affectedSupplyIds) {
+        await syncPreliminaryPurchaseOrder(tx, supplyId);
+      }
+
+      return tx.section.findUnique({
+        where: { id: created.id },
+        include: {
+          professor: true,
+          consumptionRecords: { include: { supply: true } },
+          equipmentUsages: { include: { equipment: true, supply: true } },
+        },
+      });
+    });
+
+    if (!newSection) return res.status(404).json({ error: "Sección no encontrada" });
+    res.status(201).json(newSection);
+  })
+);
+
 const consumptionSchema = z.object({
   supplyId: z.string().min(1),
   requiredQty: z.number().min(0),
