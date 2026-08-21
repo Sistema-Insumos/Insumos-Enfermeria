@@ -70,9 +70,7 @@ export function SectionDetailPage() {
 
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState({
-    requiredQty: 0,
     usedQty: 0,
-    wasteQty: 0,
     reusedQty: 0,
     discardedQty: 0,
   });
@@ -80,9 +78,7 @@ export function SectionDetailPage() {
   function startEditRecord(record: ConsumptionRecord) {
     setEditingRecordId(record.id);
     setEditDraft({
-      requiredQty: Number(record.requiredQty),
       usedQty: Number(record.usedQty),
-      wasteQty: Number(record.wasteQty),
       reusedQty: Number(record.reusedQty),
       discardedQty: Number(record.discardedQty),
     });
@@ -144,9 +140,7 @@ export function SectionDetailPage() {
             <thead className="bg-surface-container text-xs uppercase tracking-wide text-on-surface-variant">
               <tr>
                 <th className="px-4 py-2">Insumo</th>
-                <th className="px-4 py-2 text-right">Req.</th>
-                <th className="px-4 py-2 text-right">Util.</th>
-                <th className="px-4 py-2 text-right">Merma</th>
+                <th className="px-4 py-2 text-right">Utilizada</th>
                 <th className="px-4 py-2 text-right">Reutilizado</th>
                 <th className="px-4 py-2 text-right">Desechado</th>
                 <th className="px-4 py-2 text-right">Stock Actual</th>
@@ -166,28 +160,8 @@ export function SectionDetailPage() {
                             type="number"
                             min={0}
                             className="input"
-                            value={numOrEmpty(editDraft.requiredQty)}
-                            onChange={(e) =>
-                              setEditDraft((d) => ({ ...d, requiredQty: parseQty(e.target.value) }))
-                            }
-                          />
-                        </td>
-                        <td className="px-2 py-1">
-                          <input
-                            type="number"
-                            min={0}
-                            className="input"
                             value={numOrEmpty(editDraft.usedQty)}
                             onChange={(e) => setEditDraft((d) => ({ ...d, usedQty: parseQty(e.target.value) }))}
-                          />
-                        </td>
-                        <td className="px-2 py-1">
-                          <input
-                            type="number"
-                            min={0}
-                            className="input"
-                            value={numOrEmpty(editDraft.wasteQty)}
-                            onChange={(e) => setEditDraft((d) => ({ ...d, wasteQty: parseQty(e.target.value) }))}
                           />
                         </td>
                         <td className="px-2 py-1">
@@ -235,9 +209,7 @@ export function SectionDetailPage() {
                       </>
                     ) : (
                       <>
-                        <td className="px-4 py-2 text-right">{record.requiredQty}</td>
                         <td className="px-4 py-2 text-right">{record.usedQty}</td>
-                        <td className="px-4 py-2 text-right text-warning">{record.wasteQty}</td>
                         <td className="px-4 py-2 text-right text-success">{record.reusedQty}</td>
                         <td className="px-4 py-2 text-right text-danger">{record.discardedQty}</td>
                         <td
@@ -276,7 +248,7 @@ export function SectionDetailPage() {
               })}
               {section && section.consumptionRecords.length === 0 && (
                 <tr>
-                  <td colSpan={isAdmin ? 8 : 7} className="px-4 py-6 text-center text-on-surface-variant">
+                  <td colSpan={isAdmin ? 6 : 5} className="px-4 py-6 text-center text-on-surface-variant">
                     Sin ajustes reportados todavía.
                   </td>
                 </tr>
