@@ -150,6 +150,16 @@ model SupplyOnSubject {
   @@id([supplyId, subjectId])
 }
 
+model Room {
+  id    String @id @default(cuid())
+  name  String @unique
+  order Int    @default(0)
+
+  equipment Equipment[]
+
+  createdAt DateTime @default(now())
+}
+
 model Equipment {
   id       String          @id @default(cuid())
   code     String          @unique
@@ -157,7 +167,8 @@ model Equipment {
   name     String
   category String          @default("General")
   quantity Int             @default(1)
-  location String?
+  roomId   String
+  room     Room            @relation(fields: [roomId], references: [id])
   status   EquipmentStatus  @default(GOOD)
   utility  EquipmentUtility @default(MEDIUM)
   unitValue Decimal        @default(0) @db.Decimal(12, 2)

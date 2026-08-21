@@ -10,18 +10,23 @@ equipmentRouter.use(requireAuth);
 equipmentRouter.get(
   "/",
   asyncHandler(async (req, res) => {
-    const { search } = req.query as Record<string, string>;
+    const { search, roomId } = req.query as Record<string, string>;
 
     const items = await prisma.equipment.findMany({
-      where: search
-        ? {
-            OR: [
-              { name: { contains: search, mode: "insensitive" } },
-              { code: { contains: search, mode: "insensitive" } },
-            ],
-          }
-        : undefined,
-      include: { linkedSupplies: { include: { supply: true } } },
+      where: {
+        AND: [
+          search
+            ? {
+                OR: [
+                  { name: { contains: search, mode: "insensitive" } },
+                  { code: { contains: search, mode: "insensitive" } },
+                ],
+              }
+            : {},
+          roomId ? { roomId } : {},
+        ],
+      },
+      include: { linkedSupplies: { include: { supply: true } }, room: true },
       orderBy: { createdAt: "desc" },
     });
 
@@ -34,7 +39,7 @@ equipmentRouter.get(
   asyncHandler(async (req, res) => {
     const equipment = await prisma.equipment.findUnique({
       where: { id: req.params.id },
-      include: { linkedSupplies: { include: { supply: true } }, usages: true },
+      include: { linkedSupplies: { include: { supply: true } }, usages: true, room: true },
     });
     if (!equipment) return res.status(404).json({ error: "Equipo no encontrado" });
     res.json(equipment);
@@ -54,7 +59,7 @@ const equipmentSchema = z.object({
   name: z.string().min(1),
   category: z.string().min(1).default("General"),
   quantity: z.number().int().min(1).default(1),
-  location: z.string().optional(),
+  roomId: z.string().min(1),
   status: z.enum(["GOOD", "BAD"]).default("GOOD"),
   utility: z.enum(["HIGH", "MEDIUM", "LOW"]).default("MEDIUM"),
   unitValue: z.number().min(0).default(0),

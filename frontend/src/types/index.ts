@@ -81,6 +81,13 @@ export interface EquipmentLinkedSupply {
   autoDiscount: boolean;
 }
 
+export interface Room {
+  id: string;
+  name: string;
+  order: number;
+  _count?: { equipment: number };
+}
+
 export interface Equipment {
   id: string;
   code: string;
@@ -88,7 +95,8 @@ export interface Equipment {
   name: string;
   category: string;
   quantity: number;
-  location: string | null;
+  roomId: string;
+  room?: Room;
   status: "GOOD" | "BAD";
   utility: "HIGH" | "MEDIUM" | "LOW";
   unitValue: string;
