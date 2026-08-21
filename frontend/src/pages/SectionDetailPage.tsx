@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { Check, Pencil, Trash2, Wrench, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { SupplyCombobox } from "../components/SupplyCombobox";
 import type { ConsumptionRecord, Equipment, EquipmentUsage, Section, Supply } from "../types";
 
 function numOrEmpty(n: number): number | string {
@@ -29,9 +30,11 @@ export function SectionDetailPage() {
   });
 
   const suppliesQuery = useQuery({
-    queryKey: ["supplies", ""],
+    queryKey: ["supplies", "", "asc"],
     queryFn: async () => {
-      const { data } = await api.get("/api/supplies", { params: { pageSize: 100 } });
+      const { data } = await api.get("/api/supplies", {
+        params: { pageSize: 1000, sortBy: "name", sortDir: "asc" },
+      });
       return data.items as Supply[];
     },
   });
@@ -263,19 +266,12 @@ export function SectionDetailPage() {
             }}
             className="grid grid-cols-3 gap-2 border-t border-outline-variant p-4"
           >
-            <select
-              required
-              className="input col-span-3"
+            <SupplyCombobox
+              className="col-span-3"
+              supplies={suppliesQuery.data ?? []}
               value={draft.supplyId}
-              onChange={(e) => setDraft((d) => ({ ...d, supplyId: e.target.value }))}
-            >
-              <option value="">Seleccionar insumo...</option>
-              {suppliesQuery.data?.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+              onChange={(id) => setDraft((d) => ({ ...d, supplyId: id }))}
+            />
             <label className="text-sm">
               <span className="mb-1 block text-xs font-semibold text-on-surface-variant">Cantidad Utilizada</span>
               <input

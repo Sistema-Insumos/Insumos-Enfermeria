@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Sparkles, X } from "lucide-react";
 import { api } from "../lib/api";
+import { SupplyCombobox } from "../components/SupplyCombobox";
 import type { PurchaseOrder, Supply } from "../types";
 
 const STATUS_LABEL: Record<PurchaseOrder["status"], string> = {
@@ -128,9 +129,11 @@ export function PurchaseOrdersPage() {
 function NewOrderModal({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient();
   const suppliesQuery = useQuery({
-    queryKey: ["supplies", ""],
+    queryKey: ["supplies", "", "asc"],
     queryFn: async () => {
-      const { data } = await api.get("/api/supplies", { params: { pageSize: 100 } });
+      const { data } = await api.get("/api/supplies", {
+        params: { pageSize: 1000, sortBy: "name", sortDir: "asc" },
+      });
       return data.items as Supply[];
     },
   });
@@ -170,19 +173,12 @@ function NewOrderModal({ onClose }: { onClose: () => void }) {
         >
           {items.map((item, i) => (
             <div key={i} className="grid grid-cols-5 gap-2">
-              <select
-                required
-                className="input col-span-3"
+              <SupplyCombobox
+                className="col-span-3"
+                supplies={suppliesQuery.data ?? []}
                 value={item.supplyId}
-                onChange={(e) => updateItem(i, { supplyId: e.target.value })}
-              >
-                <option value="">Seleccionar insumo...</option>
-                {suppliesQuery.data?.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(id) => updateItem(i, { supplyId: id })}
+              />
               <input
                 type="number"
                 min={1}
