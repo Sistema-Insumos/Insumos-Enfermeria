@@ -187,7 +187,7 @@ model EquipmentUsage {
   section     Section?  @relation(fields: [sectionId], references: [id])
 
   supplyId String?
-  supply   Supply? @relation(fields: [supplyId], references: [id])
+  supply   Supply? @relation(fields: [supplyId], references: [id], onDelete: SetNull)
 
   usedQty      Decimal @default(0) @db.Decimal(10, 2)
   reusedQty    Decimal @default(0) @db.Decimal(10, 2)
@@ -241,7 +241,7 @@ model PurchaseOrderItem {
   purchaseOrderId String
   purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
   supplyId        String
-  supply          Supply        @relation(fields: [supplyId], references: [id])
+  supply          Supply        @relation(fields: [supplyId], references: [id], onDelete: Cascade)
   quantity        Int
   estimatedCost   Decimal       @db.Decimal(12, 2)
 

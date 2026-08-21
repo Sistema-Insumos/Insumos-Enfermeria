@@ -31,6 +31,9 @@ export function InventoryPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["supplies"] });
     },
+    onError: () => {
+      alert("No se pudo eliminar el insumo. Intenta nuevamente.");
+    },
   });
 
   function handleDelete(supply: Supply) {
