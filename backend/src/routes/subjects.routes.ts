@@ -16,7 +16,7 @@ subjectsRouter.get(
       where: year && semester ? { year: Number(year), semester: Number(semester) } : undefined,
       orderBy: { name: "asc" },
       include: {
-        workshops: { include: { professor: true, sections: true } },
+        workshops: { include: { professor: true, sections: true }, orderBy: { order: "asc" } },
         supplies: { include: { supply: true } },
       },
     });
@@ -56,6 +56,7 @@ subjectsRouter.get(
       include: {
         workshops: {
           include: { professor: true, sections: true },
+          orderBy: { order: "asc" },
         },
       },
     });

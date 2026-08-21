@@ -33,6 +33,7 @@ export interface Workshop {
   id: string;
   code: string;
   name: string;
+  order: number;
   subjectId: string;
   subject?: Subject;
   professorId: string | null;

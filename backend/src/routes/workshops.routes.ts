@@ -31,13 +31,16 @@ const workshopSchema = z.object({
   code: z.string().min(1),
   name: z.string().min(1),
   professorId: z.string().optional(),
+  order: z.number().int().optional(),
 });
 
 workshopsRouter.post(
   "/",
   asyncHandler(async (req, res) => {
     const data = workshopSchema.parse(req.body);
-    const workshop = await prisma.workshop.create({ data });
+    const order =
+      data.order ?? (await prisma.workshop.count({ where: { subjectId: data.subjectId } }));
+    const workshop = await prisma.workshop.create({ data: { ...data, order } });
     res.status(201).json(workshop);
   })
 );

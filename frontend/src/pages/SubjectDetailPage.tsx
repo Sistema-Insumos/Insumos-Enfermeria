@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
-import { Pencil, Plus, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Pencil, Plus, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import type { SubjectDetail, Workshop } from "../types";
@@ -45,6 +45,27 @@ export function SubjectDetailPage() {
     setEditingWorkshop(workshop);
   }
 
+  const reorderMutation = useMutation({
+    mutationFn: async (updates: { id: string; order: number }[]) => {
+      await Promise.all(updates.map((u) => api.patch(`/api/workshops/${u.id}`, { order: u.order })));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subject", subjectId] });
+    },
+  });
+
+  function moveWorkshop(e: React.MouseEvent, index: number, direction: -1 | 1) {
+    e.preventDefault();
+    e.stopPropagation();
+    const workshops = subject?.workshops;
+    if (!workshops) return;
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= workshops.length) return;
+    const reordered = [...workshops];
+    [reordered[index], reordered[targetIndex]] = [reordered[targetIndex], reordered[index]];
+    reorderMutation.mutate(reordered.map((w, i) => ({ id: w.id, order: i })));
+  }
+
   const subject = subjectQuery.data;
 
   return (
@@ -80,7 +101,7 @@ export function SubjectDetailPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        {subject?.workshops.map((workshop) => (
+        {subject?.workshops.map((workshop, index) => (
           <Link
             key={workshop.id}
             to={`/asignaturas/${subjectId}/talleres/${workshop.id}`}
@@ -92,6 +113,22 @@ export function SubjectDetailPage() {
               </span>
               {isAdmin && (
                 <div className="flex items-center gap-1">
+                  <button
+                    onClick={(e) => moveWorkshop(e, index, -1)}
+                    disabled={index === 0 || reorderMutation.isPending}
+                    title="Mover arriba"
+                    className="rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface disabled:cursor-not-allowed disabled:opacity-30"
+                  >
+                    <ChevronUp size={14} />
+                  </button>
+                  <button
+                    onClick={(e) => moveWorkshop(e, index, 1)}
+                    disabled={index === subject.workshops.length - 1 || reorderMutation.isPending}
+                    title="Mover abajo"
+                    className="rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface disabled:cursor-not-allowed disabled:opacity-30"
+                  >
+                    <ChevronDown size={14} />
+                  </button>
                   <button
                     onClick={(e) => handleEdit(e, workshop)}
                     title="Editar taller"
