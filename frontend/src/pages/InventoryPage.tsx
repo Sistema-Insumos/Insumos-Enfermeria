@@ -96,6 +96,15 @@ export function InventoryPage() {
           label="Artículos Bajo Stock"
           value={String(dashboardQuery.data?.lowStockCount ?? "—")}
           tone={(dashboardQuery.data?.lowStockCount ?? 0) > 0 ? "danger" : "default"}
+          onClick={() => {
+            const next = new URLSearchParams(searchParams);
+            if (lowStockOnly) {
+              next.delete("lowStock");
+            } else {
+              next.set("lowStock", "1");
+            }
+            setSearchParams(next);
+          }}
         />
         <StatCard label="Categorías Activas" value={String(dashboardQuery.data?.categoriesCount ?? "—")} />
       </div>
@@ -249,22 +258,26 @@ function StatCard({
   label,
   value,
   tone = "default",
+  onClick,
 }: {
   label: string;
   value: string;
   tone?: "default" | "danger";
+  onClick?: () => void;
 }) {
+  const Tag = onClick ? "button" : "div";
   return (
-    <div
-      className={`rounded-lg border p-4 ${
+    <Tag
+      onClick={onClick}
+      className={`rounded-lg border p-4 text-left ${
         tone === "danger" ? "border-danger/30 bg-danger-bg/40" : "border-outline-variant bg-surface-lowest"
-      }`}
+      } ${onClick ? "cursor-pointer hover:shadow-sm" : ""}`}
     >
       <p className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">{label}</p>
       <p className={`mt-1 text-2xl font-bold ${tone === "danger" ? "text-danger" : "text-on-surface"}`}>
         {value}
       </p>
-    </div>
+    </Tag>
   );
 }
 
