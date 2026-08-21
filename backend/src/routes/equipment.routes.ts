@@ -49,16 +49,21 @@ const linkedSupplySchema = z.object({
 });
 
 const equipmentSchema = z.object({
-  code: z.string().min(1),
+  code: z.string().min(1).optional(),
   serial: z.string().optional(),
   name: z.string().min(1),
-  category: z.string().min(1),
+  category: z.string().min(1).default("General"),
   quantity: z.number().int().min(1).default(1),
   location: z.string().optional(),
-  status: z.enum(["OPERATIVE", "MAINTENANCE", "OUT_OF_SERVICE"]).default("OPERATIVE"),
+  status: z.enum(["GOOD", "BAD"]).default("GOOD"),
+  utility: z.enum(["HIGH", "MEDIUM", "LOW"]).default("MEDIUM"),
   unitValue: z.number().min(0).default(0),
   linkedSupplies: z.array(linkedSupplySchema).default([]),
 });
+
+function generateEquipmentCode() {
+  return `EQ-${Date.now().toString(36).toUpperCase()}`;
+}
 
 equipmentRouter.post(
   "/",
@@ -69,6 +74,7 @@ equipmentRouter.post(
     const equipment = await prisma.equipment.create({
       data: {
         ...rest,
+        code: rest.code ?? generateEquipmentCode(),
         linkedSupplies: { create: linkedSupplies },
       },
     });

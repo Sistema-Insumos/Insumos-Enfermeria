@@ -6,16 +6,33 @@ import { useAuth } from "../lib/auth";
 import type { Equipment, Supply } from "../types";
 
 const STATUS_LABEL: Record<Equipment["status"], string> = {
-  OPERATIVE: "Operativo",
-  MAINTENANCE: "En Mantenimiento",
-  OUT_OF_SERVICE: "Fuera de Servicio",
+  GOOD: "Bueno",
+  BAD: "Malo",
 };
 
 const STATUS_TONE: Record<Equipment["status"], string> = {
-  OPERATIVE: "bg-success-bg text-success",
-  MAINTENANCE: "bg-warning-bg text-warning",
-  OUT_OF_SERVICE: "bg-danger-bg text-danger",
+  GOOD: "bg-success-bg text-success",
+  BAD: "bg-danger-bg text-danger",
 };
+
+const UTILITY_LABEL: Record<Equipment["utility"], string> = {
+  HIGH: "Alta",
+  MEDIUM: "Media",
+  LOW: "Baja",
+};
+
+const UTILITY_TONE: Record<Equipment["utility"], string> = {
+  HIGH: "bg-success-bg text-success",
+  MEDIUM: "bg-warning-bg text-warning",
+  LOW: "bg-danger-bg text-danger",
+};
+
+function parseLocation(raw: string | null | undefined) {
+  if (raw && raw.startsWith("Fuera")) {
+    return { locationType: "FUERA" as const, locationDetail: raw.replace(/^Fuera:?\s*/, "") };
+  }
+  return { locationType: "BODEGA" as const, locationDetail: "" };
+}
 
 export function EquipmentPage() {
   const { user } = useAuth();
@@ -49,7 +66,7 @@ export function EquipmentPage() {
   }
 
   const items = equipmentQuery.data ?? [];
-  const inMaintenance = items.filter((e) => e.status === "MAINTENANCE").length;
+  const badCondition = items.filter((e) => e.status === "BAD").length;
   const totalValue = items.reduce((sum, e) => sum + Number(e.unitValue) * e.quantity, 0);
   const criticalSupplies = items.flatMap((e) =>
     e.linkedSupplies.filter((l) => l.supply.currentStock < l.supply.minStock)
@@ -73,7 +90,7 @@ export function EquipmentPage() {
 
       <div className="mb-6 grid grid-cols-3 gap-4">
         <StatCard label="Valor Total en Equipos" value={`$${totalValue.toLocaleString()}`} />
-        <StatCard label="Equipos en Mantenimiento" value={String(inMaintenance)} />
+        <StatCard label="Equipos en Mal Estado" value={String(badCondition)} tone={badCondition > 0 ? "danger" : "default"} />
         <StatCard
           label="Alertas de Stock de Insumos"
           value={String(criticalSupplies)}
@@ -95,12 +112,13 @@ export function EquipmentPage() {
         <table className="w-full text-left text-sm">
           <thead className="bg-surface-container text-xs uppercase tracking-wide text-on-surface-variant">
             <tr>
-              <th className="px-4 py-3">Código / Serial</th>
+              <th className="px-4 py-3">Código / N° Inventario</th>
               <th className="px-4 py-3">Nombre</th>
               <th className="px-4 py-3">Categoría</th>
               <th className="px-4 py-3 text-right">Cantidad</th>
               <th className="px-4 py-3">Ubicación</th>
               <th className="px-4 py-3">Estado</th>
+              <th className="px-4 py-3">Utilidad</th>
               <th className="px-4 py-3">Insumos Vinculados</th>
               {isAdmin && <th className="px-4 py-3 text-right">Acciones</th>}
             </tr>
@@ -119,6 +137,11 @@ export function EquipmentPage() {
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_TONE[eq.status]}`}>
                     {STATUS_LABEL[eq.status]}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${UTILITY_TONE[eq.utility]}`}>
+                    {UTILITY_LABEL[eq.utility]}
                   </span>
                 </td>
                 <td className="px-4 py-3">
@@ -160,7 +183,7 @@ export function EquipmentPage() {
             ))}
             {!equipmentQuery.isLoading && items.length === 0 && (
               <tr>
-                <td colSpan={isAdmin ? 8 : 7} className="px-4 py-8 text-center text-on-surface-variant">
+                <td colSpan={isAdmin ? 9 : 8} className="px-4 py-8 text-center text-on-surface-variant">
                   No hay equipos registrados todavía.
                 </td>
               </tr>
@@ -211,14 +234,11 @@ function EquipmentFormModal({ onClose, editing }: { onClose: () => void; editing
   });
 
   const [form, setForm] = useState({
-    code: editing?.code ?? "",
     serial: editing?.serial ?? "",
     name: editing?.name ?? "",
-    category: editing?.category ?? "",
-    quantity: editing?.quantity ?? 1,
-    location: editing?.location ?? "",
-    status: editing?.status ?? ("OPERATIVE" as Equipment["status"]),
-    unitValue: editing ? Number(editing.unitValue) : 0,
+    status: editing?.status ?? ("GOOD" as Equipment["status"]),
+    utility: editing?.utility ?? ("MEDIUM" as Equipment["utility"]),
+    ...parseLocation(editing?.location),
     linkedSupplyIds: editing?.linkedSupplies.map((l) => l.supplyId) ?? ([] as string[]),
   });
 
@@ -233,9 +253,10 @@ function EquipmentFormModal({ onClose, editing }: { onClose: () => void; editing
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const { linkedSupplyIds, ...rest } = form;
+      const { linkedSupplyIds, locationType, locationDetail, ...rest } = form;
       const payload = {
         ...rest,
+        location: locationType === "FUERA" ? `Fuera: ${locationDetail}`.trim() : "Bodega",
         linkedSupplies: linkedSupplyIds.map((supplyId) => ({ supplyId, autoDiscount: true })),
       };
       if (editing) {
@@ -278,48 +299,11 @@ function EquipmentFormModal({ onClose, editing }: { onClose: () => void; editing
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               />
             </Field>
-            <Field label="Código *">
-              <input
-                required
-                className="input"
-                value={form.code}
-                onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))}
-                placeholder="Ej. EQ-001"
-              />
-            </Field>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Categoría *">
-              <input
-                required
-                className="input"
-                value={form.category}
-                onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-              />
-            </Field>
-            <Field label="N° Serial">
+            <Field label="N° Inventario">
               <input
                 className="input"
                 value={form.serial}
                 onChange={(e) => setForm((f) => ({ ...f, serial: e.target.value }))}
-              />
-            </Field>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Cantidad">
-              <input
-                type="number"
-                min={1}
-                className="input"
-                value={form.quantity}
-                onChange={(e) => setForm((f) => ({ ...f, quantity: Number(e.target.value) }))}
-              />
-            </Field>
-            <Field label="Ubicación">
-              <input
-                className="input"
-                value={form.location}
-                onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
               />
             </Field>
           </div>
@@ -330,20 +314,45 @@ function EquipmentFormModal({ onClose, editing }: { onClose: () => void; editing
                 value={form.status}
                 onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as Equipment["status"] }))}
               >
-                <option value="OPERATIVE">Operativo</option>
-                <option value="MAINTENANCE">En Mantenimiento</option>
-                <option value="OUT_OF_SERVICE">Fuera de Servicio</option>
+                <option value="GOOD">Bueno</option>
+                <option value="BAD">Malo</option>
               </select>
             </Field>
-            <Field label="Valor Unitario">
-              <input
-                type="number"
-                min={0}
+            <Field label="Utilidad">
+              <select
                 className="input"
-                value={form.unitValue}
-                onChange={(e) => setForm((f) => ({ ...f, unitValue: Number(e.target.value) }))}
-              />
+                value={form.utility}
+                onChange={(e) => setForm((f) => ({ ...f, utility: e.target.value as Equipment["utility"] }))}
+              >
+                <option value="HIGH">Alta</option>
+                <option value="MEDIUM">Media</option>
+                <option value="LOW">Baja</option>
+              </select>
             </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Ubicación">
+              <select
+                className="input"
+                value={form.locationType}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, locationType: e.target.value as "BODEGA" | "FUERA" }))
+                }
+              >
+                <option value="BODEGA">Bodega</option>
+                <option value="FUERA">Fuera</option>
+              </select>
+            </Field>
+            {form.locationType === "FUERA" && (
+              <Field label="Especificar ubicación">
+                <input
+                  className="input"
+                  value={form.locationDetail}
+                  onChange={(e) => setForm((f) => ({ ...f, locationDetail: e.target.value }))}
+                  placeholder="Ej. Sala 204"
+                />
+              </Field>
+            )}
           </div>
 
           <div>

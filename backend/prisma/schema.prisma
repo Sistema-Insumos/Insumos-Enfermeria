@@ -13,9 +13,14 @@ enum Role {
 }
 
 enum EquipmentStatus {
-  OPERATIVE
-  MAINTENANCE
-  OUT_OF_SERVICE
+  GOOD
+  BAD
+}
+
+enum EquipmentUtility {
+  HIGH
+  MEDIUM
+  LOW
 }
 
 enum PurchaseOrderStatus {
@@ -150,10 +155,11 @@ model Equipment {
   code     String          @unique
   serial   String?
   name     String
-  category String
+  category String          @default("General")
   quantity Int             @default(1)
   location String?
-  status   EquipmentStatus @default(OPERATIVE)
+  status   EquipmentStatus  @default(GOOD)
+  utility  EquipmentUtility @default(MEDIUM)
   unitValue Decimal        @default(0) @db.Decimal(12, 2)
 
   lastMaintenanceAt   DateTime?

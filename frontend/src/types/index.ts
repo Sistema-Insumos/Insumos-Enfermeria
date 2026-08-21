@@ -89,7 +89,8 @@ export interface Equipment {
   category: string;
   quantity: number;
   location: string | null;
-  status: "OPERATIVE" | "MAINTENANCE" | "OUT_OF_SERVICE";
+  status: "GOOD" | "BAD";
+  utility: "HIGH" | "MEDIUM" | "LOW";
   unitValue: string;
   lastMaintenanceAt: string | null;
   nextCalibrationAt: string | null;
