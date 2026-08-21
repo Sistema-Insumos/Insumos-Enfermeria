@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
-import { Pencil, Plus, Trash2, X } from "lucide-react";
+import { Copy, Pencil, Plus, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import type { Workshop, Subject, Section } from "../types";
@@ -42,6 +42,35 @@ export function WorkshopDetailPage() {
     e.preventDefault();
     e.stopPropagation();
     setEditingSection(section);
+  }
+
+  const duplicateMutation = useMutation({
+    mutationFn: async (section: Section) => {
+      await api.post("/api/sections", {
+        workshopId: section.workshopId,
+        code: `${section.code} (Copia)`,
+        year: section.year,
+        semester: section.semester,
+        dayOfWeek: section.dayOfWeek ?? undefined,
+        startTime: section.startTime ?? undefined,
+        endTime: section.endTime ?? undefined,
+        location: section.location ?? undefined,
+        studentsCount: section.studentsCount,
+        professorId: section.professorId ?? undefined,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workshop", workshopId] });
+    },
+    onError: () => {
+      alert("No se pudo duplicar la sección. Intenta nuevamente.");
+    },
+  });
+
+  function handleDuplicate(e: React.MouseEvent, section: Section) {
+    e.preventDefault();
+    e.stopPropagation();
+    duplicateMutation.mutate(section);
   }
 
   const workshop = workshopQuery.data;
@@ -105,6 +134,14 @@ export function WorkshopDetailPage() {
                 <span className="font-semibold text-on-surface">{section.code}</span>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-on-surface-variant">{section.studentsCount} alumnos</span>
+                  <button
+                    onClick={(e) => handleDuplicate(e, section)}
+                    disabled={duplicateMutation.isPending}
+                    title="Duplicar sección"
+                    className="rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                  >
+                    <Copy size={14} />
+                  </button>
                   {isAdmin && (
                     <div className="flex items-center gap-1">
                       <button
