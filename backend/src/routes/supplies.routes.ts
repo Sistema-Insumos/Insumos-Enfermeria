@@ -7,10 +7,19 @@ import { asyncHandler } from "../utils/asyncHandler";
 export const suppliesRouter = Router();
 suppliesRouter.use(requireAuth);
 
+const SORTABLE_FIELDS = ["name", "sku", "category", "currentStock", "minStock", "maxStock", "createdAt"];
+
 suppliesRouter.get(
   "/",
   asyncHandler(async (req, res) => {
-    const { search, category, page = "1", pageSize = "20" } = req.query as Record<string, string>;
+    const {
+      search,
+      category,
+      page = "1",
+      pageSize = "20",
+      sortBy = "createdAt",
+      sortDir = "desc",
+    } = req.query as Record<string, string>;
 
     const where = {
       AND: [
@@ -26,11 +35,13 @@ suppliesRouter.get(
       ],
     };
 
-    const take = Math.min(Number(pageSize) || 20, 100);
+    const take = Math.min(Number(pageSize) || 20, 1000);
     const skip = (Math.max(Number(page) || 1, 1) - 1) * take;
+    const orderField = SORTABLE_FIELDS.includes(sortBy) ? sortBy : "createdAt";
+    const orderDir = sortDir === "asc" ? "asc" : "desc";
 
     const [items, total] = await Promise.all([
-      prisma.supply.findMany({ where, take, skip, orderBy: { createdAt: "desc" } }),
+      prisma.supply.findMany({ where, take, skip, orderBy: { [orderField]: orderDir } }),
       prisma.supply.count({ where }),
     ]);
 

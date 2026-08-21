@@ -1,26 +1,50 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { ArrowDownAZ, ArrowUpAZ, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import type { Subject, Supply } from "../types";
+
+const PAGE_SIZE = 20;
 
 export function InventoryPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingSupply, setEditingSupply] = useState<Supply | null>(null);
   const isAdmin = user?.role === "ADMIN";
   const lowStockOnly = searchParams.get("lowStock") === "1";
 
+  useEffect(() => {
+    setPage(1);
+  }, [search, sortDir, lowStockOnly]);
+
   const suppliesQuery = useQuery({
-    queryKey: ["supplies", search],
+    queryKey: ["supplies", search, sortDir, lowStockOnly ? "all" : page],
     queryFn: async () => {
-      const { data } = await api.get("/api/supplies", { params: { search, pageSize: 100 } });
+      const { data } = await api.get("/api/supplies", {
+        params: {
+          search,
+          sortBy: "name",
+          sortDir,
+          page: lowStockOnly ? 1 : page,
+          pageSize: lowStockOnly ? 1000 : PAGE_SIZE,
+        },
+      });
       return data as { items: Supply[]; total: number };
+    },
+  });
+
+  const dashboardQuery = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: async () => {
+      const { data } = await api.get("/api/dashboard");
+      return data as { lowStockCount: number; categoriesCount: number };
     },
   });
 
@@ -30,6 +54,7 @@ export function InventoryPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["supplies"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: () => {
       alert("No se pudo eliminar el insumo. Intenta nuevamente.");
@@ -43,7 +68,8 @@ export function InventoryPage() {
   }
 
   const allSupplies = suppliesQuery.data?.items ?? [];
-  const lowStockCount = allSupplies.filter((s) => s.currentStock < s.minStock).length;
+  const total = suppliesQuery.data?.total ?? 0;
+  const totalPages = Math.max(Math.ceil(total / PAGE_SIZE), 1);
   const supplies = lowStockOnly ? allSupplies.filter((s) => s.currentStock < s.minStock) : allSupplies;
 
   return (
@@ -68,10 +94,10 @@ export function InventoryPage() {
         <StatCard label="Total de SKUs" value={String(suppliesQuery.data?.total ?? "—")} />
         <StatCard
           label="Artículos Bajo Stock"
-          value={String(lowStockCount)}
-          tone={lowStockCount > 0 ? "danger" : "default"}
+          value={String(dashboardQuery.data?.lowStockCount ?? "—")}
+          tone={(dashboardQuery.data?.lowStockCount ?? 0) > 0 ? "danger" : "default"}
         />
-        <StatCard label="Categorías Activas" value={String(new Set(allSupplies.map((s) => s.category)).size)} />
+        <StatCard label="Categorías Activas" value={String(dashboardQuery.data?.categoriesCount ?? "—")} />
       </div>
 
       {lowStockOnly && (
@@ -90,14 +116,24 @@ export function InventoryPage() {
         </div>
       )}
 
-      <div className="mb-4 flex items-center gap-2 rounded-md border border-outline-variant bg-surface-lowest px-3 py-2">
-        <Search size={18} className="text-on-surface-variant" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar por Nombre o SKU..."
-          className="w-full bg-transparent text-sm outline-none"
-        />
+      <div className="mb-4 flex items-center gap-2">
+        <div className="flex flex-1 items-center gap-2 rounded-md border border-outline-variant bg-surface-lowest px-3 py-2">
+          <Search size={18} className="text-on-surface-variant" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por Nombre o SKU..."
+            className="w-full bg-transparent text-sm outline-none"
+          />
+        </div>
+        <button
+          onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+          title={sortDir === "asc" ? "Ordenar Z-A" : "Ordenar A-Z"}
+          className="flex items-center gap-2 rounded-md border border-outline-variant bg-surface-lowest px-3 py-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container"
+        >
+          {sortDir === "asc" ? <ArrowDownAZ size={18} /> : <ArrowUpAZ size={18} />}
+          {sortDir === "asc" ? "A-Z" : "Z-A"}
+        </button>
       </div>
 
       <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-lowest">
@@ -174,6 +210,33 @@ export function InventoryPage() {
         </table>
       </div>
 
+      {!lowStockOnly && total > 0 && (
+        <div className="mt-4 flex items-center justify-between text-sm text-on-surface-variant">
+          <span>
+            Mostrando {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} de {total}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(p - 1, 1))}
+              disabled={page <= 1}
+              className="rounded-md border border-outline-variant px-3 py-1.5 font-semibold hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Anterior
+            </button>
+            <span>
+              Página {page} de {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+              disabled={page >= totalPages}
+              className="rounded-md border border-outline-variant px-3 py-1.5 font-semibold hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      )}
+
       {modalOpen && <SupplyFormModal onClose={() => setModalOpen(false)} />}
       {editingSupply && (
         <SupplyFormModal editing={editingSupply} onClose={() => setEditingSupply(null)} />
@@ -245,6 +308,7 @@ function SupplyFormModal({ onClose, editing }: { onClose: () => void; editing?: 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["supplies"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       onClose();
     },
   });
