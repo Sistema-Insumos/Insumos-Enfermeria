@@ -1,6 +1,21 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
 import { api } from "../lib/api";
+import { useAuth } from "../lib/auth";
+
+interface ReportRecord {
+  id: string;
+  sectionId: string;
+  supplyName: string;
+  subjectName: string;
+  workshopName: string;
+  sectionCode: string;
+  usedQty: string;
+  reusedQty: string;
+  discardedQty: string;
+  reportedAt: string;
+}
 
 interface AnnualItem {
   id: string;
@@ -26,6 +41,9 @@ const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = [CURRENT_YEAR - 1, CURRENT_YEAR, CURRENT_YEAR + 1];
 
 export function ReportsPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
+  const queryClient = useQueryClient();
   const [year, setYear] = useState<number | null>(null);
   const [semester, setSemester] = useState<number | null>(null);
 
@@ -38,6 +56,40 @@ export function ReportsPage() {
       return data as AnnualReport;
     },
   });
+
+  const recordsQuery = useQuery({
+    queryKey: ["reports-records", year, semester],
+    queryFn: async () => {
+      const { data } = await api.get("/api/reports/records", {
+        params: { year: year ?? undefined, semester: semester ?? undefined },
+      });
+      return data as ReportRecord[];
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (record: ReportRecord) => {
+      await api.delete(`/api/sections/${record.sectionId}/consumption/${record.id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reports-records"] });
+      queryClient.invalidateQueries({ queryKey: ["reports-annual"] });
+      queryClient.invalidateQueries({ queryKey: ["supplies"] });
+    },
+    onError: () => {
+      alert("No se pudo eliminar el reporte. Intenta nuevamente.");
+    },
+  });
+
+  function handleDeleteRecord(record: ReportRecord) {
+    if (
+      confirm(
+        `¿Eliminar este reporte de "${record.supplyName}" (${record.subjectName} / ${record.workshopName} / ${record.sectionCode})? Esto revierte el stock descontado.`
+      )
+    ) {
+      deleteMutation.mutate(record);
+    }
+  }
 
   const data = reportQuery.data;
   const totalToBuy = data?.items.reduce((sum, i) => sum + i.qtyToBuy, 0) ?? 0;
@@ -166,6 +218,57 @@ export function ReportsPage() {
               <tr>
                 <td colSpan={7} className="px-4 py-8 text-center text-on-surface-variant">
                   Aún no hay ajustes post-clase registrados para este período.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 className="mt-8 mb-4 text-lg font-semibold text-on-surface">Historial de Reportes</h2>
+      <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-lowest">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-surface-container text-xs uppercase tracking-wide text-on-surface-variant">
+            <tr>
+              <th className="px-4 py-3">Fecha</th>
+              <th className="px-4 py-3">Insumo</th>
+              <th className="px-4 py-3">Asignatura / Taller / Sección</th>
+              <th className="px-4 py-3 text-right">Utilizada</th>
+              <th className="px-4 py-3 text-right">Reutilizada</th>
+              <th className="px-4 py-3 text-right">Desechada</th>
+              {isAdmin && <th className="px-4 py-3 text-right">Acciones</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {recordsQuery.data?.map((record) => (
+              <tr key={record.id} className="border-t border-outline-variant hover:bg-surface-low">
+                <td className="px-4 py-3 text-on-surface-variant">
+                  {new Date(record.reportedAt).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-3 font-medium">{record.supplyName}</td>
+                <td className="px-4 py-3 text-on-surface-variant">
+                  {record.subjectName} / {record.workshopName} / {record.sectionCode}
+                </td>
+                <td className="px-4 py-3 text-right">{record.usedQty}</td>
+                <td className="px-4 py-3 text-right text-success">{record.reusedQty}</td>
+                <td className="px-4 py-3 text-right text-danger">{record.discardedQty}</td>
+                {isAdmin && (
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => handleDeleteRecord(record)}
+                      title="Eliminar reporte"
+                      className="rounded-md p-1 text-on-surface-variant hover:bg-danger-bg hover:text-danger"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </td>
+                )}
+              </tr>
+            ))}
+            {recordsQuery.data?.length === 0 && (
+              <tr>
+                <td colSpan={isAdmin ? 7 : 6} className="px-4 py-8 text-center text-on-surface-variant">
+                  No hay reportes para este período.
                 </td>
               </tr>
             )}

@@ -66,3 +66,42 @@ reportsRouter.get(
     res.json({ items, ...totals, avgEfficiency, year: year ?? null, semester: semester ?? null });
   })
 );
+
+reportsRouter.get(
+  "/records",
+  asyncHandler(async (req, res) => {
+    const year = req.query.year ? Number(req.query.year) : undefined;
+    const semester = req.query.semester ? Number(req.query.semester) : undefined;
+    const sectionFilter = year || semester ? { year, semester } : undefined;
+
+    const records = await prisma.consumptionRecord.findMany({
+      where: sectionFilter ? { section: sectionFilter } : undefined,
+      include: {
+        supply: { select: { name: true } },
+        section: {
+          select: {
+            id: true,
+            code: true,
+            workshop: { select: { name: true, subject: { select: { name: true } } } },
+          },
+        },
+      },
+      orderBy: { reportedAt: "desc" },
+    });
+
+    res.json(
+      records.map((r) => ({
+        id: r.id,
+        sectionId: r.sectionId,
+        supplyName: r.supply.name,
+        subjectName: r.section.workshop.subject.name,
+        workshopName: r.section.workshop.name,
+        sectionCode: r.section.code,
+        usedQty: r.usedQty,
+        reusedQty: r.reusedQty,
+        discardedQty: r.discardedQty,
+        reportedAt: r.reportedAt,
+      }))
+    );
+  })
+);
