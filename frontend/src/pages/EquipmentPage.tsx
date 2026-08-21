@@ -29,12 +29,19 @@ export function EquipmentPage() {
             to={`/equipamiento/${room.id}`}
             className="rounded-lg border border-outline-variant bg-surface-lowest p-4 hover:shadow-sm"
           >
-            <span className="rounded-md bg-surface-container p-2">
-              <DoorOpen size={18} className="text-secondary" />
-            </span>
-            <h3 className="mt-3 text-lg font-semibold text-on-surface">{room.name}</h3>
-            <p className="mt-2 border-t border-outline-variant pt-3 text-sm text-secondary">
-              {room._count?.equipment ?? 0} equipos →
+            <div className="mb-3 flex items-center justify-between">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary/10">
+                <DoorOpen size={22} className="text-secondary" />
+              </span>
+              {room.badCount > 0 && (
+                <span className="rounded-full bg-danger-bg px-2 py-0.5 text-xs font-semibold text-danger">
+                  {room.badCount} en mal estado
+                </span>
+              )}
+            </div>
+            <h3 className="text-lg font-semibold text-on-surface">{room.name}</h3>
+            <p className="mt-3 border-t border-outline-variant pt-3 text-sm text-secondary">
+              {room.equipmentCount} equipos →
             </p>
           </Link>
         ))}

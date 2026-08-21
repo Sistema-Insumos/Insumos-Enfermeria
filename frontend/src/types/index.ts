@@ -85,7 +85,8 @@ export interface Room {
   id: string;
   name: string;
   order: number;
-  _count?: { equipment: number };
+  equipmentCount: number;
+  badCount: number;
 }
 
 export interface Equipment {

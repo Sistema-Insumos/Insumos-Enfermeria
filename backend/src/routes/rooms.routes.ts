@@ -11,9 +11,16 @@ roomsRouter.get(
   asyncHandler(async (_req, res) => {
     const rooms = await prisma.room.findMany({
       orderBy: { order: "asc" },
-      include: { _count: { select: { equipment: true } } },
+      include: { equipment: { select: { status: true } } },
     });
-    res.json(rooms);
+
+    const result = rooms.map(({ equipment, ...room }) => ({
+      ...room,
+      equipmentCount: equipment.length,
+      badCount: equipment.filter((e) => e.status === "BAD").length,
+    }));
+
+    res.json(result);
   })
 );
 
