@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
-import { requireAuth } from "../middleware/auth";
+import { requireAdmin, requireAuth } from "../middleware/auth";
 import { asyncHandler } from "../utils/asyncHandler";
 
 export const purchaseOrdersRouter = Router();
@@ -121,6 +121,39 @@ purchaseOrdersRouter.patch(
       where: { id: req.params.id },
       data: { status },
     });
+    res.json(order);
+  })
+);
+
+const orderUpdateSchema = z.object({
+  status: z.enum(["DRAFT", "SENT", "RECEIVED", "CANCELLED"]).optional(),
+  items: z
+    .array(
+      z.object({
+        supplyId: z.string().min(1),
+        quantity: z.number().int().min(1),
+        estimatedCost: z.number().min(0),
+      })
+    )
+    .min(1)
+    .optional(),
+});
+
+purchaseOrdersRouter.patch(
+  "/:id",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const data = orderUpdateSchema.parse(req.body);
+
+    const order = await prisma.purchaseOrder.update({
+      where: { id: req.params.id },
+      data: {
+        ...(data.status ? { status: data.status } : {}),
+        ...(data.items ? { items: { deleteMany: {}, create: data.items } } : {}),
+      },
+      include: { items: { include: { supply: true } }, quotes: { include: { supplier: true } } },
+    });
+
     res.json(order);
   })
 );

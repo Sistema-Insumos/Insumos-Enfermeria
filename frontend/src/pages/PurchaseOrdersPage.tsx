@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, ShoppingCart, Sparkles, X } from "lucide-react";
+import { FileDown, Pencil, Plus, ShoppingCart, Sparkles, X } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { api } from "../lib/api";
 import { SupplyCombobox } from "../components/SupplyCombobox";
 import type { PurchaseOrder, Supply } from "../types";
@@ -12,8 +14,51 @@ const STATUS_LABEL: Record<PurchaseOrder["status"], string> = {
   CANCELLED: "Cancelada",
 };
 
+function exportOrderToPdf(order: PurchaseOrder) {
+  const doc = new jsPDF();
+
+  doc.setFontSize(16);
+  doc.text(`Orden de Compra #${order.id.slice(-6).toUpperCase()}`, 14, 18);
+  doc.setFontSize(10);
+  doc.setTextColor(100);
+  doc.text(
+    `Fecha: ${new Date(order.createdAt).toLocaleDateString("es-CL")} · Estado: ${STATUS_LABEL[order.status]}`,
+    14,
+    24
+  );
+
+  autoTable(doc, {
+    startY: 30,
+    head: [["Insumo", "Cantidad", "Costo Estimado"]],
+    body: order.items.map((item) => [
+      item.supply.name,
+      String(item.quantity),
+      `$${Number(item.estimatedCost).toLocaleString()}`,
+    ]),
+  });
+
+  if (order.quotes.length > 0) {
+    const finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    doc.text("Cotizaciones", 14, finalY + 10);
+    autoTable(doc, {
+      startY: finalY + 14,
+      head: [["Proveedor", "Total", "Disponibilidad"]],
+      body: order.quotes.map((q) => [
+        q.supplier.name,
+        `$${Number(q.total).toLocaleString()}`,
+        q.availability ?? "—",
+      ]),
+    });
+  }
+
+  doc.save(`orden-compra-${order.id.slice(-6).toLowerCase()}.pdf`);
+}
+
 export function PurchaseOrdersPage() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingOrder, setEditingOrder] = useState<PurchaseOrder | null>(null);
 
   const ordersQuery = useQuery({
     queryKey: ["purchase-orders"],
@@ -72,9 +117,25 @@ export function PurchaseOrdersPage() {
                   </span>
                 )}
               </div>
-              <span className="rounded-full bg-surface-container px-2 py-0.5 text-xs font-semibold text-on-surface-variant">
-                {STATUS_LABEL[order.status]}
-              </span>
+              <div className="flex items-center gap-1">
+                <span className="rounded-full bg-surface-container px-2 py-0.5 text-xs font-semibold text-on-surface-variant">
+                  {STATUS_LABEL[order.status]}
+                </span>
+                <button
+                  onClick={() => exportOrderToPdf(order)}
+                  title="Exportar PDF"
+                  className="rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                >
+                  <FileDown size={14} />
+                </button>
+                <button
+                  onClick={() => setEditingOrder(order)}
+                  title="Editar orden"
+                  className="rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                >
+                  <Pencil size={14} />
+                </button>
+              </div>
             </div>
             {order.isPreliminary && (
               <p className="mb-3 text-xs text-on-surface-variant">
@@ -132,12 +193,15 @@ export function PurchaseOrdersPage() {
         )}
       </div>
 
-      {modalOpen && <NewOrderModal onClose={() => setModalOpen(false)} />}
+      {modalOpen && <OrderFormModal onClose={() => setModalOpen(false)} />}
+      {editingOrder && (
+        <OrderFormModal editing={editingOrder} onClose={() => setEditingOrder(null)} />
+      )}
     </div>
   );
 }
 
-function NewOrderModal({ onClose }: { onClose: () => void }) {
+function OrderFormModal({ onClose, editing }: { onClose: () => void; editing?: PurchaseOrder }) {
   const queryClient = useQueryClient();
   const suppliesQuery = useQuery({
     queryKey: ["supplies", "", "asc"],
@@ -149,11 +213,24 @@ function NewOrderModal({ onClose }: { onClose: () => void }) {
     },
   });
 
-  const [items, setItems] = useState([{ supplyId: "", quantity: 1, estimatedCost: 0 }]);
+  const [items, setItems] = useState(
+    editing
+      ? editing.items.map((it) => ({
+          supplyId: it.supplyId,
+          quantity: it.quantity,
+          estimatedCost: Number(it.estimatedCost),
+        }))
+      : [{ supplyId: "", quantity: 1, estimatedCost: 0 }]
+  );
+  const [status, setStatus] = useState<PurchaseOrder["status"]>(editing?.status ?? "DRAFT");
 
   const mutation = useMutation({
     mutationFn: async () => {
-      await api.post("/api/purchase-orders", { items });
+      if (editing) {
+        await api.patch(`/api/purchase-orders/${editing.id}`, { status, items });
+      } else {
+        await api.post("/api/purchase-orders", { items });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["purchase-orders"] });
@@ -165,11 +242,17 @@ function NewOrderModal({ onClose }: { onClose: () => void }) {
     setItems((list) => list.map((it, i) => (i === index ? { ...it, ...patch } : it)));
   }
 
+  function removeItem(index: number) {
+    setItems((list) => list.filter((_, i) => i !== index));
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg bg-surface-lowest p-6 shadow-xl">
         <div className="mb-4 flex items-start justify-between">
-          <h2 className="text-xl font-bold text-on-surface">Nueva Orden de Compra</h2>
+          <h2 className="text-xl font-bold text-on-surface">
+            {editing ? "Editar Orden de Compra" : "Nueva Orden de Compra"}
+          </h2>
           <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface">
             <X size={20} />
           </button>
@@ -182,8 +265,23 @@ function NewOrderModal({ onClose }: { onClose: () => void }) {
           }}
           className="flex flex-col gap-4"
         >
+          {editing && (
+            <label className="text-sm">
+              <span className="mb-1 block font-semibold text-on-surface">Estado</span>
+              <select
+                className="input"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as PurchaseOrder["status"])}
+              >
+                <option value="DRAFT">Borrador</option>
+                <option value="SENT">Enviada</option>
+                <option value="RECEIVED">Recibida</option>
+                <option value="CANCELLED">Cancelada</option>
+              </select>
+            </label>
+          )}
           {items.map((item, i) => (
-            <div key={i} className="grid grid-cols-5 gap-2">
+            <div key={i} className="grid grid-cols-6 gap-2">
               <SupplyCombobox
                 className="col-span-3"
                 supplies={suppliesQuery.data ?? []}
@@ -206,6 +304,15 @@ function NewOrderModal({ onClose }: { onClose: () => void }) {
                 value={item.estimatedCost}
                 onChange={(e) => updateItem(i, { estimatedCost: Number(e.target.value) })}
               />
+              <button
+                type="button"
+                onClick={() => removeItem(i)}
+                disabled={items.length <= 1}
+                title="Quitar insumo"
+                className="flex items-center justify-center rounded-md text-on-surface-variant hover:bg-danger-bg hover:text-danger disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                <X size={16} />
+              </button>
             </div>
           ))}
 
@@ -217,7 +324,9 @@ function NewOrderModal({ onClose }: { onClose: () => void }) {
             + Añadir insumo
           </button>
 
-          {mutation.isError && <p className="text-sm text-danger">No se pudo crear la orden.</p>}
+          {mutation.isError && (
+            <p className="text-sm text-danger">No se pudo guardar la orden.</p>
+          )}
 
           <div className="mt-2 flex justify-end gap-3 border-t border-outline-variant pt-4">
             <button
@@ -232,7 +341,11 @@ function NewOrderModal({ onClose }: { onClose: () => void }) {
               disabled={mutation.isPending}
               className="rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
             >
-              {mutation.isPending ? "Creando..." : "Crear Orden"}
+              {mutation.isPending
+                ? "Guardando..."
+                : editing
+                  ? "Guardar Cambios"
+                  : "Crear Orden"}
             </button>
           </div>
         </form>
