@@ -178,6 +178,23 @@ model Room {
   createdAt DateTime @default(now())
 }
 
+model StationerySupply {
+  id       String @id @default(cuid())
+  sku      String @unique
+  name     String
+  category String @default("General")
+  unit     String @default("uds")
+
+  currentStock  Int  @default(0)
+  minStock      Int  @default(0)
+  maxStock      Int?
+  newStock      Int  @default(0)
+  reusableStock Int  @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Equipment {
   id       String          @id @default(cuid())
   code     String          @unique

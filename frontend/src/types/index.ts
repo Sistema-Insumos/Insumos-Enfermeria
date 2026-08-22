@@ -95,6 +95,20 @@ export interface EquipmentSupply {
   createdAt: string;
 }
 
+export interface StationerySupply {
+  id: string;
+  sku: string;
+  name: string;
+  category: string;
+  unit: string;
+  currentStock: number;
+  minStock: number;
+  maxStock: number | null;
+  newStock: number;
+  reusableStock: number;
+  createdAt: string;
+}
+
 export interface Room {
   id: string;
   name: string;
