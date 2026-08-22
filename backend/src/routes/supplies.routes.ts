@@ -152,3 +152,63 @@ suppliesRouter.delete(
     res.status(204).send();
   })
 );
+
+const sendToEquipmentSchema = z.object({ quantity: z.number().int().min(1) });
+
+suppliesRouter.post(
+  "/:id/send-to-equipment",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const { quantity } = sendToEquipmentSchema.parse(req.body);
+
+    const supply = await prisma.supply.findUnique({ where: { id: req.params.id } });
+    if (!supply) return res.status(404).json({ error: "Insumo no encontrado" });
+    if (quantity > supply.currentStock) {
+      return res.status(400).json({ error: "La cantidad excede el stock disponible" });
+    }
+
+    // Draw the moved quantity from newStock first, falling back to reusableStock,
+    // so the new/reusable split stays consistent with currentStock afterward.
+    const fromNew = Math.min(quantity, supply.newStock);
+    const fromReusable = quantity - fromNew;
+
+    const equipmentSupply = await prisma.$transaction(async (tx) => {
+      await tx.supply.update({
+        where: { id: supply.id },
+        data: {
+          currentStock: { decrement: quantity },
+          newStock: { decrement: fromNew },
+          reusableStock: { decrement: fromReusable },
+        },
+      });
+
+      const existing = await tx.equipmentSupply.findFirst({
+        where: { name: { equals: supply.name, mode: "insensitive" } },
+      });
+
+      if (existing) {
+        return tx.equipmentSupply.update({
+          where: { id: existing.id },
+          data: {
+            currentStock: { increment: quantity },
+            newStock: { increment: quantity },
+          },
+        });
+      }
+
+      return tx.equipmentSupply.create({
+        data: {
+          sku: generateSku(supply.name, supply.category),
+          name: supply.name,
+          category: supply.category,
+          unit: supply.unit,
+          currentStock: quantity,
+          newStock: quantity,
+          minStock: supply.minStock,
+        },
+      });
+    });
+
+    res.status(201).json(equipmentSupply);
+  })
+);

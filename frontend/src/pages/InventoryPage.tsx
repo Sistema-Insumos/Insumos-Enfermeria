@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { ArrowDownAZ, ArrowUpAZ, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { ArrowDownAZ, ArrowUpAZ, Pencil, Plus, Search, Send, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import type { Subject, Supply } from "../types";
@@ -17,6 +17,7 @@ export function InventoryPage() {
   const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingSupply, setEditingSupply] = useState<Supply | null>(null);
+  const [sendingSupply, setSendingSupply] = useState<Supply | null>(null);
   const isAdmin = user?.role === "ADMIN";
   const lowStockOnly = searchParams.get("lowStock") === "1";
 
@@ -190,6 +191,14 @@ export function InventoryPage() {
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">
                       <button
+                        onClick={() => setSendingSupply(supply)}
+                        disabled={supply.currentStock <= 0}
+                        title="Enviar a Equipamiento"
+                        className="rounded-md p-1 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary disabled:cursor-not-allowed disabled:opacity-30"
+                      >
+                        <Send size={14} />
+                      </button>
+                      <button
                         onClick={() => setEditingSupply(supply)}
                         title="Editar insumo"
                         className="rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
@@ -250,6 +259,9 @@ export function InventoryPage() {
       {editingSupply && (
         <SupplyFormModal editing={editingSupply} onClose={() => setEditingSupply(null)} />
       )}
+      {sendingSupply && (
+        <SendToEquipmentModal supply={sendingSupply} onClose={() => setSendingSupply(null)} />
+      )}
     </div>
   );
 }
@@ -278,6 +290,80 @@ function StatCard({
         {value}
       </p>
     </Tag>
+  );
+}
+
+function SendToEquipmentModal({ supply, onClose }: { supply: Supply; onClose: () => void }) {
+  const queryClient = useQueryClient();
+  const [quantity, setQuantity] = useState(supply.currentStock);
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      await api.post(`/api/supplies/${supply.id}/send-to-equipment`, { quantity });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["supplies"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["equipment-supplies"] });
+      onClose();
+    },
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+      <div className="w-full max-w-sm rounded-lg bg-surface-lowest p-6 shadow-xl">
+        <div className="mb-4 flex items-start justify-between">
+          <h2 className="text-xl font-bold text-on-surface">Enviar a Equipamiento</h2>
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface">
+            <X size={20} />
+          </button>
+        </div>
+        <p className="mb-4 text-sm text-on-surface-variant">
+          Se restará del stock de <span className="font-semibold">{supply.name}</span> en Inventario y se
+          sumará como insumo en{" "}
+          <span className="font-semibold">Insumos de Equipamiento</span> (disponible: {supply.currentStock}).
+        </p>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            mutation.mutate();
+          }}
+          className="flex flex-col gap-4"
+        >
+          <label className="text-sm">
+            <span className="mb-1 block font-semibold text-on-surface">Cantidad a Enviar</span>
+            <input
+              type="number"
+              required
+              min={1}
+              max={supply.currentStock}
+              className="input"
+              value={quantity}
+              onChange={(e) => setQuantity(Number(e.target.value))}
+            />
+          </label>
+          {mutation.isError && (
+            <p className="text-sm text-danger">No se pudo enviar el insumo. Verifica la cantidad.</p>
+          )}
+          <div className="mt-2 flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-md border border-outline-variant px-4 py-2 text-sm font-semibold hover:bg-surface-container"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={mutation.isPending || quantity < 1 || quantity > supply.currentStock}
+              className="rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
+            >
+              {mutation.isPending ? "Enviando..." : "Confirmar Envío"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
 
