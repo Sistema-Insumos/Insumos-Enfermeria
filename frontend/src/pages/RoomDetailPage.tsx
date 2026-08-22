@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
-import type { Equipment, Room, Supply } from "../types";
+import type { Equipment, EquipmentSupply, Room } from "../types";
 
 const STATUS_LABEL: Record<Equipment["status"], string> = {
   GOOD: "Bueno",
@@ -73,7 +73,7 @@ export function RoomDetailPage() {
   const badCondition = items.filter((e) => e.status === "BAD").length;
   const totalValue = items.reduce((sum, e) => sum + Number(e.unitValue) * e.quantity, 0);
   const criticalSupplies = items.flatMap((e) =>
-    e.linkedSupplies.filter((l) => l.supply.currentStock < l.supply.minStock)
+    e.linkedSupplies.filter((l) => l.equipmentSupply.currentStock < l.equipmentSupply.minStock)
   ).length;
 
   return (
@@ -161,13 +161,15 @@ export function RoomDetailPage() {
                   {eq.linkedSupplies.length === 0 && <span className="text-on-surface-variant">—</span>}
                   {eq.linkedSupplies.map((l) => (
                     <div key={l.id} className="text-xs">
-                      <span className="font-medium">{l.supply.name}</span>{" "}
+                      <span className="font-medium">{l.equipmentSupply.name}</span>{" "}
                       <span
                         className={
-                          l.supply.currentStock < l.minThreshold ? "text-danger" : "text-on-surface-variant"
+                          l.equipmentSupply.currentStock < l.minThreshold
+                            ? "text-danger"
+                            : "text-on-surface-variant"
                         }
                       >
-                        ({l.supply.currentStock})
+                        ({l.equipmentSupply.currentStock})
                       </span>
                     </div>
                   ))}
@@ -251,10 +253,10 @@ function EquipmentFormModal({
 }) {
   const queryClient = useQueryClient();
   const suppliesQuery = useQuery({
-    queryKey: ["supplies", ""],
+    queryKey: ["equipment-supplies", ""],
     queryFn: async () => {
-      const { data } = await api.get("/api/supplies", { params: { pageSize: 100 } });
-      return data.items as Supply[];
+      const { data } = await api.get("/api/equipment-supplies", { params: { pageSize: 1000 } });
+      return data.items as EquipmentSupply[];
     },
   });
 
@@ -263,15 +265,15 @@ function EquipmentFormModal({
     name: editing?.name ?? "",
     status: editing?.status ?? ("GOOD" as Equipment["status"]),
     utility: editing?.utility ?? ("MEDIUM" as Equipment["utility"]),
-    linkedSupplyIds: editing?.linkedSupplies.map((l) => l.supplyId) ?? ([] as string[]),
+    linkedSupplyIds: editing?.linkedSupplies.map((l) => l.equipmentSupplyId) ?? ([] as string[]),
   });
 
-  function toggleLinkedSupply(supplyId: string) {
+  function toggleLinkedSupply(equipmentSupplyId: string) {
     setForm((f) => ({
       ...f,
-      linkedSupplyIds: f.linkedSupplyIds.includes(supplyId)
-        ? f.linkedSupplyIds.filter((id) => id !== supplyId)
-        : [...f.linkedSupplyIds, supplyId],
+      linkedSupplyIds: f.linkedSupplyIds.includes(equipmentSupplyId)
+        ? f.linkedSupplyIds.filter((id) => id !== equipmentSupplyId)
+        : [...f.linkedSupplyIds, equipmentSupplyId],
     }));
   }
 
@@ -281,7 +283,10 @@ function EquipmentFormModal({
       const payload = {
         ...rest,
         roomId,
-        linkedSupplies: linkedSupplyIds.map((supplyId) => ({ supplyId, autoDiscount: true })),
+        linkedSupplies: linkedSupplyIds.map((equipmentSupplyId) => ({
+          equipmentSupplyId,
+          autoDiscount: true,
+        })),
       };
       if (editing) {
         await api.patch(`/api/equipment/${editing.id}`, payload);
@@ -358,7 +363,7 @@ function EquipmentFormModal({
 
           <div>
             <p className="mb-2 text-sm font-semibold text-on-surface">
-              Insumos Vinculados (descuento automático)
+              Insumos de Equipamiento Vinculados (descuento automático)
             </p>
             <div className="flex flex-wrap gap-2">
               {suppliesQuery.data?.map((s) => (
@@ -376,7 +381,13 @@ function EquipmentFormModal({
                 </button>
               ))}
               {suppliesQuery.data?.length === 0 && (
-                <p className="text-xs text-on-surface-variant">No hay insumos registrados todavía.</p>
+                <p className="text-xs text-on-surface-variant">
+                  No hay insumos de equipamiento registrados todavía. Créalos en{" "}
+                  <Link to="/equipamiento/insumos" className="underline">
+                    Insumos de Equipamiento
+                  </Link>
+                  .
+                </p>
               )}
             </div>
           </div>

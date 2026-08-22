@@ -133,9 +133,27 @@ model Supply {
 
   subjects           SupplyOnSubject[]
   consumptionRecords ConsumptionRecord[]
-  equipmentLinks     EquipmentSupplyLink[]
-  equipmentUsages    EquipmentUsage[]
   purchaseOrderItems PurchaseOrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EquipmentSupply {
+  id       String @id @default(cuid())
+  sku      String @unique
+  name     String
+  category String @default("General")
+  unit     String @default("uds")
+
+  currentStock  Int  @default(0)
+  minStock      Int  @default(0)
+  maxStock      Int?
+  newStock      Int  @default(0)
+  reusableStock Int  @default(0)
+
+  equipmentLinks  EquipmentSupplyLink[]
+  equipmentUsages EquipmentUsage[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -187,14 +205,14 @@ model EquipmentSupplyLink {
   id          String  @id @default(cuid())
   equipmentId String
   equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
-  supplyId    String
-  supply      Supply    @relation(fields: [supplyId], references: [id], onDelete: Cascade)
+  equipmentSupplyId String
+  equipmentSupply   EquipmentSupply @relation(fields: [equipmentSupplyId], references: [id], onDelete: Cascade)
 
   minThreshold  Int     @default(0)
   maxThreshold  Int?
   autoDiscount  Boolean @default(false)
 
-  @@unique([equipmentId, supplyId])
+  @@unique([equipmentId, equipmentSupplyId])
 }
 
 model EquipmentUsage {
@@ -204,8 +222,8 @@ model EquipmentUsage {
   sectionId   String?
   section     Section?  @relation(fields: [sectionId], references: [id])
 
-  supplyId String?
-  supply   Supply? @relation(fields: [supplyId], references: [id], onDelete: SetNull)
+  equipmentSupplyId String?
+  equipmentSupply   EquipmentSupply? @relation(fields: [equipmentSupplyId], references: [id], onDelete: SetNull)
 
   usedQty      Decimal @default(0) @db.Decimal(10, 2)
   reusedQty    Decimal @default(0) @db.Decimal(10, 2)

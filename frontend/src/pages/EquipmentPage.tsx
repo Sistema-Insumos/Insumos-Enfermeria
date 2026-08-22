@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { DoorOpen, LayoutGrid } from "lucide-react";
+import { Boxes, DoorOpen, LayoutGrid } from "lucide-react";
 import { api } from "../lib/api";
-import type { Room } from "../types";
+import type { EquipmentSupply, Room } from "../types";
 
 export function EquipmentPage() {
   const roomsQuery = useQuery({
@@ -12,6 +12,17 @@ export function EquipmentPage() {
       return data as Room[];
     },
   });
+
+  const equipmentSuppliesQuery = useQuery({
+    queryKey: ["equipment-supplies", ""],
+    queryFn: async () => {
+      const { data } = await api.get("/api/equipment-supplies", { params: { pageSize: 1000 } });
+      return data as { items: EquipmentSupply[]; total: number };
+    },
+  });
+
+  const lowStockSupplies =
+    equipmentSuppliesQuery.data?.items.filter((i) => i.currentStock < i.minStock).length ?? 0;
 
   return (
     <div>
@@ -44,6 +55,25 @@ export function EquipmentPage() {
             </p>
           </Link>
         )}
+        <Link
+          to="/equipamiento/insumos"
+          className="rounded-lg border border-secondary bg-secondary/5 p-4 hover:shadow-sm"
+        >
+          <div className="mb-3 flex items-center justify-between">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary/15">
+              <Boxes size={22} className="text-secondary" />
+            </span>
+            {lowStockSupplies > 0 && (
+              <span className="rounded-full bg-danger-bg px-2 py-0.5 text-xs font-semibold text-danger">
+                {lowStockSupplies} bajo stock
+              </span>
+            )}
+          </div>
+          <h3 className="text-lg font-semibold text-on-surface">INSUMOS DE EQUIPAMIENTO</h3>
+          <p className="mt-3 border-t border-outline-variant pt-3 text-sm text-secondary">
+            {equipmentSuppliesQuery.data?.total ?? 0} insumos propios de equipos →
+          </p>
+        </Link>
         {roomsQuery.data?.map((room) => (
           <Link
             key={room.id}

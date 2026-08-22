@@ -64,8 +64,8 @@ export interface EquipmentUsage {
   equipmentId: string;
   equipment: Equipment;
   sectionId: string | null;
-  supplyId: string | null;
-  supply: Supply | null;
+  equipmentSupplyId: string | null;
+  equipmentSupply: EquipmentSupply | null;
   usedQty: string;
   reusedQty: string;
   discardedQty: string;
@@ -74,11 +74,25 @@ export interface EquipmentUsage {
 
 export interface EquipmentLinkedSupply {
   id: string;
-  supplyId: string;
-  supply: Supply;
+  equipmentSupplyId: string;
+  equipmentSupply: EquipmentSupply;
   minThreshold: number;
   maxThreshold: number | null;
   autoDiscount: boolean;
+}
+
+export interface EquipmentSupply {
+  id: string;
+  sku: string;
+  name: string;
+  category: string;
+  unit: string;
+  currentStock: number;
+  minStock: number;
+  maxStock: number | null;
+  newStock: number;
+  reusableStock: number;
+  createdAt: string;
 }
 
 export interface Room {

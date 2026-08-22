@@ -17,7 +17,10 @@ sectionsRouter.get(
         professor: true,
         workshop: { include: { subject: true } },
         consumptionRecords: { include: { supply: true }, orderBy: { reportedAt: "desc" } },
-        equipmentUsages: { include: { equipment: true, supply: true }, orderBy: { usedAt: "desc" } },
+        equipmentUsages: {
+          include: { equipment: true, equipmentSupply: true },
+          orderBy: { usedAt: "desc" },
+        },
       },
     });
     if (!section) return res.status(404).json({ error: "Sección no encontrada" });
@@ -128,22 +131,21 @@ sectionsRouter.post(
           data: {
             sectionId: created.id,
             equipmentId: usage.equipmentId,
-            supplyId: usage.supplyId,
+            equipmentSupplyId: usage.equipmentSupplyId,
             usedQty: usage.usedQty,
             reusedQty: usage.reusedQty,
             discardedQty: usage.discardedQty,
           },
         });
-        if (usage.supplyId) {
-          await tx.supply.update({
-            where: { id: usage.supplyId },
+        if (usage.equipmentSupplyId) {
+          await tx.equipmentSupply.update({
+            where: { id: usage.equipmentSupplyId },
             data: {
               currentStock: { increment: Number(usage.reusedQty) - Number(usage.usedQty) },
               newStock: { decrement: Number(usage.usedQty) },
               reusableStock: { increment: Number(usage.reusedQty) },
             },
           });
-          affectedSupplyIds.add(usage.supplyId);
         }
       }
 
@@ -156,7 +158,7 @@ sectionsRouter.post(
         include: {
           professor: true,
           consumptionRecords: { include: { supply: true } },
-          equipmentUsages: { include: { equipment: true, supply: true } },
+          equipmentUsages: { include: { equipment: true, equipmentSupply: true } },
         },
       });
     });
@@ -285,7 +287,7 @@ sectionsRouter.delete(
 
 const equipmentUsageSchema = z.object({
   equipmentId: z.string().min(1),
-  supplyId: z.string().min(1),
+  equipmentSupplyId: z.string().min(1),
   usedQty: z.number().min(0),
   reusedQty: z.number().min(0).default(0),
   discardedQty: z.number().min(0).default(0),
@@ -300,19 +302,17 @@ sectionsRouter.post(
     const usage = await prisma.$transaction(async (tx) => {
       const created = await tx.equipmentUsage.create({
         data: { ...data, sectionId },
-        include: { equipment: true, supply: true },
+        include: { equipment: true, equipmentSupply: true },
       });
 
-      await tx.supply.update({
-        where: { id: data.supplyId },
+      await tx.equipmentSupply.update({
+        where: { id: data.equipmentSupplyId },
         data: {
           currentStock: { increment: data.reusedQty - data.usedQty },
           newStock: { decrement: data.usedQty },
           reusableStock: { increment: data.reusedQty },
         },
       });
-
-      await syncPreliminaryPurchaseOrder(tx, data.supplyId);
 
       return created;
     });
@@ -336,15 +336,15 @@ sectionsRouter.patch(
 
     const usage = await prisma.$transaction(async (tx) => {
       const existing = await tx.equipmentUsage.findUnique({ where: { id: usageId } });
-      if (!existing || !existing.supplyId) return null;
+      if (!existing || !existing.equipmentSupplyId) return null;
 
       const oldUsedQty = Number(existing.usedQty);
       const oldReusedQty = Number(existing.reusedQty);
       const newUsedQty = data.usedQty ?? oldUsedQty;
       const newReusedQty = data.reusedQty ?? oldReusedQty;
 
-      await tx.supply.update({
-        where: { id: existing.supplyId },
+      await tx.equipmentSupply.update({
+        where: { id: existing.equipmentSupplyId },
         data: {
           currentStock: { increment: newReusedQty - newUsedQty - (oldReusedQty - oldUsedQty) },
           newStock: { decrement: newUsedQty - oldUsedQty },
@@ -355,10 +355,9 @@ sectionsRouter.patch(
       const updated = await tx.equipmentUsage.update({
         where: { id: usageId },
         data,
-        include: { equipment: true, supply: true },
+        include: { equipment: true, equipmentSupply: true },
       });
 
-      await syncPreliminaryPurchaseOrder(tx, existing.supplyId);
       return updated;
     });
 
@@ -375,10 +374,10 @@ sectionsRouter.delete(
 
     const found = await prisma.$transaction(async (tx) => {
       const existing = await tx.equipmentUsage.findUnique({ where: { id: usageId } });
-      if (!existing || !existing.supplyId) return false;
+      if (!existing || !existing.equipmentSupplyId) return false;
 
-      await tx.supply.update({
-        where: { id: existing.supplyId },
+      await tx.equipmentSupply.update({
+        where: { id: existing.equipmentSupplyId },
         data: {
           currentStock: { increment: Number(existing.usedQty) - Number(existing.reusedQty) },
           newStock: { increment: Number(existing.usedQty) },
@@ -387,7 +386,6 @@ sectionsRouter.delete(
       });
 
       await tx.equipmentUsage.delete({ where: { id: usageId } });
-      await syncPreliminaryPurchaseOrder(tx, existing.supplyId);
       return true;
     });
 

@@ -26,7 +26,7 @@ equipmentRouter.get(
           roomId ? { roomId } : {},
         ],
       },
-      include: { linkedSupplies: { include: { supply: true } }, room: true },
+      include: { linkedSupplies: { include: { equipmentSupply: true } }, room: true },
       orderBy: { createdAt: "desc" },
     });
 
@@ -39,7 +39,7 @@ equipmentRouter.get(
   asyncHandler(async (req, res) => {
     const equipment = await prisma.equipment.findUnique({
       where: { id: req.params.id },
-      include: { linkedSupplies: { include: { supply: true } }, usages: true, room: true },
+      include: { linkedSupplies: { include: { equipmentSupply: true } }, usages: true, room: true },
     });
     if (!equipment) return res.status(404).json({ error: "Equipo no encontrado" });
     res.json(equipment);
@@ -47,7 +47,7 @@ equipmentRouter.get(
 );
 
 const linkedSupplySchema = z.object({
-  supplyId: z.string().min(1),
+  equipmentSupplyId: z.string().min(1),
   minThreshold: z.number().int().min(0).default(0),
   maxThreshold: z.number().int().min(0).optional(),
   autoDiscount: z.boolean().default(false),

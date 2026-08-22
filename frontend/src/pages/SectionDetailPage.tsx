@@ -353,20 +353,22 @@ function EquipmentUsageCard({
 
   const [draft, setDraft] = useState({
     equipmentId: "",
-    supplyId: "",
+    equipmentSupplyId: "",
     usedQty: 0,
     reusedQty: 0,
     discardedQty: 0,
   });
   const selectedEquipment = equipmentQuery.data?.find((e) => e.id === draft.equipmentId);
-  const linkedSupply = selectedEquipment?.linkedSupplies.find((l) => l.supplyId === draft.supplyId)?.supply ?? null;
+  const linkedSupply =
+    selectedEquipment?.linkedSupplies.find((l) => l.equipmentSupplyId === draft.equipmentSupplyId)
+      ?.equipmentSupply ?? null;
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const { equipmentId, supplyId, usedQty, reusedQty, discardedQty } = draft;
+      const { equipmentId, equipmentSupplyId, usedQty, reusedQty, discardedQty } = draft;
       await api.post(`/api/sections/${sectionId}/equipment-usage`, {
         equipmentId,
-        supplyId,
+        equipmentSupplyId,
         usedQty,
         reusedQty,
         discardedQty,
@@ -374,14 +376,18 @@ function EquipmentUsageCard({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["section", sectionId] });
-      queryClient.invalidateQueries({ queryKey: ["supplies"] });
-      setDraft({ equipmentId: "", supplyId: "", usedQty: 0, reusedQty: 0, discardedQty: 0 });
+      queryClient.invalidateQueries({ queryKey: ["equipment-supplies"] });
+      setDraft({ equipmentId: "", equipmentSupplyId: "", usedQty: 0, reusedQty: 0, discardedQty: 0 });
     },
   });
 
   function selectEquipment(equipmentId: string) {
     const eq = equipmentQuery.data?.find((e) => e.id === equipmentId);
-    setDraft((d) => ({ ...d, equipmentId, supplyId: eq?.linkedSupplies[0]?.supplyId ?? "" }));
+    setDraft((d) => ({
+      ...d,
+      equipmentId,
+      equipmentSupplyId: eq?.linkedSupplies[0]?.equipmentSupplyId ?? "",
+    }));
   }
 
   const equipmentWithSupplies = equipmentQuery.data?.filter((e) => e.linkedSupplies.length > 0) ?? [];
@@ -404,7 +410,7 @@ function EquipmentUsageCard({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["section", sectionId] });
-      queryClient.invalidateQueries({ queryKey: ["supplies"] });
+      queryClient.invalidateQueries({ queryKey: ["equipment-supplies"] });
       setEditingUsageId(null);
     },
   });
@@ -415,7 +421,7 @@ function EquipmentUsageCard({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["section", sectionId] });
-      queryClient.invalidateQueries({ queryKey: ["supplies"] });
+      queryClient.invalidateQueries({ queryKey: ["equipment-supplies"] });
     },
   });
 
@@ -449,7 +455,7 @@ function EquipmentUsageCard({
             return (
               <tr key={usage.id} className="border-t border-outline-variant">
                 <td className="px-4 py-2 font-medium">{usage.equipment.name}</td>
-                <td className="px-4 py-2 text-on-surface-variant">{usage.supply?.name ?? "—"}</td>
+                <td className="px-4 py-2 text-on-surface-variant">{usage.equipmentSupply?.name ?? "—"}</td>
                 {isEditing ? (
                   <>
                     <td className="px-2 py-1">
@@ -566,12 +572,12 @@ function EquipmentUsageCard({
           <select
             required
             className="input col-span-3"
-            value={draft.supplyId}
-            onChange={(e) => setDraft((d) => ({ ...d, supplyId: e.target.value }))}
+            value={draft.equipmentSupplyId}
+            onChange={(e) => setDraft((d) => ({ ...d, equipmentSupplyId: e.target.value }))}
           >
             {selectedEquipment.linkedSupplies.map((l) => (
-              <option key={l.supplyId} value={l.supplyId}>
-                {l.supply.name}
+              <option key={l.equipmentSupplyId} value={l.equipmentSupplyId}>
+                {l.equipmentSupply.name}
               </option>
             ))}
           </select>
@@ -609,7 +615,7 @@ function EquipmentUsageCard({
         </label>
         <button
           type="submit"
-          disabled={mutation.isPending || !draft.equipmentId || !draft.supplyId}
+          disabled={mutation.isPending || !draft.equipmentId || !draft.equipmentSupplyId}
           className="col-span-3 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
         >
           Reportar
