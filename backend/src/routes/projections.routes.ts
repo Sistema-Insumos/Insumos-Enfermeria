@@ -105,10 +105,16 @@ const futureNeedSchema = z.object({
   status: z.enum(["PENDING", "IN_PROGRESS"]).optional(),
 });
 
+const FUTURE_NEED_SORTABLE_FIELDS = ["name", "estimatedQty", "priority", "createdAt"];
+
 projectionsRouter.get(
   "/future-needs",
-  asyncHandler(async (_req, res) => {
-    const needs = await prisma.futureSupplyNeed.findMany({ orderBy: { createdAt: "desc" } });
+  asyncHandler(async (req, res) => {
+    const { sortBy = "createdAt", sortDir = "desc" } = req.query as Record<string, string>;
+    const orderField = FUTURE_NEED_SORTABLE_FIELDS.includes(sortBy) ? sortBy : "createdAt";
+    const orderDir = sortDir === "asc" ? "asc" : "desc";
+
+    const needs = await prisma.futureSupplyNeed.findMany({ orderBy: { [orderField]: orderDir } });
     res.json(needs);
   })
 );

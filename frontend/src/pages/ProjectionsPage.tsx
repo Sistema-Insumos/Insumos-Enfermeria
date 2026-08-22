@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, Check, FileDown, Pencil, Plus, ShoppingCart, Trash2, X } from "lucide-react";
+import {
+  ArrowDownAZ,
+  ArrowRight,
+  ArrowUpAZ,
+  Check,
+  FileDown,
+  Pencil,
+  Plus,
+  ShoppingCart,
+  Trash2,
+  X,
+} from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { api } from "../lib/api";
@@ -52,6 +63,7 @@ export function ProjectionsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingNeed, setEditingNeed] = useState<FutureSupplyNeed | null>(null);
   const [sentIds, setSentIds] = useState<Set<string>>(new Set());
+  const [needsSortDir, setNeedsSortDir] = useState<"asc" | "desc">("asc");
 
   useEffect(() => {
     setSentIds(new Set());
@@ -66,9 +78,11 @@ export function ProjectionsPage() {
   });
 
   const futureNeedsQuery = useQuery({
-    queryKey: ["future-needs"],
+    queryKey: ["future-needs", needsSortDir],
     queryFn: async () => {
-      const { data } = await api.get("/api/projections/future-needs");
+      const { data } = await api.get("/api/projections/future-needs", {
+        params: { sortBy: "name", sortDir: needsSortDir },
+      });
       return data as FutureSupplyNeed[];
     },
   });
@@ -255,6 +269,14 @@ export function ProjectionsPage() {
       <div className="mt-8 mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-on-surface">Insumos Futuros</h2>
         <div className="flex gap-2">
+          <button
+            onClick={() => setNeedsSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+            title={needsSortDir === "asc" ? "Ordenar Z-A" : "Ordenar A-Z"}
+            className="flex items-center gap-2 rounded-md border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container"
+          >
+            {needsSortDir === "asc" ? <ArrowDownAZ size={18} /> : <ArrowUpAZ size={18} />}
+            {needsSortDir === "asc" ? "A-Z" : "Z-A"}
+          </button>
           <button
             onClick={() => exportFutureNeedsToPdf(pendingNeeds)}
             disabled={pendingNeeds.length === 0}
