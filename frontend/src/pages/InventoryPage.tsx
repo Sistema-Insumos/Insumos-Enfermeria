@@ -321,7 +321,7 @@ function SendToEquipmentModal({ supply, onClose }: { supply: Supply; onClose: ()
         <p className="mb-4 text-sm text-on-surface-variant">
           Se restará del stock de <span className="font-semibold">{supply.name}</span> en Inventario y se
           sumará como insumo en{" "}
-          <span className="font-semibold">Insumos de Equipamiento</span> (disponible: {supply.currentStock}).
+          <span className="font-semibold">Complementario</span> (disponible: {supply.currentStock}).
         </p>
         <form
           onSubmit={(e) => {

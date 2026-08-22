@@ -363,7 +363,7 @@ function EquipmentFormModal({
 
           <div>
             <p className="mb-2 text-sm font-semibold text-on-surface">
-              Insumos de Equipamiento Vinculados (descuento automático)
+              Complementario Vinculado (descuento automático)
             </p>
             <div className="flex flex-wrap gap-2">
               {suppliesQuery.data?.map((s) => (
@@ -382,9 +382,9 @@ function EquipmentFormModal({
               ))}
               {suppliesQuery.data?.length === 0 && (
                 <p className="text-xs text-on-surface-variant">
-                  No hay insumos de equipamiento registrados todavía. Créalos en{" "}
+                  No hay insumos complementarios registrados todavía. Créalos en{" "}
                   <Link to="/equipamiento/insumos" className="underline">
-                    Insumos de Equipamiento
+                    Complementario
                   </Link>
                   .
                 </p>

@@ -80,7 +80,7 @@ export function EquipmentPage() {
               </span>
             )}
           </div>
-          <h3 className="text-lg font-semibold text-on-surface">INSUMOS DE EQUIPAMIENTO</h3>
+          <h3 className="text-lg font-semibold text-on-surface">COMPLEMENTARIO</h3>
           <p className="mt-3 border-t border-outline-variant pt-3 text-sm text-secondary">
             {equipmentSuppliesQuery.data?.total ?? 0} insumos propios de equipos →
           </p>

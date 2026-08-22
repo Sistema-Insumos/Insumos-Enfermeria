@@ -37,7 +37,7 @@ export function EquipmentSuppliesPage() {
   });
 
   function handleDelete(item: EquipmentSupply) {
-    if (confirm(`¿Eliminar el insumo de equipamiento "${item.name}"?`)) {
+    if (confirm(`¿Eliminar el insumo complementario "${item.name}"?`)) {
       deleteMutation.mutate(item.id);
     }
   }
@@ -51,12 +51,12 @@ export function EquipmentSuppliesPage() {
         <Link to="/equipamiento" className="hover:underline">
           Equipamiento
         </Link>{" "}
-        / Insumos de Equipamiento
+        / Complementario
       </p>
 
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-on-surface">Insumos de Equipamiento</h1>
+          <h1 className="text-3xl font-bold text-on-surface">Complementario</h1>
           <p className="mt-1 text-on-surface-variant">
             Stock exclusivo para insumos que solo ocupan los equipos (pilas, repuestos, gel, etc.),
             independiente del inventario general.
@@ -143,7 +143,7 @@ export function EquipmentSuppliesPage() {
             {!itemsQuery.isLoading && items.length === 0 && (
               <tr>
                 <td colSpan={isAdmin ? 7 : 6} className="px-4 py-8 text-center text-on-surface-variant">
-                  No hay insumos de equipamiento registrados todavía.
+                  No hay insumos complementarios registrados todavía.
                 </td>
               </tr>
             )}
@@ -222,7 +222,7 @@ function EquipmentSupplyFormModal({
       <div className="w-full max-w-md rounded-lg bg-surface-lowest p-6 shadow-xl">
         <div className="mb-4 flex items-start justify-between">
           <h2 className="text-xl font-bold text-on-surface">
-            {editing ? "Editar Insumo de Equipamiento" : "Agregar Insumo de Equipamiento"}
+            {editing ? "Editar Insumo Complementario" : "Agregar Insumo Complementario"}
           </h2>
           <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface">
             <X size={20} />
