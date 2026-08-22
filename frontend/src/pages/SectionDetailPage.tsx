@@ -5,6 +5,7 @@ import { Check, Pencil, Trash2, Wrench, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { SupplyCombobox } from "../components/SupplyCombobox";
+import { EquipmentCombobox } from "../components/EquipmentCombobox";
 import type { ConsumptionRecord, Equipment, EquipmentUsage, Section, Supply } from "../types";
 
 function numOrEmpty(n: number): number | string {
@@ -362,13 +363,14 @@ function EquipmentUsageCard({
   const linkedSupply =
     selectedEquipment?.linkedSupplies.find((l) => l.equipmentSupplyId === draft.equipmentSupplyId)
       ?.equipmentSupply ?? null;
+  const needsSupplyChoice = (selectedEquipment?.linkedSupplies.length ?? 0) > 1;
 
   const mutation = useMutation({
     mutationFn: async () => {
       const { equipmentId, equipmentSupplyId, usedQty, reusedQty, discardedQty } = draft;
       await api.post(`/api/sections/${sectionId}/equipment-usage`, {
         equipmentId,
-        equipmentSupplyId,
+        equipmentSupplyId: equipmentSupplyId || undefined,
         usedQty,
         reusedQty,
         discardedQty,
@@ -390,7 +392,7 @@ function EquipmentUsageCard({
     }));
   }
 
-  const equipmentWithSupplies = equipmentQuery.data?.filter((e) => e.linkedSupplies.length > 0) ?? [];
+  const allEquipment = equipmentQuery.data ?? [];
 
   const [editingUsageId, setEditingUsageId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState({ usedQty: 0, reusedQty: 0, discardedQty: 0 });
@@ -554,19 +556,12 @@ function EquipmentUsageCard({
         }}
         className="grid grid-cols-3 gap-2 border-t border-outline-variant p-4"
       >
-        <select
-          required
-          className="input col-span-3"
+        <EquipmentCombobox
+          className="col-span-3"
+          equipment={allEquipment}
           value={draft.equipmentId}
-          onChange={(e) => selectEquipment(e.target.value)}
-        >
-          <option value="">Seleccionar equipo...</option>
-          {equipmentWithSupplies.map((eq) => (
-            <option key={eq.id} value={eq.id}>
-              {eq.name}
-            </option>
-          ))}
-        </select>
+          onChange={(id) => selectEquipment(id)}
+        />
 
         {selectedEquipment && selectedEquipment.linkedSupplies.length > 1 && (
           <select
@@ -615,7 +610,9 @@ function EquipmentUsageCard({
         </label>
         <button
           type="submit"
-          disabled={mutation.isPending || !draft.equipmentId || !draft.equipmentSupplyId}
+          disabled={
+            mutation.isPending || !draft.equipmentId || (needsSupplyChoice && !draft.equipmentSupplyId)
+          }
           className="col-span-3 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-on-secondary hover:opacity-90 disabled:opacity-60"
         >
           Reportar
