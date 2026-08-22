@@ -7,10 +7,20 @@ import { asyncHandler } from "../utils/asyncHandler";
 export const equipmentRouter = Router();
 equipmentRouter.use(requireAuth);
 
+const SORTABLE_FIELDS = ["name", "code", "quantity", "createdAt"];
+
 equipmentRouter.get(
   "/",
   asyncHandler(async (req, res) => {
-    const { search, roomId } = req.query as Record<string, string>;
+    const {
+      search,
+      roomId,
+      sortBy = "createdAt",
+      sortDir = "desc",
+    } = req.query as Record<string, string>;
+
+    const orderField = SORTABLE_FIELDS.includes(sortBy) ? sortBy : "createdAt";
+    const orderDir = sortDir === "asc" ? "asc" : "desc";
 
     const items = await prisma.equipment.findMany({
       where: {
@@ -27,7 +37,7 @@ equipmentRouter.get(
         ],
       },
       include: { linkedSupplies: { include: { equipmentSupply: true } }, room: true },
-      orderBy: { createdAt: "desc" },
+      orderBy: { [orderField]: orderDir },
     });
 
     res.json(items);

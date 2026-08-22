@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { ArrowDownAZ, ArrowUpAZ, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import type { Equipment, EquipmentSupply, Room } from "../types";
@@ -32,6 +32,7 @@ export function AllEquipmentPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEquipment, setEditingEquipment] = useState<Equipment | null>(null);
   const isAdmin = user?.role === "ADMIN";
@@ -45,9 +46,11 @@ export function AllEquipmentPage() {
   });
 
   const equipmentQuery = useQuery({
-    queryKey: ["equipment", "general", search],
+    queryKey: ["equipment", "general", search, sortDir],
     queryFn: async () => {
-      const { data } = await api.get("/api/equipment", { params: { search } });
+      const { data } = await api.get("/api/equipment", {
+        params: { search, sortBy: "name", sortDir },
+      });
       return data as Equipment[];
     },
   });
@@ -114,14 +117,24 @@ export function AllEquipmentPage() {
         />
       </div>
 
-      <div className="mb-4 flex items-center gap-2 rounded-md border border-outline-variant bg-surface-lowest px-3 py-2">
-        <Search size={18} className="text-on-surface-variant" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar por código, serial o nombre..."
-          className="w-full bg-transparent text-sm outline-none"
-        />
+      <div className="mb-4 flex items-center gap-2">
+        <div className="flex flex-1 items-center gap-2 rounded-md border border-outline-variant bg-surface-lowest px-3 py-2">
+          <Search size={18} className="text-on-surface-variant" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por código, serial o nombre..."
+            className="w-full bg-transparent text-sm outline-none"
+          />
+        </div>
+        <button
+          onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+          title={sortDir === "asc" ? "Ordenar Z-A" : "Ordenar A-Z"}
+          className="flex items-center gap-2 rounded-md border border-outline-variant bg-surface-lowest px-3 py-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container"
+        >
+          {sortDir === "asc" ? <ArrowDownAZ size={18} /> : <ArrowUpAZ size={18} />}
+          {sortDir === "asc" ? "A-Z" : "Z-A"}
+        </button>
       </div>
 
       <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-lowest">
