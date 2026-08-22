@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Sparkles, X } from "lucide-react";
+import { Plus, ShoppingCart, Sparkles, X } from "lucide-react";
 import { api } from "../lib/api";
 import { SupplyCombobox } from "../components/SupplyCombobox";
 import type { PurchaseOrder, Supply } from "../types";
@@ -65,6 +65,12 @@ export function PurchaseOrdersPage() {
                     Preliminar · se actualiza sola
                   </span>
                 )}
+                {order.fromProjection && (
+                  <span className="flex items-center gap-1 rounded-full bg-secondary/15 px-2 py-0.5 text-xs font-semibold text-secondary">
+                    <ShoppingCart size={12} />
+                    Desde Proyección
+                  </span>
+                )}
               </div>
               <span className="rounded-full bg-surface-container px-2 py-0.5 text-xs font-semibold text-on-surface-variant">
                 {STATUS_LABEL[order.status]}
@@ -74,6 +80,11 @@ export function PurchaseOrdersPage() {
               <p className="mb-3 text-xs text-on-surface-variant">
                 Se arma automáticamente con los insumos que caen bajo su stock mínimo al reportar consumo o
                 uso de equipamiento.
+              </p>
+            )}
+            {order.fromProjection && (
+              <p className="mb-3 text-xs text-on-surface-variant">
+                Se arma con los insumos que enviaste manualmente desde Proyección.
               </p>
             )}
 

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, FileDown, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ArrowRight, Check, FileDown, Pencil, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { api } from "../lib/api";
@@ -51,6 +51,11 @@ export function ProjectionsPage() {
   const [semester, setSemester] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingNeed, setEditingNeed] = useState<FutureSupplyNeed | null>(null);
+  const [sentIds, setSentIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    setSentIds(new Set());
+  }, [year, semester]);
 
   const projectionQuery = useQuery({
     queryKey: ["projections", year, semester],
@@ -73,6 +78,20 @@ export function ProjectionsPage() {
       await api.delete(`/api/projections/future-needs/${id}`);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["future-needs"] }),
+  });
+
+  const sendToOrderMutation = useMutation({
+    mutationFn: async (item: { id: string; diff: number; estimatedCost: number }) => {
+      await api.post("/api/purchase-orders/projection-items", {
+        supplyId: item.id,
+        quantity: Math.abs(item.diff),
+        estimatedCost: item.estimatedCost,
+      });
+    },
+    onSuccess: (_data, item) => {
+      queryClient.invalidateQueries({ queryKey: ["purchase-orders"] });
+      setSentIds((prev) => new Set(prev).add(item.id));
+    },
   });
 
   const statusMutation = useMutation({
@@ -166,6 +185,7 @@ export function ProjectionsPage() {
               <th className="px-4 py-3 text-right">Diferencia</th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3 text-right">Costo Reposición</th>
+              {isAdmin && <th className="px-4 py-3 text-right">Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -195,11 +215,35 @@ export function ProjectionsPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">${item.estimatedCost.toLocaleString()}</td>
+                {isAdmin && (
+                  <td className="px-4 py-3 text-right">
+                    {item.diff < 0 &&
+                      (sentIds.has(item.id) ? (
+                        <span
+                          title="Enviado a la orden de compra"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-success"
+                        >
+                          <Check size={14} />
+                          Enviado
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => sendToOrderMutation.mutate(item)}
+                          disabled={sendToOrderMutation.isPending}
+                          title="Enviar a Orden de Compra"
+                          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-secondary hover:bg-secondary/10 disabled:opacity-60"
+                        >
+                          <ShoppingCart size={14} />
+                          Enviar
+                        </button>
+                      ))}
+                  </td>
+                )}
               </tr>
             ))}
             {data && data.items.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-on-surface-variant">
+                <td colSpan={isAdmin ? 8 : 7} className="px-4 py-8 text-center text-on-surface-variant">
                   No hay insumos registrados para proyectar todavía.
                 </td>
               </tr>

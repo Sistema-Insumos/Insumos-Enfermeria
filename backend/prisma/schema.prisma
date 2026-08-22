@@ -280,10 +280,11 @@ model Supplier {
 }
 
 model PurchaseOrder {
-  id            String              @id @default(cuid())
-  status        PurchaseOrderStatus @default(DRAFT)
-  isPreliminary Boolean             @default(false)
-  createdAt     DateTime            @default(now())
+  id             String              @id @default(cuid())
+  status         PurchaseOrderStatus @default(DRAFT)
+  isPreliminary  Boolean             @default(false)
+  fromProjection Boolean             @default(false)
+  createdAt      DateTime            @default(now())
 
   items  PurchaseOrderItem[]
   quotes PurchaseOrderQuote[]

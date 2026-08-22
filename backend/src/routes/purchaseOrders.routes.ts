@@ -45,6 +45,46 @@ purchaseOrdersRouter.post(
   })
 );
 
+const projectionItemSchema = z.object({
+  supplyId: z.string().min(1),
+  quantity: z.number().int().min(1),
+  estimatedCost: z.number().min(0),
+});
+
+purchaseOrdersRouter.post(
+  "/projection-items",
+  asyncHandler(async (req, res) => {
+    const data = projectionItemSchema.parse(req.body);
+
+    const order = await prisma.$transaction(async (tx) => {
+      let cart = await tx.purchaseOrder.findFirst({
+        where: { fromProjection: true, status: "DRAFT" },
+      });
+      if (!cart) {
+        cart = await tx.purchaseOrder.create({ data: { fromProjection: true } });
+      }
+
+      await tx.purchaseOrderItem.upsert({
+        where: { purchaseOrderId_supplyId: { purchaseOrderId: cart.id, supplyId: data.supplyId } },
+        create: {
+          purchaseOrderId: cart.id,
+          supplyId: data.supplyId,
+          quantity: data.quantity,
+          estimatedCost: data.estimatedCost,
+        },
+        update: { quantity: data.quantity, estimatedCost: data.estimatedCost },
+      });
+
+      return tx.purchaseOrder.findUnique({
+        where: { id: cart.id },
+        include: { items: { include: { supply: true } }, quotes: { include: { supplier: true } } },
+      });
+    });
+
+    res.status(201).json(order);
+  })
+);
+
 const quoteSchema = z.object({
   supplierId: z.string().min(1),
   subtotal: z.number().min(0),
